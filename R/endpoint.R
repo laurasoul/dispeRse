@@ -16,7 +16,7 @@
 # Perhaps add conditionals to overcome floating point error when travelling exactly N, E, S, or W
 # Similarly perhaps add something to ensure travelling from poles makes sense, e.g. going North from North Pole.
 
-endpoint <- function(slat=0, slong=0, bearing=0, distance=1) {
+EndPoint <- function(slat=0, slong=0, bearing=0, distance=1) {
     
     R <- 6367.4447 #average radius
 
