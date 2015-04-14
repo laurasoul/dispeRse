@@ -37,7 +37,7 @@ lonlat <- c(0, 90)
 for(i in 1:1000) {
 
 	# Take a random step and store new coordinates:
-	lonlat2 <- unlist(endpoint(lonlat[2], lonlat[1], runif(1, 0, 360), abs(rnorm(1, 0, 100)))[c(2, 1)])
+	lonlat2 <- unlist(EndPoint(lonlat[2], lonlat[1], runif(1, 0, 360), abs(rnorm(1, 0, 100)))[c(2, 1)])
 
 	# Plot coordinates on sphere in rainbow colour order:
 	rgl.sphpoints(lonlat2[1], lonlat2[2], 1, deg=TRUE, col=rainbow(1000)[i], cex=2)
