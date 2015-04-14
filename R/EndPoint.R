@@ -1,8 +1,8 @@
 #' Random walk on a sphere
 #'
 #' This function allows you calculate the final coordinates and bearing after one step of a random walk on a sphere.
-#' @param latitude starting latitude
-#' @param longitude starting longitude
+#' @param slat starting latitude
+#' @param slong starting longitude
 #' @param bearing heading in degrees from north
 #' @param distance length of step in km
 #' @return lat final latitude
