@@ -19,4 +19,33 @@ install_github("laurasoul/dispeRse")
 library(dispeRse)
 ```
 
+Script to perform (and plot) a random walk on a sphere:
+
+```r
+# Load libraries:
+library(dispeRse)
+install.packages("sphereplot", dependencies=T)
+library(sphereplot)
+
+# Plot spherical grid:
+rgl.sphgrid()
+
+# Start at North Pole:
+lonlat <- c(0, 90)
+
+# For 1000 random walk steps:
+for(i in 1:1000) {
+
+	# Take a random step and store new coordinates:
+	lonlat2 <- unlist(endpoint(lonlat[2], lonlat[1], runif(1, 0, 360), abs(rnorm(1, 0, 100)))[c(2, 1)])
+
+	# Plot coordinates on sphere in rainbow colour order:
+	rgl.sphpoints(lonlat2[1], lonlat2[2], 1, deg=TRUE, col=rainbow(1000)[i], cex=2)
+
+	# Update lonlat ready for next step:
+	lonlat <- lonlat2
+
+}
+```
+
 More to follow.
