@@ -11,7 +11,7 @@
 #' @keywords random walk
 #' @export
 #' @examples
-#' endpoint(slat=0, slong=0, bearing=90, distance=111)
+#' EndPoint(slat=0, slong=0, bearing=90, distance=111)
 
 # Perhaps add conditionals to overcome floating point error when travelling exactly N, E, S, or W
 # Similarly perhaps add something to ensure travelling from poles makes sense, e.g. going North from North Pole.
