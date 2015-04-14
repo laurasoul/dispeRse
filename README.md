@@ -12,10 +12,10 @@ install.packages("devtools")
 # Load the devtools package into R:
 library(devtools)
 
-# Install the Claddis package from github:
+# Install the dispeRse package from github:
 install_github("laurasoul/dispeRse")
 
-# Load the Claddis package into R:
+# Load the dispeRse package into R:
 library(dispeRse)
 ```
 
