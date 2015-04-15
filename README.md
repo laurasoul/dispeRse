@@ -51,6 +51,11 @@ for(i in 1:1000) {
 Script to perform (and plot) a random walk on a tree on a sphere:
 
 ```r
+# Add and load the Claddis package into R:
+library(devtools)
+install_github("graemetlloyd/Claddis")
+library(Claddis)
+
 # Load libraries:
 library(dispeRse)
 install.packages(c("ape", "maps"), dependencies=T)
