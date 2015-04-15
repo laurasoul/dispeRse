@@ -1,3 +1,24 @@
+#' Generate random birth-death tree with associated coordinates
+#'
+#' This function generates a birth-death tree in discrete time steps at the same time as recording the long lat of each brach at the end of each step
+#'
+#' @param b per-lineage birth (speciation) rate
+#' @param d per-lineage death (extinction) rate
+#' @param slon starting longitude
+#' @param slat starting latitude
+#' @param steps number of time steps to use
+#' @param steplengthsd standard deviation used for random walk draws
+#'
+#' @return tree a phylogenetic tree
+#' @return longitudes a matrix with rows corresponding to the tree edges and colunns to time step
+#' @return latitudes a matrix with rows corresponding to the tree edges and colunns to time step
+#' @details This function is based on the function sim.bdtree in geiger <http://cran.r-project.org/web/packages/geiger/geiger.pdf>. 
+#' @keywords random walk discrete
+#' @export
+#' @examples
+#' TreeWalkerDiscrete(b=0.1, d=0.05, steps=50, slon=0, slat=0, steplengthsd = 100)
+#'
+
 TreeWalkerDiscrete <- function (b=0.1, d=0.05, steps=50, slon=0, slat=0, steplengthsd=100) {
 # Modified from sim.bdtree in geiger
 # The following simulates birthdeath trees to a given number of time steps t
