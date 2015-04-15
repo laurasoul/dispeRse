@@ -48,4 +48,31 @@ for(i in 1:1000) {
 }
 ```
 
+Script to perform (and plot) a random walk on a tree on a sphere:
+
+```r
+# Load libraries:
+library(dispeRse)
+install.packages(c("ape", "maps"), dependencies=T)
+library(ape)
+library(maps)
+
+# Generate random 50-taxon tree:
+tree <- rtree(10)
+
+# Run function setting start point at equator-Greenwich Meridian intersection:
+out <- TreeWalker(tree, slat = 0, slon = 0, niter = 100, steplengthmean = 0, steplengthsd = 1000)
+
+# Plot map:
+map()
+
+# For each branch:
+for(i in 1:length(out)) {
+
+	# Plot walk along branch:
+	lines(out[[i]][2, ], out[[i]][3, ], col=rainbow(length(out))[i])
+
+}
+```
+
 More to follow.
