@@ -1,8 +1,8 @@
 #' Random walk on a sphere
 #'
 #' This function allows you calculate the final coordinates and bearing after one step of a random walk on a sphere.
-#' @param slat starting latitude
 #' @param slong starting longitude
+#' @param slat starting latitude
 #' @param bearing heading in degrees from north
 #' @param distance length of step in km
 #' @return lat final latitude
@@ -11,12 +11,12 @@
 #' @keywords random walk
 #' @export
 #' @examples
-#' EndPoint(slat=0, slong=0, bearing=90, distance=111)
+#' EndPoint(slong = 0, slat = 0, bearing = 90, distance = 111)
 
 # Perhaps add conditionals to overcome floating point error when travelling exactly N, E, S, or W
 # Similarly perhaps add something to ensure travelling from poles makes sense, e.g. going North from North Pole.
 
-EndPoint <- function(slat=0, slong=0, bearing=0, distance=1) {
+EndPoint <- function(slong = 0, slat = 0, bearing = 0, distance = 1) {
     
     R <- 6367.4447 #average radius
 
