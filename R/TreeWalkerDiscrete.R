@@ -1,4 +1,4 @@
-TreeWalkerDiscrete <- function (b=0.1, d=0.05, steps=50, long=0, lat=0, step.dev=100) {
+TreeWalkerDiscrete <- function (b=0.1, d=0.05, steps=50, slon=0, slat=0, steplengthsd=100) {
 # Modified from sim.bdtree in geiger
 # The following simulates birthdeath trees to a given number of time steps t
     extra.rows <- matrix(NA,nrow=2,ncol=steps+1)
@@ -10,8 +10,8 @@ TreeWalkerDiscrete <- function (b=0.1, d=0.05, steps=50, long=0, lat=0, step.dev
     while (1) {
         lat.matrix <- matrix(nrow=2,ncol=steps+1)
         long.matrix <- matrix(nrow=2,ncol=steps+1)
-        lat.matrix[,1] <- lat
-        long.matrix[,1] <- long
+        lat.matrix[,1] <- slat
+        long.matrix[,1] <- slon
         edge <- rbind(c(1, 2), c(1, 3)) # this is a starting edge matrix
         edge.length <- rep(NA, 2)
         stem.depth <- numeric(2)
@@ -27,7 +27,7 @@ TreeWalkerDiscrete <- function (b=0.1, d=0.05, steps=50, long=0, lat=0, step.dev
             for (i in 1:nrow(lat.matrix)) {
                 if (alive[i]) {
                     starting<-c(lat.matrix[i,t],long.matrix[i,t])
-                    moveto<-EndPoint(starting[2],starting[1],runif(1,0,360),abs(rnorm(1,0,step.dev))) #generates a random walk step and calculates new position
+                    moveto<-EndPoint(starting[2],starting[1],runif(1,0,360),abs(rnorm(1,0,steplengthsd))) #generates a random walk step and calculates new position
                     lat.matrix[i,t+1]<-moveto$lat
                     long.matrix[i,t+1]<-moveto$long
                 }
