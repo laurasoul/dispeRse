@@ -66,7 +66,7 @@ library(maps)
 tree <- rtree(10)
 
 # Run function setting start point at equator-Greenwich Meridian intersection:
-out <- TreeWalker(tree, slon = 0, slat = 0, niter = 100, steplengthmean = 0, steplengthsd = 1000)
+out <- TreeWalkerContinuous(tree, slon = 0, slat = 0, niter = 100, steplengthmean = 0, steplengthsd = 1000)
 
 # Plot map:
 map()
