@@ -39,8 +39,8 @@ EndPoint <- function(slong = 0, slat = 0, bearing = 0, distance = 1) {
     final_bearing <- final_bearing_rad * 180 / pi
     final_bearing <- (final_bearing + 360) %% 360
 
-    result <- list(end_lat, end_long, final_bearing)
-    names(result) <- c("lat", "long", "bearing")
+    result <- list(end_long, end_lat, final_bearing)
+    names(result) <- c("long", "lat", "bearing")
 
     return(result)
 	
