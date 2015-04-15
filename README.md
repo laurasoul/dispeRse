@@ -68,6 +68,9 @@ tree <- rtree(10)
 # Run function setting start point at equator-Greenwich Meridian intersection:
 out <- TreeWalkerContinuous(tree, slon = 0, slat = 0, niter = 100, steplengthmean = 0, steplengthsd = 1000)
 
+# For discrete function
+run<-TreeWalkerDiscrete(b=0.1, d=0.05, steps=50, long=0, lat= 0, step.dev=100)
+
 # Plot map:
 map()
 
@@ -77,6 +80,11 @@ for(i in 1:length(out)) {
 	# Plot walk along branch:
 	lines(out[[i]][2, ], out[[i]][3, ], col=rainbow(length(out))[i])
 
+}
+
+# For discrete function
+for (i in 1:nrow(run$latitudes) {
+    lines(run$longitudes[i,], run$latitudes[i,])
 }
 ```
 
