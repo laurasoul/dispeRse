@@ -15,10 +15,10 @@ SphericalAngleForEquilateralTriangleFromGreatCircleSideLength <- function(side_l
 # Check this works for triangles larger than equivalent of 90-degrees of latitude on each side!
 	
 	# Get y (which will be double the opposite for the triangle we are trying to solve):
-	y <- GetChordLengthFromTheta(GetThetaFromGreatCircleDistance(side_length))
+	y <- ChordLengthFromTheta(ThetaFromGreatCircleDistance(side_length))
 	
 	# Get z which will be double the hypotenuse for the triangle we are trying to solve):
-	z <- GetChordLengthFromTheta(GetThetaFromGreatCircleDistance(side_length * 2))
+	z <- ChordLengthFromTheta(ThetaFromGreatCircleDistance(side_length * 2))
 	
 	# Solve the traingle for theta (the spherical angle) and convert to degrees:
 	spherical_angle <- asin((y / 2) / (z / 2)) / (pi / 180) * 2
