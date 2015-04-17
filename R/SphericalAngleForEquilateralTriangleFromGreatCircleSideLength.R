@@ -1,3 +1,14 @@
+#' Finds the spherical angle for an equilateral triangle
+#'
+#' Returns the spherical angle in degrees for an equilateral triangle of known side length
+#'
+#' @param side_length The great circle distance of a side of the triangle in kilometres.
+#' @param EarthRad Radius of the Earth in kilometres.
+#' @return Spherical angle in degrees.
+#' @details Nothing yet.
+#' @examples
+#' SphericalAngleForEquilateralTriangleFromGreatCircleSideLength(1000)
+
 # Get the spherical angle for an equilateral triangle where its sides (as great circle distances) are known:
 SphericalAngleForEquilateralTriangleFromGreatCircleSideLength <- function(side_length, EarthRad = 6367.4447) {
 	
