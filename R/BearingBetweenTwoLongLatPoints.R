@@ -1,5 +1,5 @@
 # Get bearing (with 0 or 360 being North, 90 being East etc.) from one lat-long coordinate to another:
-GetBearingBetweenTwoLongLatPoints <- function(start_long, start_lat, end_long, end_lat) {
+BearingBetweenTwoLongLatPoints <- function(start_long, start_lat, end_long, end_lat) {
 	
 # Check that lat and long are not both identical (where no bearing is possible)
 	

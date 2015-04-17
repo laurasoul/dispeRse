@@ -1,5 +1,5 @@
 # GreatCircleDistance function:
-GetGreatCircleDistanceFromLongLat <- function(long1, lat1, long2, lat2, EarthRad = 6367.4447) {
+GreatCircleDistanceFromLongLat <- function(long1, lat1, long2, lat2, EarthRad = 6367.4447) {
 	
 	# Convert point 1 longitude to radians:
 	long1 <- long1 * (pi / 180)

@@ -1,5 +1,5 @@
 # Get the spherical angle for an equilateral triangle where its sides (as great circle distances) are known:
-GetSphericalAngleForEquilateralTriangleFromGreatCircleSideLength <- function(side_length, EarthRad = 6367.4447) {
+SphericalAngleForEquilateralTriangleFromGreatCircleSideLength <- function(side_length, EarthRad = 6367.4447) {
 	
 # Check this works for triangles larger than equivalent of 90-degrees of latitude on each side!
 	
