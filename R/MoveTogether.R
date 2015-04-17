@@ -21,15 +21,13 @@ MoveTogether <- function(centers, pole, angle) {
     
     new_centers<-matrix(nrow=2, ncol=ncol(centers))
     centers <- as.matrix(centers)
-    long_pole_rad <- pole[1]*pi/180
-    lat_pole_rad <- pole[2]*pi/180
-
+    
     for (i in 1:ncol(centers)) {
 
-    	start_long <- centers[1,i]*pi/180
-    	start_lat <- centers[2,i]*pi/180
-    	distance <- acos(sin(start_lat) * sin(lat_pole_rad) + cos(start_lat) * cos(lat_pole_rad) * cos(abs(start_long - long_pole_rad))) * EarthRad
-    	init_bearing <- GetBearing(pole[1], pole[2], centers[1,i], centers[2,i])
+    	start_long <- centers[1,i]
+    	start_lat <- centers[2,i]
+    	distance <- GreatCircleDistanceFromLongLat(long1=start_long,lat1=start_lat, long2=pole[1], lat2=pole[2])
+    	init_bearing <- BearingBetweenTwoLongLatPoints(pole[1], pole[2], start_long, start_lat)
     	new_bearing <- ((init_bearing + angle) + 360) %% 360
     	new_loc <- EndPoint(pole[1], pole[2], new_bearing, distance)
     	new_centers[1,i] <- new_loc$long
