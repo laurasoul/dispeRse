@@ -1,17 +1,30 @@
-#N circles
-#Radius (single value)
-#Starting points (random; supercontinent; all separate)
-#squishiness (How close can they get?; %age of radii; make sure it is 0-100)
-#Starting bearings (random; disperse; converging) -use centroid of all radii to define this.
-#Speed
-#Stickiness (how long (in steps) can continents stay at maximum squished-togetherness
+#' Generate a matrix of longitudes and latitudes of contienntal centres
+#'
+#' Generates a matrix of longitudes and latitudes describing the centres of circular continents on a sphere
+#'
+#' @param N_continents The (maximum) number of individual continents
+#' @param radius The radius of each circular continent.
+#' @param start_configuration One of "random", "supercontinent", or "max separate".
+#' @param squishiness A value from 0 (continents can never overlap) to 1 (continents can overlap completely)
+#' @return A matrix of longitudes and latitudes describing the centres of circular continents
+#' @details Nothing yet.
+#' @examples
+#' StartingPoints(N_continents = 3, radius = 1000, start_configuration = "supercontinent", squishiness = 0.1)
 
-#N separated continents (distance matrix with values less than 2radii)
-#lat-longs of each circle centre
-#Bearings after each step change
-#total land area all circles - minus
+# Inouts for eventual continental function:
+# - N circles
+# - Radius (single value)
+# - Starting points (random; supercontinent; all separate)
+# - Squishiness (How close can they get?; %age of radii; make sure it is 0-100)
+# - Starting bearing (random; disperse; converging) - will need to use Euler Pole function to do this.
+# - Speed - Not sure how we will do this.
+# - Stickiness: how long (in steps) can continents stay at maximum squished-togetherness?
 
-#If continents are stuck together should still be able to move, but in unison. How?
+# Outputs:
+# - N separated continents (distance matrix with values less than 2radii)
+# - Long-lat of each circle centre
+# - Bearings after each step change
+# - Total land area all circles - minus
 
 StartingPoints <- function(N_continents = 3, radius = 500, start_configuration = "supercontinent", squishiness = 0.25) {
 
@@ -122,5 +135,8 @@ StartingPoints <- function(N_continents = 3, radius = 500, start_configuration =
 		#min_separation <- ?????
 		
 	}
+	
+	# Output the circles matrix:
+	return(circles)
 	
 }
