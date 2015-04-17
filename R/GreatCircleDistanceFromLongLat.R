@@ -1,3 +1,18 @@
+#' Returns great circle distance from a set of coordinates
+#'
+#' Returns great circle distance in kilometres from a two longitude-latitude points
+#'
+#' @param long1 Decimalised longitude for first point.
+#' @param lat1 Decimalised latitude for first point.
+#' @param long2 Decimalised longitude for second point.
+#' @param lat2 Decimalised latitude for second point.
+#' @param EarthRad Radius of the Earth in kilometres.
+#' @return Great circle distance in kilometres.
+#' @details Nothing yet.
+#' @examples
+#' # Return one-degree of latitude (approximately 111 kilometres):
+#' GreatCircleDistanceFromLongLat(0, 0, 0, 1)
+
 # GreatCircleDistance function:
 GreatCircleDistanceFromLongLat <- function(long1, lat1, long2, lat2, EarthRad = 6367.4447) {
 	
