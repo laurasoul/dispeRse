@@ -64,13 +64,13 @@ StartingPoints <- function(N_continents = 3, radius = 500, start_configuration =
 			if(N_continents > 2) {
 				
 				# Get spherical angle of equilateral (spherical) triangle with sides equal to minimum separation:
-				spherical_angle <- GetSphericalAngleForEquilateralTriangleFromGreatCircleSideLength(min_separation)
+				spherical_angle <- SphericalAngleForEquilateralTriangleFromGreatCircleSideLength(min_separation)
 
 				# Get first of two possible bearings from centre of first continent to centre of third continent:
-				new_bearing_1 <- (GetBearingBetweenTwoLongLatPoints(circles[1, "Longitude"], circles[1, "Latitude"], circles[2, "Longitude"], circles[2, "Latitude"]) - spherical_angle) %% 360
+				new_bearing_1 <- (BearingBetweenTwoLongLatPoints(circles[1, "Longitude"], circles[1, "Latitude"], circles[2, "Longitude"], circles[2, "Latitude"]) - spherical_angle) %% 360
 				
 				# Get second of two possible bearings from centre of first continent to centre of third continent:
-				new_bearing_2 <- (GetBearingBetweenTwoLongLatPoints(circles[1, "Longitude"], circles[1, "Latitude"], circles[2, "Longitude"], circles[2, "Latitude"]) + spherical_angle) %% 360
+				new_bearing_2 <- (BearingBetweenTwoLongLatPoints(circles[1, "Longitude"], circles[1, "Latitude"], circles[2, "Longitude"], circles[2, "Latitude"]) + spherical_angle) %% 360
 				
 				# Get lat-long coordinates of first possible site of third continent:
 				new_continent_1 <- EndPoint(circles[1, "Longitude"], circles[1, "Latitude"], new_bearing_1, min_separation)[c("long", "lat")]
