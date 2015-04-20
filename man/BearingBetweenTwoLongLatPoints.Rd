@@ -26,6 +26,7 @@ Nothing yet.
 }
 \examples{
 # Should return bearing of North (0):
-BearingBetweenTwoLongLatPoints(0, 0, 0, 1)
+BearingBetweenTwoLongLatPoints(start_long = 0, start_lat = 0,
+  end_long = 0, end_lat = 1)
 }
 
