@@ -270,10 +270,10 @@ StartingPoints <- function(N_continents = 7, radius = 2000, start_configuration 
 #rgl.sphpoints(open_spots[, "Longitude"], open_spots[, "Latitude"], 1, deg=TRUE, col="blue", cex=2)
 	
 	
-	library(maps)
-	map()
-	points(circles[, "Longitude"], circles[, "Latitude"], pch=19, col="red")
-	points(open_spots[, 1], open_spots[, 2], pch=19, col="blue")
+#library(maps)
+#map()
+#points(circles[, "Longitude"], circles[, "Latitude"], pch=19, col="red")
+#points(open_spots[, 1], open_spots[, 2], pch=19, col="blue")
 	
 	
 	# If starting continental configuration is random:
