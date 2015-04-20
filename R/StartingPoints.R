@@ -89,11 +89,6 @@ StartingPoints <- function(N_continents = 7, radius = 2000, start_configuration 
 				# Add third continent to circles matrix:
 				circles <- rbind(circles, c(3, third_circle))
 				
-# Little plot to check things look like they are working OK!:
-#library(maps)
-#map()
-#points(circles[, "Longitude"], circles[, "Latitude"], pch=19, col="red")
-				
 				# If there are more than three continents:
 				if(N_continents > 3) {
 					
@@ -135,8 +130,8 @@ StartingPoints <- function(N_continents = 7, radius = 2000, start_configuration 
 					# Keep adding continents unless they all have starting points:
 					while(N_continents > nrow(circles)) {
 						
-# If no new open spots then stop
-# Make sure open spots is always a matrix too!
+						# Error message if too many continents are requested:
+						if(nrow(open_spots) == 0) stop("ERROR: There is not enough space for all your continents! Try making them smaller or choosing fewer of them.")
 						
 						# Randomly pick an open spot to place a new continent:
 						new_continent_point <- sample(c(1:nrow(open_spots)))[1]
@@ -248,26 +243,16 @@ StartingPoints <- function(N_continents = 7, radius = 2000, start_configuration 
 					
 				}
 				
-			# If only two continents:
-			} else {
-			
-# Output
-				
 			}
 		
-		# If only one continent:
-		} else {
-			
-# Output
-			
 		}
 		
 	}
 	
 #library(sphereplot)
-#rgl.sphgrid()
-#rgl.sphpoints(circles[, "Longitude"], circles[, "Latitude"], 1, deg=TRUE, col="red", cex=2)
-#rgl.sphpoints(open_spots[, "Longitude"], open_spots[, "Latitude"], 1, deg=TRUE, col="blue", cex=2)
+rgl.sphgrid()
+rgl.sphpoints(circles[, "Longitude"], circles[, "Latitude"], 1, deg=TRUE, col="red", cex=2)
+rgl.sphpoints(open_spots[, "Longitude"], open_spots[, "Latitude"], 1, deg=TRUE, col="blue", cex=2)
 	
 	
 #library(maps)
