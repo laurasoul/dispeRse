@@ -8,10 +8,10 @@
 #' @param squishiness A value from 0 (continents can never overlap) to 1 (continents can overlap completely)
 #' @return A matrix of longitudes and latitudes describing the centres of circular continents
 #' @details Nothing yet.
-#'
 #' @examples
 #' StartingPoints(N_continents = 7, radius = 2000,
-#'    start_configuration = "supercontinent", squishiness = 0.1)
+#'    start_configuration = "supercontinent", squishiness = 0.1,
+#'    EarthRad = 6367.4447)
 
 # Inouts for eventual continental function:
 # - N circles
@@ -28,12 +28,19 @@
 # - Bearings after each step change
 # - Total land area all circles - minus
 
-StartingPoints <- function(N_continents = 7, radius = 2000, start_configuration = "supercontinent", squishiness = 0.25) {
+StartingPoints <- function(N_continents = 7, radius = 2000, start_configuration = "supercontinent", squishiness = 0.25, EarthRad = 6367.4447) {
 
-# Check N_continents at least 1 and is integer
-# Check start_configuration is one of: "random separate", "random overlap", "supercontinent" "all separate"
-# Check radius is positive and less than area of planet! (check with N_continents for total size)
-# if(squishiness > 1 || squishiness < 0) Check squishiness is between 0 and 1 (0 being 0%, circles cannot occlude at all; 1 being 100% circles can completely occlude)
+	# Check N_continents at least 1 and is an integer (divisble by one:
+	if(N_continents %% 1 != 0 || N_continents < 1) stop("ERROR: Number of contientns must be a positive integer >= 1.")
+	
+	# Check radius is less than or equal to pi * the radius of the Earth:
+	if(radius > (pi * EarthRad)) stop("ERROR: Radius must be less than pi * EarthRad (and much more if using multiple continents).")
+	
+	# Check configuration option chosen is valid:
+	if(start_configuration != "random separate" && start_configuration != "random overlap" && start_configuration != "supercontinent" && start_configuration != "all separate") stop("ERROR: Starting configuration must be one of \"random separate\", \"random overlap\", \"supercontinent\", or \"all separate\".")
+	
+	# Check squishiness is a proportion:
+	if(squishiness > 1 || squishiness < 0) stop("ERROR: Squishiness is proportional and must be between 0 and 1.")
 
 	# If the start configuration is a supercontinnet (all continents attached togther):
 	if(start_configuration == "supercontinent") {
@@ -66,7 +73,7 @@ StartingPoints <- function(N_continents = 7, radius = 2000, start_configuration 
 				if(N_continents > 2) {
 					
 					# Get spherical angle of equilateral (spherical) triangle with sides equal to minimum separation:
-					spherical_angle <- SphericalAngleForEquilateralTriangleFromGreatCircleSideLength(min_separation)
+					spherical_angle <- SphericalAngleForEquilateralTriangleFromGreatCircleSideLength(min_separation, EarthRad = EarthRad)
 					
 					# Get first of two possible bearings from centre of first continent to centre of third continent:
 					new_bearing_1 <- (BearingBetweenTwoLongLatPoints(circles[1, "Longitude"], circles[1, "Latitude"], circles[2, "Longitude"], circles[2, "Latitude"]) - spherical_angle) %% 360
@@ -105,7 +112,7 @@ StartingPoints <- function(N_continents = 7, radius = 2000, start_configuration 
 						for(i in 1:3) {
 							
 							# Get distance from open spot to ith continent centre:
-							distances_from_centres[i] <- GreatCircleDistanceFromLongLat(open_spots[, "Longitude"], open_spots[, "Latitude"], circles[i, "Longitude"], circles[i, "Latitude"])
+							distances_from_centres[i] <- GreatCircleDistanceFromLongLat(open_spots[, "Longitude"], open_spots[, "Latitude"], circles[i, "Longitude"], circles[i, "Latitude"], EarthRad = EarthRad)
 							
 						}
 						
@@ -143,7 +150,7 @@ StartingPoints <- function(N_continents = 7, radius = 2000, start_configuration 
 							for(i in 1:nrow(circles)) {
 								
 								# Is the distance from the new continent to the ith pre-existing continent equal to the minimum continental separation?:
-								equal_check <- all.equal(as.vector(GreatCircleDistanceFromLongLat(open_spots[new_continent_point, "Longitude"], open_spots[new_continent_point, "Latitude"], circles[i, "Longitude"], circles[i, "Latitude"])), min_separation)
+								equal_check <- all.equal(as.vector(GreatCircleDistanceFromLongLat(open_spots[new_continent_point, "Longitude"], open_spots[new_continent_point, "Latitude"], circles[i, "Longitude"], circles[i, "Latitude"], EarthRad = EarthRad)), min_separation)
 								
 								# If one of the nearest continents then add to the list:
 								if(equal_check == TRUE) adjacent_continents <- c(adjacent_continents, i)
@@ -194,7 +201,7 @@ StartingPoints <- function(N_continents = 7, radius = 2000, start_configuration 
 								for(j in 1:nrow(circles)) {
 									
 									# Get distance from ith potential new open spot to jth existing continent:
-									distance_between_centres <- as.vector(GreatCircleDistanceFromLongLat(potential_new_open_spots[i, "Longitude"], potential_new_open_spots[i, "Latitude"], circles[j, "Longitude"], circles[j, "Latitude"]))
+									distance_between_centres <- as.vector(GreatCircleDistanceFromLongLat(potential_new_open_spots[i, "Longitude"], potential_new_open_spots[i, "Latitude"], circles[j, "Longitude"], circles[j, "Latitude"], EarthRad = EarthRad))
 									
 									# If ith potential new open spot is closer to a pre-existing continent than the minimum separation allows add to unsuitable spots:
 									if(all.equal(distance_between_centres, min_separation) != TRUE && distance_between_centres < min_separation) unsuitable_spots <- as.vector(c(unsuitable_spots, i))
@@ -205,7 +212,7 @@ StartingPoints <- function(N_continents = 7, radius = 2000, start_configuration 
 								for(j in 1:nrow(open_spots)) {
 									
 									# Get distance from ith potential new open spot to jth existing open spot:
-									distance_between_centres <- as.vector(GreatCircleDistanceFromLongLat(potential_new_open_spots[i, "Longitude"], potential_new_open_spots[i, "Latitude"], open_spots[j, "Longitude"], open_spots[j, "Latitude"]))
+									distance_between_centres <- as.vector(GreatCircleDistanceFromLongLat(potential_new_open_spots[i, "Longitude"], potential_new_open_spots[i, "Latitude"], open_spots[j, "Longitude"], open_spots[j, "Latitude"], EarthRad = EarthRad))
 									
 									# If ith potential new open spot is closer to a pre-existing open spot than the minimum separation allows add to unsuitable spots:
 									if(all.equal(distance_between_centres, min_separation) != TRUE && distance_between_centres < min_separation) unsuitable_spots <- as.vector(c(unsuitable_spots, i))
