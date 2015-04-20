@@ -12,7 +12,8 @@
 # Get the spherical angle for an equilateral triangle where its sides (as great circle distances) are known:
 SphericalAngleForEquilateralTriangleFromGreatCircleSideLength <- function(side_length, EarthRad = 6367.4447) {
 	
-# Check this works for triangles larger than equivalent of 90-degrees of latitude on each side!
+	# Error check for large triangles:
+	if(side_length > (0.5 * pi * EarthRad)) stop("ERROR: This function will not work for spherical equilateral triangles that are greater in area than 1/8th the sphere's surface.")
 	
 	# Get y (which will be double the opposite for the triangle we are trying to solve):
 	y <- ChordLengthFromTheta(ThetaFromGreatCircleDistance(side_length))
