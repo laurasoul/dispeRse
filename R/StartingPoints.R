@@ -296,6 +296,9 @@ StartingPoints <- function(N_continents = 7, radius = 2000, start_configuration 
 		# Establish minimum difference between continent centres if overlap not allowed:
 		if(start_configuration == "random separate") min_separation <- radius * 2
 		
+		# Error check for whether all continents can theoretically fit:
+		if((SphericalCapArea(min_separation / 2) * N_continents) > (4 * pi * (EarthRad ^ 2))) stop("ERROR: The current choices for number of continents, radius and squishiness means it is impossible to fit all continents on the sphere. Consider choosing fewer continents, a smaller radius, or larger squishiness.")
+		
 		# Randomly assign starting longitude:
 		first_circle_long <- runif(1, min = -180, max = 180)
 		
@@ -308,8 +311,40 @@ StartingPoints <- function(N_continents = 7, radius = 2000, start_configuration 
 		# Keep adding continents until they all have starting points:
 		while(N_continents > nrow(circles)) {
 
+			# Randomly assign starting longitude:
+			new_circle_long <- runif(1, min = -180, max = 180)
 			
+			# Randomly assign starting latitude:
+			new_circle_lat <- runif(1, min = -90, max = 90)
 			
+			# Get the Great Circle distance matrix of the potential new continent and the pre-existing continents:
+			GC_distance_matrix <- GreatCircleDistanceMatrix(rbind(circles[, c("Longitude", "Latitude")], c(new_circle_long, new_circle_lat))[, 1], rbind(circles[, c("Longitude", "Latitude")], c(new_circle_long, new_circle_lat))[, 2], EarthRad = EarthRad)
+			
+			# Reset counter:
+			counter <- 1
+			
+			# As long as the new point is too close to the epre-existing continents:
+			while(min(GC_distance_matrix[lower.tri(GC_distance_matrix)]) < min_separation) {
+				
+				# Randomly assign new starting longitude:
+				new_circle_long <- runif(1, min = -180, max = 180)
+				
+				# Randomly assign new starting latitude:
+				new_circle_lat <- runif(1, min = -90, max = 90)
+				
+				# Update Great Circle distance matrix:
+				GC_distance_matrix <- GreatCircleDistanceMatrix(rbind(circles[, c("Longitude", "Latitude")], c(new_circle_long, new_circle_lat))[, 1], rbind(circles[, c("Longitude", "Latitude")], c(new_circle_long, new_circle_lat))[, 2], EarthRad = EarthRad)
+				
+				# Update counter:
+				counter <- counter + 1
+				
+				# Break loop if it looks like adding the next continent is impossible:
+				if(counter == 1000) stop("ERROR: Have made 1000 attempts to add the next continent without success. Check that number of continents or continent radius are not too large.")
+				
+			}
+			
+			# Add new continent to list:
+			circles <- rbind(circles, c(nrow(circles) + 1, new_circle_long, new_circle_lat))
 			
 		}
 		
