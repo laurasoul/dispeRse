@@ -8,8 +8,10 @@
 #' @param squishiness A value from 0 (continents can never overlap) to 1 (continents can overlap completely)
 #' @return A matrix of longitudes and latitudes describing the centres of circular continents
 #' @details Nothing yet.
+#'
 #' @examples
-#' StartingPoints(N_continents = 7, radius = 2000, start_configuration = "supercontinent", squishiness = 0.1)
+#' StartingPoints(N_continents = 7, radius = 2000,
+#'    start_configuration = "supercontinent", squishiness = 0.1)
 
 # Inouts for eventual continental function:
 # - N circles
