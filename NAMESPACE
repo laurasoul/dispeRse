@@ -1,5 +1,3 @@
 export(BearingBetweenTwoLongLatPoints)export(ChordLengthFromTheta)export(EndPoint)export(GreatCircleDistanceFromLongLat)export(GreatCircleDistanceFromTheta)export(MoveTogether)export(SphericalAngleForEquilateralTriangleFromGreatCircleSideLength)export(StartingPoints)export(ThetaFromChordLength)export(ThetaFromGreatCircleDistance)export(TreeWalkerContinuous)export(TreeWalkerDiscrete)
 import(ape)
 import(geiger)
-
-
