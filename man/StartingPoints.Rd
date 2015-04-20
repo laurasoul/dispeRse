@@ -4,7 +4,7 @@
 \alias{StartingPoints}
 \title{Generate a matrix of longitudes and latitudes of contienntal centres}
 \usage{
-StartingPoints(N_continents = 3, radius = 500,
+StartingPoints(N_continents = 7, radius = 2000,
   start_configuration = "supercontinent", squishiness = 0.25)
 }
 \arguments{
@@ -26,6 +26,6 @@ Generates a matrix of longitudes and latitudes describing the centres of circula
 Nothing yet.
 }
 \examples{
-StartingPoints(N_continents = 3, radius = 1000, start_configuration = "supercontinent", squishiness = 0.1)
+StartingPoints(N_continents = 7, radius = 2000, start_configuration = "supercontinent", squishiness = 0.1)
 }
 
