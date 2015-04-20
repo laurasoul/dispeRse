@@ -1,7 +1,7 @@
 Package: dispeRse
 Title: Models for Paleobiogeography
 Version: 0.0.0.9000
-Authors: Laura C. Soul <lauracsoul@gmail.com> Graeme T. Lloyd
+Author: Laura C. Soul and Graeme T. Lloyd
 Maintainer: Graeme T. Lloyd <graemetlloyd@gmail.com>
 Description: Functions for simulating and modelling phylogenetic patterns of paleobiogeography
 Depends: R (>= 3.1.3)
