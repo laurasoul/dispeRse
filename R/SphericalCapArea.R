@@ -9,7 +9,6 @@
 #' @examples
 #' SphericalCapArea(2000)
 
-# Function to get the area of a circle on a sphere:
 SphericalCapArea <- function(radius, EarthRad = 6367.4447) {
 	
 	# Get circumference of the sphere:
