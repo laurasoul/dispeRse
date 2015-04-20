@@ -9,7 +9,6 @@
 #' @examples
 #' GreatCircleDistanceMatrix(c(-179, 0, 179), c(89, 0, -89))
 
-# Great Circle Distance Matrix function:
 GreatCircleDistanceMatrix <- function(longs, lats, EarthRad = 6367.4447) {
 	
 	# Create empty square matrix:
