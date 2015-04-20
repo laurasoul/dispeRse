@@ -26,6 +26,7 @@ Generates a matrix of longitudes and latitudes describing the centres of circula
 Nothing yet.
 }
 \examples{
-StartingPoints(N_continents = 7, radius = 2000, start_configuration = "supercontinent", squishiness = 0.1)
+StartingPoints(N_continents = 7, radius = 2000,
+   start_configuration = "supercontinent", squishiness = 0.1)
 }
 
