@@ -27,7 +27,7 @@ A list of edges with matrices showing times and coordinates
 Perform Brownian motion (a random walk) on a sphere.
 }
 \examples{
-tree <- tree(10)
+tree <- rtree(10)
 TreeWalkerContinuous(tree, slat = 0, slon = 0, niter = 1000, steplengthmean = 0, steplengthsd = 100)
 }
 \keyword{random}
