@@ -5,7 +5,6 @@
 #' @param centers A matix with columns corresponding to continent central positions in degrees. Row 1 for longitude row 2 for latitude. Or a long lat vector for a single continent.
 #' @param pole A vector of the long lat of the pole of rotation
 #' @param angle The angle of rotation about the pole in degrees
-#'
 #' @return a matix of the new long lat in degrees of the centers of each continent after moving
 #' @keywords rotate sphere
 #' @export
