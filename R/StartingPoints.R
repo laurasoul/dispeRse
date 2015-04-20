@@ -196,9 +196,20 @@ StartingPoints <- function(N_continents = 7, radius = 2000, start_configuration 
 								# Get distance from ith potential new open spot to jth existing continent:
 								distance_between_centres <- as.vector(GreatCircleDistanceFromLongLat(potential_new_open_spots[i, "Longitude"], potential_new_open_spots[i, "Latitude"], circles[j, "Longitude"], circles[j, "Latitude"]))
 							
-								# If ith potential new open spot is closer to a pre-existing continent than the minimum spearation allows add to unsuitable spots:
+								# If ith potential new open spot is closer to a pre-existing continent than the minimum separation allows add to unsuitable spots:
 								if(all.equal(distance_between_centres, min_separation) != TRUE && distance_between_centres < min_separation) unsuitable_spots <- as.vector(c(unsuitable_spots, i))
 							
+							}
+							
+							# For each existing open spot:
+							for(j in 1:nrow(open_spots)) {
+								
+								# Get distance from ith potential new open spot to jth existing open spot:
+								distance_between_centres <- as.vector(GreatCircleDistanceFromLongLat(potential_new_open_spots[i, "Longitude"], potential_new_open_spots[i, "Latitude"], open_spots[j, "Longitude"], open_spots[j, "Latitude"]))
+								
+								# If ith potential new open spot is closer to a pre-existing open spot than the minimum separation allows add to unsuitable spots:
+								if(all.equal(distance_between_centres, min_separation) != TRUE && distance_between_centres < min_separation) unsuitable_spots <- as.vector(c(unsuitable_spots, i))
+								
 							}
 							
 						}
@@ -250,9 +261,9 @@ StartingPoints <- function(N_continents = 7, radius = 2000, start_configuration 
 	}
 	
 #library(sphereplot)
-rgl.sphgrid()
-rgl.sphpoints(circles[, "Longitude"], circles[, "Latitude"], 1, deg=TRUE, col="red", cex=2)
-rgl.sphpoints(open_spots[, "Longitude"], open_spots[, "Latitude"], 1, deg=TRUE, col="blue", cex=2)
+#rgl.sphgrid()
+#rgl.sphpoints(circles[, "Longitude"], circles[, "Latitude"], 1, deg=TRUE, col="red", cex=2)
+#rgl.sphpoints(open_spots[, "Longitude"], open_spots[, "Latitude"], 1, deg=TRUE, col="blue", cex=2)
 	
 	
 #library(maps)
