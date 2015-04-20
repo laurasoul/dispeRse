@@ -28,7 +28,7 @@
 # - Bearings after each step change
 # - Total land area all circles - minus
 
-StartingPoints <- function(N_continents = 7, radius = 2000, start_configuration = "supercontinent", squishiness = 0.25, EarthRad = 6367.4447) {
+StartingPoints <- function(N_continents = 7, radius = 2000, start_configuration = "supercontinent", squishiness = 0.25, EarthRad = 6367.4447, polar=FALSE) {
 
 	# Check N_continents at least 1 and is an integer (divisble by one:
 	if(N_continents %% 1 != 0 || N_continents < 1) stop("ERROR: Number of contientns must be a positive integer >= 1.")
@@ -352,10 +352,81 @@ StartingPoints <- function(N_continents = 7, radius = 2000, start_configuration 
 
 	# If starting continental configuration is maximally separated:
 	if(start_configuration == "max separate") {
-		
-		# Establish minimum difference between points:
-		#min_separation <- ?????
-		
+		N = N_continents
+		if (polar = TRUE) {
+			slong = 0
+			slat = -90
+		} else {
+			slong = runif(1, c(-180,180))
+			slat = runif(1, c(-90, 90))
+		}
+		points <- matrix(nrow=N, ncol=2)
+		points[1,1] <- slong
+		points[1,2] <- slat
+
+		if (N=2)  {
+			points[2,1] <- (slong - 180) %% 180
+    		points[2,2] <- -slat
+		}
+
+		if (N=3) {
+			d<- 2*pi*EarthRad/3
+			bearing <- runif(1, c(0,360))
+			second <- EndPoint(slong, slat, bearing, distance = d)
+			third <- EndPoint(slong, slat, bearing, distance = 2*d)
+			points[2,] <- c(second$long, second$lat)
+			points[3,] <- c(third$long, third$lat)
+		}
+
+		if (N=4) {
+			a<-EarthRad/(sqrt(3/8))
+			theta <- ThetaFromChordLength(a)
+			d <- EarthRad*theta
+			bear <- runif(1, c(0,360))
+			second <- EndPoint(slong, slat, bearing=bear, distance = d)
+			points[2,] <- c(second$long, second$lat)
+			third <- EndPoint(slong, slat, bearing=(bear+120) %% 360, distance = d)
+			points[3,] <- c(third$long, third$lat)
+			fourth <- EndPoint(slong, slat, bearing=(bear+240) %% 360, distance = d)
+			points[4,] <- c(fourth$long, fourth$lat)
+		}
+
+		if (N=5) {
+			d<- 2*pi*EarthRad/3
+			bear <- runif(1, c(0,360))
+			second <- EndPoint(slong, slat, bear, distance = d)
+			third <- EndPoint(slong, slat, bear, distance = 2*d)
+			fourth <- EndPoint(slong, slat, (bear + 90) %% 360, distance=0.5*EarthRad*pi)
+			fifth <- c((fourth$long-180)%%180, -fourth$lat)
+			points[2,] <- c(second$long, second$lat)
+			points[3,] <- c(third$long, third$lat)
+   			points[4,] <- c(fourth$long, fourth$lat)
+    		points[5,] <- fifth
+		}
+
+		if (N=6) {
+			d<- 0.5*pi*EarthRad
+			bear <- runif(1, c(0,360))
+			second <- EndPoint(slong, slat, bear, distance = d)
+			third <- EndPoint(slong, slat, bear, distance = 2*d)
+			fourth <- EndPoint(slong, slat, bear, distance = 3*d)
+			fifth <- EndPoint(slong, slat, (bear + 90) %% 360, distance=0.5*EarthRad*pi)
+			sixth <- c((fifth$long-180)%%180, -fifth$lat)
+			points[2,] <- c(second$long, second$lat)
+			points[3,] <- c(third$long, third$lat)
+   			points[4,] <- c(fourth$long, fourth$lat)
+    		points[5,] <- c(fifth$long, fifth$lat)
+    		points[6,] <- sixth
+		}
+
+		if (N=7) {
+			
+		}
+		# Create matrix to store circles:
+		circles <- cbind(c(1:N), points)
+			
+		# Add column names:
+		colnames(circles) <- c("Circle", "Longitude", "Latitude")
 	}
 	
 	# Output the circles matrix:
