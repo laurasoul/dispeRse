@@ -355,7 +355,7 @@ StartingPoints <- function(N_continents = 7, radius = 2000, start_configuration 
 	if(start_configuration == "max separate") {
 		N = N_continents
 		#Puts the first continent on the south pole
-		if (polar = TRUE) {
+		if (polar) {
 			slong = 0
 			slat = -90
 		} else {
@@ -427,9 +427,29 @@ StartingPoints <- function(N_continents = 7, radius = 2000, start_configuration 
     		points[5,] <- c(fifth$long, fifth$lat)
     		points[6,] <- sixth
 		}
-
+		#Verticies of a pentagonal bipyramid
 		if (N=7) {
-			
+			d<- 2*pi*EarthRad/5
+			bear <- runif(1, c(0,360))
+			second <- EndPoint(slong, slat, bear, distance = d)
+			third <- EndPoint(slong, slat, bear, distance = 2*d)
+			fourth <- EndPoint(slong, slat, bear, distance = 3*d)
+			fifth <- EndPoint(slong, slat, bear, distance = 4*d)
+			sixth <- EndPoint(slong, slat, (bear + 90) %% 360, distance=0.5*EarthRad*pi)
+			seventh <- c((sixth$long-180)%%180, -sixth$lat)
+			points[2,] <- c(second$long, second$lat)
+			points[3,] <- c(third$long, third$lat)
+   			points[4,] <- c(fourth$long, fourth$lat)
+    		points[5,] <- c(fifth$long, fifth$lat)
+    		points[6,] <- c(sixth$long, sixth$lat)
+    		points[6,] <- seventh
+		}
+
+		if (N=8) {
+			d <- 2 * EarthRad * sqrt(3) / 3
+			second <- EndPoint(slong, slat, bearing=0, distance = d)
+			third <- EndPoint(slong, slat, bearing=120, distance = d)
+			fourth <- EndPoint(slong, slat, bearing=240, distance = d)
 		}
 		# Create matrix to store circles:
 		circles <- cbind(c(1:N), points)
