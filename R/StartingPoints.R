@@ -6,6 +6,7 @@
 #' @param radius The radius of each circular continent.
 #' @param start_configuration One of "random separate", "random overlap", "supercontinent", or "max separate".
 #' @param squishiness A value from 0 (continents can never overlap) to 1 (continents can overlap completely)
+#' @param polar TRUE/FALSE Is there a continent starting on the south pole?
 #' @return A matrix of longitudes and latitudes describing the centres of circular continents
 #' @details Nothing yet.
 #' @examples
@@ -353,22 +354,27 @@ StartingPoints <- function(N_continents = 7, radius = 2000, start_configuration 
 	# If starting continental configuration is maximally separated:
 	if(start_configuration == "max separate") {
 		N = N_continents
+		#Puts the first continent on the south pole
 		if (polar = TRUE) {
 			slong = 0
 			slat = -90
 		} else {
+			#Randomly positions the first continent
 			slong = runif(1, c(-180,180))
 			slat = runif(1, c(-90, 90))
 		}
+		#matrix of continent coordinates
 		points <- matrix(nrow=N, ncol=2)
 		points[1,1] <- slong
 		points[1,2] <- slat
 
+		#Continents on either end of a diameter
 		if (N=2)  {
 			points[2,1] <- (slong - 180) %% 180
     		points[2,2] <- -slat
 		}
 
+		#Three points on a great circle
 		if (N=3) {
 			d<- 2*pi*EarthRad/3
 			bearing <- runif(1, c(0,360))
@@ -378,6 +384,7 @@ StartingPoints <- function(N_continents = 7, radius = 2000, start_configuration 
 			points[3,] <- c(third$long, third$lat)
 		}
 
+		#Verticies of a tetrahedron
 		if (N=4) {
 			a<-EarthRad/(sqrt(3/8))
 			theta <- ThetaFromChordLength(a)
@@ -391,6 +398,7 @@ StartingPoints <- function(N_continents = 7, radius = 2000, start_configuration 
 			points[4,] <- c(fourth$long, fourth$lat)
 		}
 
+		#No unique solution so three points on great circle and two at ends of perpendicular diameter
 		if (N=5) {
 			d<- 2*pi*EarthRad/3
 			bear <- runif(1, c(0,360))
@@ -404,6 +412,7 @@ StartingPoints <- function(N_continents = 7, radius = 2000, start_configuration 
     		points[5,] <- fifth
 		}
 
+		#Verticies of an octohedron
 		if (N=6) {
 			d<- 0.5*pi*EarthRad
 			bear <- runif(1, c(0,360))
