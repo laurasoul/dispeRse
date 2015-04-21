@@ -17,7 +17,7 @@
 # Inouts for eventual continental function:
 # - N circles
 # - Radius (single value)
-# - Starting points (random; supercontinent; all separate)
+# - Starting points (random; supercontinent; max separate)
 # - Squishiness (How close can they get?; %age of radii; make sure it is 0-100)
 # - Starting bearing (random; disperse; converging) - will need to use Euler Pole function to do this.
 # - Speed - Not sure how we will do this.
@@ -38,11 +38,16 @@ StartingPoints <- function(N_continents = 7, radius = 2000, start_configuration 
 	if(radius > (pi * EarthRad)) stop("ERROR: Radius must be less than pi * EarthRad (and much more if using multiple continents).")
 	
 	# Check configuration option chosen is valid:
-	if(start_configuration != "random separate" && start_configuration != "random overlap" && start_configuration != "supercontinent" && start_configuration != "all separate") stop("ERROR: Starting configuration must be one of \"random separate\", \"random overlap\", \"supercontinent\", or \"all separate\".")
+	if(start_configuration != "random separate" && start_configuration != "random overlap" && start_configuration != "supercontinent" && start_configuration != "max separate") stop("ERROR: Starting configuration must be one of \"random separate\", \"random overlap\", \"supercontinent\", or \"max separate\".")
 	
 	# Check squishiness is a proportion:
 	if(squishiness > 1 || squishiness < 0) stop("ERROR: Squishiness is proportional and must be between 0 and 1.")
 
+	# If starting dispersed and the number of continents is larger that 8 use random distribution instead
+	if(start_configuration = "max separate" && N_continents >= 9) {
+		cat("Using random separate configuration as number of continents is too large","\n")
+		start_configuration <- "random separate"
+	}
 	# If the start configuration is a supercontinnet (all continents attached togther):
 	if(start_configuration == "supercontinent") {
 	
@@ -353,7 +358,7 @@ StartingPoints <- function(N_continents = 7, radius = 2000, start_configuration 
 
 	# If starting continental configuration is maximally separated:
 	if(start_configuration == "max separate") {
-		N = N_continents
+		N <- N_continents
 		#Puts the first continent on the south pole
 		if (polar) {
 			slong = 0
@@ -369,13 +374,13 @@ StartingPoints <- function(N_continents = 7, radius = 2000, start_configuration 
 		points[1,2] <- slat
 
 		#Continents on either end of a diameter
-		if (N=2)  {
+		if (N==2)  {
 			points[2,1] <- (slong - 180) %% 180
     		points[2,2] <- -slat
 		}
 
 		#Three points on a great circle
-		if (N=3) {
+		if (N==3) {
 			d<- 2*pi*EarthRad/3
 			bearing <- runif(1, c(0,360))
 			second <- EndPoint(slong, slat, bearing, distance = d)
@@ -385,7 +390,7 @@ StartingPoints <- function(N_continents = 7, radius = 2000, start_configuration 
 		}
 
 		#Verticies of a tetrahedron
-		if (N=4) {
+		if (N==4) {
 			a<-EarthRad/(sqrt(3/8))
 			theta <- ThetaFromChordLength(a)
 			d <- EarthRad*theta
@@ -399,7 +404,7 @@ StartingPoints <- function(N_continents = 7, radius = 2000, start_configuration 
 		}
 
 		#No unique solution so three points on great circle and two at ends of perpendicular diameter
-		if (N=5) {
+		if (N==5) {
 			d<- 2*pi*EarthRad/3
 			bear <- runif(1, c(0,360))
 			second <- EndPoint(slong, slat, bear, distance = d)
@@ -413,7 +418,7 @@ StartingPoints <- function(N_continents = 7, radius = 2000, start_configuration 
 		}
 
 		#Verticies of an octohedron
-		if (N=6) {
+		if (N==6) {
 			d<- 0.5*pi*EarthRad
 			bear <- runif(1, c(0,360))
 			second <- EndPoint(slong, slat, bear, distance = d)
@@ -428,7 +433,7 @@ StartingPoints <- function(N_continents = 7, radius = 2000, start_configuration 
     		points[6,] <- sixth
 		}
 		#Verticies of a pentagonal bipyramid
-		if (N=7) {
+		if (N==7) {
 			d<- 2*pi*EarthRad/5
 			bear <- runif(1, c(0,360))
 			second <- EndPoint(slong, slat, bear, distance = d)
@@ -445,7 +450,7 @@ StartingPoints <- function(N_continents = 7, radius = 2000, start_configuration 
     		points[6,] <- seventh
 		}
 
-		if (N=8) {
+		if (N==8) {
 			d <- 2 * EarthRad * sqrt(3) / 3
 			second <- EndPoint(slong, slat, bearing=0, distance = d)
 			third <- EndPoint(slong, slat, bearing=120, distance = d)
