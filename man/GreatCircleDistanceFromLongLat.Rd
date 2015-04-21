@@ -2,7 +2,7 @@
 % Please edit documentation in R/GreatCircleDistanceFromLongLat.R
 \name{GreatCircleDistanceFromLongLat}
 \alias{GreatCircleDistanceFromLongLat}
-\title{Returns great circle distance from a set of coordinates}
+\title{Great circle distance from a set of coordinates}
 \usage{
 GreatCircleDistanceFromLongLat(long1, lat1, long2, lat2, EarthRad = 6367.4447)
 }
