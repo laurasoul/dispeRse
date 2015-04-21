@@ -44,10 +44,12 @@ StartingPoints <- function(N_continents = 7, radius = 2000, start_configuration 
 	if(squishiness > 1 || squishiness < 0) stop("ERROR: Squishiness is proportional and must be between 0 and 1.")
 
 	# If starting dispersed and the number of continents is larger that 8 use random distribution instead
-	if(start_configuration = "max separate" && N_continents >= 9) {
-		cat("Using random separate configuration as number of continents is too large","\n")
+	if(start_configuration == "max separate" && N_continents >= 9) {
+	
+		cat("Using random separate configuration as number of continents is too large", "\n")
 		start_configuration <- "random separate"
 	}
+	
 	# If the start configuration is a supercontinnet (all continents attached togther):
 	if(start_configuration == "supercontinent") {
 	
