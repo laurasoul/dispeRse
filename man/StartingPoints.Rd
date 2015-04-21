@@ -6,7 +6,7 @@
 \usage{
 StartingPoints(N_continents = 7, radius = 2000,
   start_configuration = "supercontinent", squishiness = 0.25,
-  EarthRad = 6367.4447)
+  EarthRad = 6367.4447, polar = FALSE)
 }
 \arguments{
 \item{N_continents}{The (maximum) number of individual continents}
@@ -16,6 +16,8 @@ StartingPoints(N_continents = 7, radius = 2000,
 \item{start_configuration}{One of "random separate", "random overlap", "supercontinent", or "max separate".}
 
 \item{squishiness}{A value from 0 (continents can never overlap) to 1 (continents can overlap completely)}
+
+\item{polar}{TRUE/FALSE Is there a continent starting on the south pole?}
 }
 \value{
 A matrix of longitudes and latitudes describing the centres of circular continents
