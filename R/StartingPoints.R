@@ -7,12 +7,13 @@
 #' @param start_configuration One of "random separate", "random overlap", "supercontinent", or "max separate".
 #' @param squishiness A value from 0 (continents can never overlap) to 1 (continents can overlap completely)
 #' @param polar TRUE/FALSE Is there a continent starting on the south pole?
-#' @return A matrix of longitudes and latitudes describing the centres of circular continents
+#' @return A matrix of longitudes and latitudes describing the centres of circular continents.
 #' @details Nothing yet.
+#'
 #' @examples
 #' StartingPoints(N_continents = 7, radius = 2000,
 #'    start_configuration = "supercontinent", squishiness = 0.1,
-#'    EarthRad = 6367.4447)
+#'    EarthRad = 6367.4447, polar=FALSE)
 
 # Inouts for eventual continental function:
 # - N circles
@@ -66,7 +67,7 @@ StartingPoints <- function(N_continents = 7, radius = 2000, start_configuration 
 			first_circle_lat <- runif(1, min = -90, max = 90)
 			
 			# Create matrix to store circles:
-			circles <- matrix(c(1, first_circle_long, first_circle_lat), ncol=3, dimnames=list(c(), c("Circle", "Longitude", "Latitude")))
+			circles <- matrix(c(first_circle_long, first_circle_lat), ncol=2, dimnames=list(c(), c("Longitude", "Latitude")))
 			
 			# If there are two or more continents still to place:
 			if(N_continents > 1) {
@@ -75,7 +76,7 @@ StartingPoints <- function(N_continents = 7, radius = 2000, start_configuration 
 				second_circle <- EndPoint(slong = first_circle_long, slat = first_circle_lat, bearing = runif(1, min = 0, max = 360), distance = min_separation)
 				
 				# Add second continent to circles matrix:
-				circles <- rbind(circles, c(2, second_circle$long, second_circle$lat))
+				circles <- rbind(circles, c(second_circle$long, second_circle$lat))
 				
 				# If there are more than two continents still to place:
 				if(N_continents > 2) {
@@ -102,7 +103,7 @@ StartingPoints <- function(N_continents = 7, radius = 2000, start_configuration 
 					third_circle <- rbind(unlist(new_continent_1), unlist(new_continent_2))[third_continent_picked, ]
 					
 					# Add third continent to circles matrix:
-					circles <- rbind(circles, c(3, third_circle))
+					circles <- rbind(circles, c(third_circle))
 					
 					# If there are more than three continents:
 					if(N_continents > 3) {
@@ -197,7 +198,7 @@ StartingPoints <- function(N_continents = 7, radius = 2000, start_configuration 
 							colnames(potential_new_open_spots) <- c("Longitude", "Latitude")
 							
 							# Add new continent to circles matrix:
-							circles <- rbind(circles, c(nrow(circles) + 1, open_spots[new_continent_point, ]))
+							circles <- rbind(circles, c(open_spots[new_continent_point, ]))
 							
 							# Vector to store unsuitable new spots (those that are closer than minimum separation to existing continents):
 							unsuitable_spots <- vector(mode="numeric")
@@ -286,10 +287,10 @@ StartingPoints <- function(N_continents = 7, radius = 2000, start_configuration 
 			first_circle_lat <- runif(1, min = -90, max = 90)
 			
 			# Create matrix to store circles:
-			circles <- cbind(c(1:N_continents), matrix(rep(c(first_circle_long, first_circle_lat), N_continents), ncol=2, byrow=TRUE))
+			circles <- cbind(matrix(rep(c(first_circle_long, first_circle_lat), N_continents), ncol=2, byrow=TRUE))
 			
 			# Add column names:
-			colnames(circles) <- c("Circle", "Longitude", "Latitude")
+			colnames(circles) <- c("Longitude", "Latitude")
 			
 		}
 		
@@ -314,7 +315,7 @@ StartingPoints <- function(N_continents = 7, radius = 2000, start_configuration 
 		first_circle_lat <- runif(1, min = -90, max = 90)
 		
 		# Create matrix to store circles:
-		circles <- matrix(c(1, first_circle_long, first_circle_lat), ncol=3, dimnames=list(c(), c("Circle", "Longitude", "Latitude")))
+		circles <- matrix(c(first_circle_long, first_circle_lat), ncol=2, dimnames=list(c(), c("Longitude", "Latitude")))
 		
 		# Keep adding continents until they all have starting points:
 		while(N_continents > nrow(circles)) {
@@ -352,7 +353,7 @@ StartingPoints <- function(N_continents = 7, radius = 2000, start_configuration 
 			}
 			
 			# Add new continent to list:
-			circles <- rbind(circles, c(nrow(circles) + 1, new_circle_long, new_circle_lat))
+			circles <- rbind(circles, c(new_circle_long, new_circle_lat))
 			
 		}
 		
@@ -474,10 +475,10 @@ StartingPoints <- function(N_continents = 7, radius = 2000, start_configuration 
 		}
 
 		# Create matrix to store circles:
-		circles <- cbind(c(1:N), points)
+		circles <- cbind(points)
 			
 		# Add column names:
-		colnames(circles) <- c("Circle", "Longitude", "Latitude")
+		colnames(circles) <- c("Longitude", "Latitude")
 	}
 	
 	# Output the circles matrix:
