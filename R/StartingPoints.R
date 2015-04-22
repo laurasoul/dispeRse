@@ -449,30 +449,15 @@ StartingPoints <- function(N_continents = 7, radius = 2000, start_configuration 
    			points[4,] <- c(fourth$long, fourth$lat)
     		points[5,] <- c(fifth$long, fifth$lat)
     		points[6,] <- c(sixth$long, sixth$lat)
-    		points[7,] <- seventh
+    		points[6,] <- seventh
 		}
-		# Verticies of a cube
+
 		if (N==8) {
-			d <- 2 * EarthRad * asin(1 / sqrt(3))
+			d <- 2 * EarthRad * sqrt(3) / 3
 			second <- EndPoint(slong, slat, bearing=0, distance = d)
 			third <- EndPoint(slong, slat, bearing=120, distance = d)
 			fourth <- EndPoint(slong, slat, bearing=240, distance = d)
-			reverse <- BearingBetweenTwoLongLatPoints(second$long, second$lat, slong, slat)
-			fifth <- EndPoint(second$long, second$lat, bearing=(reverse + 120) %% 360, distance = d)
-			sixth <- EndPoint(second$long, second$lat, bearing=(reverse + 240) %% 360, distance = d)
-			reverse2 <- BearingBetweenTwoLongLatPoints(sixth$long, sixth$lat, second$long, second$lat)
-			seventh <- EndPoint(sixth$long, sixth$lat, bearing=(reverse2 + 120) %% 360, distance = d)
-			reverse3 <- BearingBetweenTwoLongLatPoints(third$long, third$lat, slong, slat)
-			eigth <- EndPoint(third$long, third$lat, bearing=(reverse3 - 120) %% 360, distance = d)
-			points[2,] <- c(second$long, second$lat)
-			points[3,] <- c(third$long, third$lat)
-   			points[4,] <- c(fourth$long, fourth$lat)
-    		points[5,] <- c(fifth$long, fifth$lat)
-    		points[6,] <- c(sixth$long, sixth$lat)
-    		points[7,] <- c(seventh$long, seventh$lat)
-    		points[8,] <- c(eigth$long, eigth$lat)
 		}
-
 		# Create matrix to store circles:
 		circles <- cbind(c(1:N), points)
 			
