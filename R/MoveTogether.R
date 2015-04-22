@@ -13,8 +13,6 @@
 #' pole<-c(90, -20)
 #' MoveTogether(centers, pole, angle = 5)
 
-# WHat happens when we try and break github?
-
 MoveTogether <- function(centers, pole, angle) {
     
     if(pole[2] == 90 || pole[2] == -90) stop ("rotation pole cannot be at the north or south pole")
@@ -36,4 +34,3 @@ MoveTogether <- function(centers, pole, angle) {
 
     return(new_centers)
 }
-#blah blahwoicnpwqeincqwoiec
