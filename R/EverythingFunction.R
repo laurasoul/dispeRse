@@ -90,9 +90,25 @@ EverythingFunction <- function(N_steps = 1000, N_continents = 7, radius = 2000, 
 	
 # Now need to move them!
 	#List to store which circles are in each supercontinent (new element added only when it changes)
-	
+	linked <- list()
+	linked[[1]] <- separate_continents
+
 	#List to store which circles are in each supercontinent (new element added only when it changes)
-	
+	touching <- list()
+	touching[[1]] <- touching_continents
+
+	#Array to store the positions of every continent at each time step
+	position <- array(NA, c(N_continents, N_steps + 1, 2), c("continent", "timestep", "coordinate"))
+	position[,1,1] <- continent_starting_points[,"Longitude"]
+	position[,1,2] <- continent_starting_points[,"Latitude"]
+
+	#for loops to move everything
+	for (t in 2:N_steps + 1) {
+
+		for (k in 1:N_continents) {
+			
+		}
+	}
 # When rotating around Euler pole could theoretically pick clockwise or anticlockwise, but as we are allowing poles to be on either side of planet this takes care of that for us!
 # Number continents in plots
 	
