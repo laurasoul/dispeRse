@@ -31,6 +31,6 @@ Nothing yet.
 \examples{
 StartingPoints(N_continents = 7, radius = 2000,
    start_configuration = "supercontinent", squishiness = 0.1,
-   EarthRad = 6367.4447)
+   EarthRad = 6367.4447, polar=FALSE)
 }
 
