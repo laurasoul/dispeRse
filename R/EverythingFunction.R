@@ -66,10 +66,10 @@ EverythingFunction <- function(N_steps = 1000, N_continents = 7, radius = 2000, 
 	for(i in 1:length(separate_continents)) {
 		
 		# Get Greate Circle distances from Euler pole to each continent centre:
-		euler_GC_distances <- GreatCircleDistanceMatrix(rbind(c(euler_pole_longitudes[i], euler_pole_latitudes[i]), continent_starting_points[, c("Longitude", "Latitude")])[, "Longitude"], rbind(c(euler_pole_longitudes[i], euler_pole_latitudes[i]), continent_starting_points[, c("Longitude", "Latitude")])[, "Latitude"])[2:(N_continents + 1), 1]
+		euler_GC_distances <- One2ManyGreatCircleDistance(euler_pole_longitudes[i], euler_pole_latitudes[i], continent_starting_points[as.numeric(unlist(strsplit(separate_continents[i], "&"))), "Longitude"], continent_starting_points[as.numeric(unlist(strsplit(separate_continents[i], "&"))), "Latitude"])
 		
 		# Find GC distance to furthest continent (closest to euler pole "equator") in cluster (as speed will be assigned based on this):
-		furthest_continent_GC_distance <- euler_GC_distances[which.min(abs(euler_GC_distances - rep(0.5 * pi * EarthRad, length(euler_GC_distances))))]
+		furthest_continent_GC_distance <- max(abs(euler_GC_distances - rep(0.5 * pi * EarthRad)))
 		
 		# Randomly draw a continent speed:
 		continent_speed <- rnorm(1, mean = continent_speed_mean, sd = continent_speed_sd)
