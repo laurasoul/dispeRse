@@ -42,6 +42,9 @@ EverythingFunction <- function(N_steps = 1000, N_continents = 7, radius = 2000, 
 
 	# Get list of separate continents:
 	separate_continents <- HowManySeparateContinents(min_separation, continent_starting_points[, "Longitude"], continent_starting_points[, "Latitude"])
+
+	# Get list of touching continents (to be used later for whether dispersal is allowable or not):
+	touching_continents <- HowManySeparateContinents((radius * 2), continent_starting_points[, "Longitude"], continent_starting_points[, "Latitude"])
 	
 # Assign Euler poles to each separate continent:
 	
