@@ -21,7 +21,7 @@ GreatCircleDistanceMatrix <- function(longs, lats, EarthRad = 6367.4447) {
 		for(j in (i + 1):length(longs)) {
 			
 			# Store minimal Great Circle distance:
-			GC_dist_matrix[i, j] <- GC_dist_matrix[j, i] <- GreatCircleDistanceFromLongLat(longs[i], lats[i], longs[j], lats[j])
+			GC_dist_matrix[i, j] <- GC_dist_matrix[j, i] <- GreatCircleDistanceFromLongLat(longs[i], lats[i], longs[j], lats[j], EarthRad = EarthRad)
 			
 		}
 		
