@@ -29,6 +29,12 @@
 
 EverythingFunction <- function(N_steps = 1000, N_continents = 7, radius = 2000, start_configuration = "supercontinent", squishiness = 0.25, stickiness = 0.95, continent_speed_mean = 5, continent_speed_sd = 2, EarthRad = 6367.4447, polar = FALSE) {
 
+	#Subfunction to find out which supercontinent a circle belongs to
+	which_sprcont <- function(cont){
+		cont <- as.character(cont)
+		result <- which(unlist(lapply(lapply(lapply(strsplit(separate_continents, "&"), match, cont), sort), length)) == 1)
+		return(result)
+	}
 # Need more top-level conditionals, e.g. N steps must be a positive integer, speed mean and sd must also be positive
 # Others may be cuaght by subfunctions so no need to repeat
 	
@@ -83,8 +89,9 @@ EverythingFunction <- function(N_steps = 1000, N_continents = 7, radius = 2000, 
 	}
 	
 # Now need to move them!
+	#List to store which circles are in each supercontinent (new element added only when it changes)
 	
-	
+	#List to store which circles are in each supercontinent (new element added only when it changes)
 	
 # When rotating around Euler pole could theoretically pick clockwise or anticlockwise, but as we are allowing poles to be on either side of planet this takes care of that for us!
 # Number continents in plots
