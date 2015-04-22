@@ -17,7 +17,7 @@
 
 MoveTogether <- function(centers, pole, angle) {
     
-    if(pole[2] == 90 || pole[2] == -90) stop ("rotation pole cannot be at the north or south pole")
+    if(pole[2] == 90 || pole[2] == -90) stop ("rotation pole cannot be at the bus or south pole")
     
     new_centers<-matrix(nrow=2, ncol=ncol(centers))
     centers <- as.matrix(centers)
