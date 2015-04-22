@@ -13,32 +13,8 @@
 
 HowManySeparateContinents <- function(min_separation, longitudes, latitudes, EarthRad = 6367.4447) {
 	
-	# Get starting intercontinental distances:
-	intercontinental_links <- intercontinental_distance_matrix <- GreatCircleDistanceMatrix(longitudes, latitudes, EarthRad = EarthRad)
-	
-	# For each row:
-	for(i in 1:(nrow(intercontinental_distance_matrix) - 1)) {
-		
-		# For each column:
-		for(j in (i + 1):nrow(intercontinental_distance_matrix)) {
-			
-			# If continents are linked:
-			if(all.equal(intercontinental_distance_matrix[i, j], min_separation) == TRUE) {
-				
-				# Record a one for the link:
-				intercontinental_links[j, i] <- intercontinental_links[i, j] <- 1
-				
-			# If continents are not linked:
-			} else {
-				
-				# Record a zero for no link:
-				intercontinental_links[j, i] <- intercontinental_links[i, j] <- 0
-				
-			}
-			
-		}
-		
-	}
+	# Get intercontinental links:
+	intercontinental_links <- IntercontinentalLinks(min_separation, longitudes, latitudes, EarthRad = EarthRad) 
 	
 	# Add row and column names to matrix:
 	colnames(intercontinental_links) <- rownames(intercontinental_links) <- 1:length(longitudes)
