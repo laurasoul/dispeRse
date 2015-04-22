@@ -106,7 +106,12 @@ EverythingFunction <- function(N_steps = 1000, N_continents = 7, radius = 2000, 
 	for (t in 2:N_steps + 1) {
 
 		for (k in 1:N_continents) {
-			
+			start_long <- position[k, t-1, 1]
+			start_lat <- position[k, t-1, 2]
+			where <- which_sprcont(k)
+			distance <- GreatCircleDistanceFromLongLat(long1=start_long,lat1=start_lat, long2=euler_pole_longitudes[where], lat2=euler_pole_latitudes[where])
+			init_bearing <- BearingBetweenTwoLongLatPoints(euler_pole_longitudes[where], euler_pole_latitudes[where], start_long, start_lat)
+			new_bearing <- (init_bearing + degrees_per_step[where]) %% 360
 		}
 	}
 # When rotating around Euler pole could theoretically pick clockwise or anticlockwise, but as we are allowing poles to be on either side of planet this takes care of that for us!
