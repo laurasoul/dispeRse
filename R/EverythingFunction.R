@@ -30,9 +30,9 @@
 EverythingFunction <- function(N_steps = 1000, N_continents = 7, radius = 2000, start_configuration = "supercontinent", squishiness = 0.25, stickiness = 0.95, continent_speed_mean = 5, continent_speed_sd = 2, EarthRad = 6367.4447, polar = FALSE) {
 
 	#Subfunction to find out which supercontinent a circle belongs to
-	which_sprcont <- function(cont){
+	which_sprcont <- function(cont, sprconts){
 		cont <- as.character(cont)
-		result <- which(unlist(lapply(lapply(lapply(strsplit(separate_continents, "&"), match, cont), sort), length)) == 1)
+		result <- which(unlist(lapply(lapply(lapply(strsplit(sprconts, "&"), match, cont), sort), length)) == 1)
 		return(result)
 	}
 # Need more top-level conditionals, e.g. N steps must be a positive integer, speed mean and sd must also be positive
@@ -111,7 +111,7 @@ EverythingFunction <- function(N_steps = 1000, N_continents = 7, radius = 2000, 
 			start_lat <- position[k, t-1, 2]
 
 			#Identify which supercontinent, and therefore which element of the euler pole and speed vectors, the circle k belongs to
-			where <- which_sprcont(k)
+			where <- which_sprcont(k, tail(linked, n=1)[[1]])
 
 			#Find distance of circle from pole
 			distance <- GreatCircleDistanceFromLongLat(long1=start_long,lat1=start_lat, long2=euler_pole_longitudes[where], lat2=euler_pole_latitudes[where])
