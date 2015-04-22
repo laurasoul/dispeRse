@@ -20,7 +20,7 @@ StartingPoints(N_continents = 7, radius = 2000,
 \item{polar}{TRUE/FALSE Is there a continent starting on the south pole?}
 }
 \value{
-A matrix of longitudes and latitudes describing the centres of circular continents
+A matrix of longitudes and latitudes describing the centres of circular continents.
 }
 \description{
 Generates a matrix of longitudes and latitudes describing the centres of circular continents on a sphere

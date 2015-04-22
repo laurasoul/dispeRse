@@ -18,7 +18,7 @@ One2ManyGreatCircleDistance(point_longitude, point_latitude, point_longitudes,
 A distancematrix of minimum Great Circle Distances.
 }
 \description{
-Returns a set of distances distance matrix between points of longitude and latitude
+Returns a set of distances from a single point of longitude and latitude
 }
 \details{
 Nothing yet.

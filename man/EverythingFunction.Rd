@@ -6,7 +6,7 @@
 \usage{
 EverythingFunction(N_steps = 1000, N_continents = 7, radius = 2000,
   start_configuration = "supercontinent", squishiness = 0.25,
-  stickiness = 0.95, continent_speed_mean = 500, continent_speed_sd = 250,
+  stickiness = 0.95, continent_speed_mean = 5, continent_speed_sd = 2,
   EarthRad = 6367.4447, polar = FALSE)
 }
 \arguments{
@@ -42,7 +42,7 @@ Nothing yet.
 \examples{
 EverythingFunction <- function(N_steps = 1000, N_continents = 7, radius = 2000,
   start_configuration = "supercontinent", squishiness = 0.25, stickiness = 0.95,
-  continent_speed_mean = 500, continent_speed_sd = 250, EarthRad = 6367.4447,
+  continent_speed_mean = 5, continent_speed_sd = 2, EarthRad = 6367.4447,
   polar = FALSE)
 }
 
