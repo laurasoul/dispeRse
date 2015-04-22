@@ -11,40 +11,79 @@
 #' @param continent_speed_mean Mean continent speed (kilometers per time step).
 #' @param continent_speed_sd Standard deviation of continent speed (kilometers per time step).
 #' @param EarthRad Radius of the Earth in kilometres.
+#' @param polar Whether continents are allowed to exist exactly at the poles.
 #' @return A magic table of awesomeness.
 #' @details Nothing yet.
 #'
 #' @examples
 #' EverythingFunction <- function(N_steps = 1000, N_continents = 7, radius = 2000,
 #'   start_configuration = "supercontinent", squishiness = 0.25, stickiness = 0.95,
-#'   continent_speed_mean = 500, continent_speed_sd = 250, EarthRad = 6367.4447)
-
-# Inouts for eventual continental function:
-# - N circles
-# - Radius (single value)
-# - Starting points (random; supercontinent; all separate)
-# - Squishiness (How close can they get?; %age of radii; make sure it is 0-100)
-# - Starting bearing (random; disperse; converging) - will need to use Euler Pole function to do this.
-# - Speed - Not sure how we will do this.
-# - Stickiness: how long (in steps) can continents stay at maximum squished-togetherness?
+#'   continent_speed_mean = 500, continent_speed_sd = 250, EarthRad = 6367.4447,
+#'   polar = FALSE)
 
 # Outputs:
-# - N separated continents (distance matrix with values less than 2radii)
+# - N separated continents (distance matrix with values less than 2 radii)
 # - Long-lat of each circle centre
 # - Bearings after each step change
 # - Total land area all circles - minus
 
-EverythingFunction <- function(N_steps = 1000, N_continents = 7, radius = 2000, start_configuration = "supercontinent", squishiness = 0.25, stickiness = 0.95, continent_speed_mean = 500, continent_speed_sd = 250, EarthRad = 6367.4447, polar = FALSE) {
+EverythingFunction <- function(N_steps = 1000, N_continents = 7, radius = 2000, start_configuration = "supercontinent", squishiness = 0.25, stickiness = 0.95, continent_speed_mean = 500, continent_speed_sd = 200, EarthRad = 6367.4447, polar = FALSE) {
 
+# Need more top-level conditionals, e.g. N steps must be a positive integer, speed mean and sd must also be positive
+# Others may be cuaght by subfunctions so no need to repeat
+	
 	# Start by picking continent start points:
 	continent_starting_points <- StartingPoints(N_continents = N_continents, radius = radius, start_configuration = start_configuration, squishiness = squishiness, EarthRad = EarthRad, polar = polar)
-	
 	
 # Are any continents joined at start?:
 
 	# Get minimum_continental separation:
 	min_separation <- (1 - squishiness) * radius * 2
 
-	HowManySeparateContinents(min_separation, continent_starting_points[, "Longitude"], continent_starting_points[, "Latitude"])
+	# Get list of separate continents:
+	separate_continents <- HowManySeparateContinents(min_separation, continent_starting_points[, "Longitude"], continent_starting_points[, "Latitude"])
+	
+# Assign Euler poles to each separate continent:
+	
+	# Randomly draw longitudes for each separated continent:
+	euler_pole_longitudes <- runif(length(separate_continents), -180, 180)
+	
+	# Randomly draw latitudes for each separated continent:
+	euler_pole_latitudes <- runif(length(separate_continents), -90, 90)
+	
+	# Ensure no latitude is directly at a pole (North or South) by redrawing if any are found:
+	if((sum(euler_pole_latitudes == 90) + sum(euler_pole_latitudes == -90)) > 0) euler_pole_latitudes <- runif(length(separate_continents), -90, 90)
+
+# Assign speeds to each separate continent:
+	
+	# Create empty vector to store degrees per step (effectively the speed of movement) for each continent:
+	degrees_per_step <- vector(mode="numeric")
+	
+	# For each separate continent:
+	for(i in 1:length(separate_continents)) {
+		
+		# Get Greate Circle distances from Euler pole to each continent centre:
+		euler_GC_distances <- GreatCircleDistanceMatrix(rbind(c(euler_pole_longitudes[i], euler_pole_latitudes[i]), continent_starting_points[, c("Longitude", "Latitude")])[, "Longitude"], rbind(c(euler_pole_longitudes[i], euler_pole_latitudes[i]), continent_starting_points[, c("Longitude", "Latitude")])[, "Latitude"])[2:(N_continents + 1), 1]
+		
+		# Find GC distance to furthest continent (closest to euler pole "equator") in cluster (as speed will be assigned based on this):
+		furthest_continent_GC_distance <- euler_GC_distances[which.min(abs(euler_GC_distances - rep(0.5 * pi * EarthRad, length(euler_GC_distances))))]
+		
+		# Randomly draw a continent speed:
+		continent_speed <- rnorm(1, mean = continent_speed_mean, sd = continent_speed_sd)
+		
+		# If a negative or zero speed is picked then redraw:
+		while(continent_speed <= 0) continent_speed <- rnorm(1, mean = continent_speed_mean, sd = continent_speed_sd)
+		
+		# Set degree change per step (effectively the speed):
+		degrees_per_step[i] <- continent_speed / (2 * pi * furthest_continent_GC_distance) * 360
+		
+	}
+	
+# Now need to move them!
+	
+	
+	
+# When rotating around Euler pole could theoretically pick clockwise or anticlockwise, but as we are allowing poles to be on either side of planet this takes care of that for us!
+# Number continents in plots
 	
 }
