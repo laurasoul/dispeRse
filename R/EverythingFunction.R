@@ -128,8 +128,47 @@ EverythingFunction <- function(N_steps = 1000, N_continents = 7, radius = 2000, 
 			position[k,t,1] <- new_loc$long
 			position[k,t,2] <- new_loc$lat
 		}
+
+		separate_continents <- HowManySeparateContinents(min_separation, position[,t,1], position[,t,2])
+
+		# Get list of touching continents (to be used later for whether dispersal is allowable or not):
+		touching_continents <- HowManySeparateContinents((radius * 2), position[,t,1], position[,t,2])
+
+		if (separate_continents != tail(linked,n=1)[[1]]) {
+			#Add new continental configuration to linked list
+			linked <- c(linked, list(separate_continents))
+
+			#Select continents that are different to previous time step
+			toChange <- is.na(match(tail(linked,n=1)[[1]], tail(linked, n=2)[[1]]))
+
+			#Assign new euler poles to different continents
+			euler_pole_longitudes[toChange] <- runif(sum(toChange), -180, 180)
+			euler_pole_latitudes[toChange] <- runif(sum(toChange), -90, 90)
+			while (sum(euler_pole_latitudes == 90) + sum(euler_pole_latitudes == -90)) > 0) euler_pole_latitudes[toChange] <- runif(sum(toChange), -90, 90)
+			
+			# Get Greate Circle distances from Euler pole to each continent centre:
+			euler_GC_distances <- One2ManyGreatCircleDistance(euler_pole_longitudes[i], euler_pole_latitudes[i], position[as.numeric(unlist(strsplit(separate_continents[i], "&"))), "Longitude"], continent_starting_points[as.numeric(unlist(strsplit(separate_continents[i], "&"))), "Latitude"])
+
+			#Assign new speeds to different continents
+			degrees_per_step[toChange] <- 
+					
+		# Find GC distance to furthest continent (closest to euler pole "equator") in cluster (as speed will be assigned based on this):
+			furthest_continent_GC_distance <- max(abs(euler_GC_distances - rep(0.5 * pi * EarthRad)))
+		
+		# Randomly draw a continent speed:
+			continent_speed <- rnorm(1, mean = continent_speed_mean, sd = continent_speed_sd)
+		
+		# If a negative or zero speed is picked then redraw:
+			while(continent_speed <= 0) continent_speed <- rnorm(1, mean = continent_speed_mean, sd = continent_speed_sd)
+		
+		# Set degree change per step (effectively the speed):
+			degrees_per_step[i] <- continent_speed / (2 * pi * furthest_continent_GC_distance) * 360
+
+		}
+
+	
 	}
 # When rotating around Euler pole could theoretically pick clockwise or anticlockwise, but as we are allowing poles to be on either side of planet this takes care of that for us!
 # Number continents in plots
 	
-}
+
