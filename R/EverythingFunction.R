@@ -102,8 +102,14 @@ EverythingFunction <- function(N_steps = 1000, N_continents = 7, radius = 2000, 
 	position[,1,1] <- continent_starting_points[,"Longitude"]
 	position[,1,2] <- continent_starting_points[,"Latitude"]
 
+	temp_position<-matrix(nrow = N_continents, ncol=2)
+
 	#for loops to move everything
 	for (t in 2:(N_steps + 1)) {
+
+		#distances apart before they move
+		starting_distances <- GreatCircleDistanceMatrix(position[,t-1,1], position[,t-1,2])
+
 		for (k in 1:N_continents) {
 			#find current longlat of the circle k
 			start_long <- position[k, t-1, 1]
@@ -125,21 +131,44 @@ EverythingFunction <- function(N_steps = 1000, N_continents = 7, radius = 2000, 
 			new_loc <- EndPoint(euler_pole_longitudes[where], euler_pole_latitudes[where], new_bearing, distance)
 
 			#Add the new loction to the position matrix
-			position[k,t,1] <- new_loc$long
-			position[k,t,2] <- new_loc$lat
+			temp_position[k,1] <- new_loc$long
+			temp_position[k,2] <- new_loc$lat
+
 		}
 
+		new_distances <- GreatCircleDistanceMatrix(temp_position[k,1], temp_position[k,2])
+		
+		comp1 <- vector()
+		comp2 <- vector()
+		collisions<-matrix()
+		for (b in 1:(N_continents-1) {
+			for (p in (b+1):N_continents) {
+				comp1 <- all.equal(new_distances[p,b],starting_distances[p,b])
+				comp2 <- new_distances[p,b] <= min_separation
+				if (comp1 != TRUE && comp2 == TRUE) {
+					collisions<-rbind(collisions,c(p,b))
+			}
+		}
+
+		if (nrow(collisions) <= 2) {
+			cont_1 <- collisions[2,1]
+			cont_2 <- collisions[2,2]
+			ColliderReverser(min_separation, position[cont_1, t-1, 1], position[cont_1, t-1, 2], temp_position[cont_1,1], temp_position[cont_1,2], position[cont_2, t-1, 1], position[cont_2, t-1, 2], temp_position[cont_2,1], temp_position[cont_2,2], continent_1_euler_longitude, continent_1_euler_latitude, continent_2_euler_longitude, continent_2_euler_latitude, continent_1_degrees_per_step, continent_2_degrees_per_step, EarthRad = 6367.4447) {
+
+		}
+		#position[k,t,1] <- new_loc$long
+		#position[k,t,2] <- new_loc$lat
 		separate_continents <- HowManySeparateContinents(min_separation, position[,t,1], position[,t,2])
 
 		# Get list of touching continents (to be used later for whether dispersal is allowable or not):
 		touching_continents <- HowManySeparateContinents((radius * 2), position[,t,1], position[,t,2])
 
-		if (separate_continents != tail(linked,n=1)[[1]]) {
+		if (any(separate_continents != tail(linked,n=1)[[1]])) {
 			#Add new continental configuration to linked list
 			linked <- c(linked, list(separate_continents))
 
 			#Select continents that are different to previous time step
-			toChange <- is.na(match(tail(linked,n=1)[[1]], tail(linked, n=2)[[1]]))
+			toChange <- c(tail(linked,n=1)[[1]],  tail(linked, n=2)[[1]])[duplicated(c(tail(linked,n=1)[[1]],  tail(linked, n=2)[[1]]))]
 
 			#Assign new euler poles to different continents
 			euler_pole_longitudes[toChange] <- runif(sum(toChange), -180, 180)
@@ -147,7 +176,7 @@ EverythingFunction <- function(N_steps = 1000, N_continents = 7, radius = 2000, 
 			while (sum(euler_pole_latitudes == 90) + sum(euler_pole_latitudes == -90)) > 0) euler_pole_latitudes[toChange] <- runif(sum(toChange), -90, 90)
 			
 			# Get Greate Circle distances from Euler pole to each continent centre:
-			euler_GC_distances <- One2ManyGreatCircleDistance(euler_pole_longitudes[i], euler_pole_latitudes[i], position[as.numeric(unlist(strsplit(separate_continents[i], "&"))), "Longitude"], continent_starting_points[as.numeric(unlist(strsplit(separate_continents[i], "&"))), "Latitude"])
+			for (l in 1: euler_GC_distances <- One2ManyGreatCircleDistance(euler_pole_longitudes[i], euler_pole_latitudes[i], position[as.numeric(unlist(strsplit(separate_continents[i], "&"))), "Longitude"], continent_starting_points[as.numeric(unlist(strsplit(separate_continents[i], "&"))), "Latitude"])
 
 			#Assign new speeds to different continents
 			degrees_per_step[toChange] <- 
