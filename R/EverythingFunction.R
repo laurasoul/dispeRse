@@ -103,8 +103,7 @@ EverythingFunction <- function(N_steps = 1000, N_continents = 7, radius = 2000, 
 	position[,1,2] <- continent_starting_points[,"Latitude"]
 
 	#for loops to move everything
-	for (t in 2:N_steps + 1) {
-
+	for (t in 2:(N_steps + 1)) {
 		for (k in 1:N_continents) {
 			#find current longlat of the circle k
 			start_long <- position[k, t-1, 1]
