@@ -1,18 +1,10 @@
-#' Global function to simulate evolution on a sphere
+#' Make random draws for bearing
 #'
-#' Global function to generate simulated continents and clades on a sphere
+#' Make random draws for bearings with bias towards North-South or East-West
 #'
-#' @param N_steps The number of time steps in the simulation.
-#' @param N_continents The (maximum) number of individual continents.
-#' @param radius The radius of each circular continent.
-#' @param start_configuration One of "random separate", "random overlap", "supercontinent", or "max separate".
-#' @param squishiness A value from 0 (continents can never overlap) to 1 (continents can overlap completely).
-#' @param stickiness Probability of two conjoined continents remaining conjoined in the next time step.
-#' @param continent_speed_mean Mean continent speed (kilometers per time step).
-#' @param continent_speed_sd Standard deviation of continent speed (kilometers per time step).
-#' @param EarthRad Radius of the Earth in kilometres.
-#' @param polar Whether continents are allowed to exist exactly at the poles.
-#' @return A magic table of awesomeness.
+#' @param n The number of randomly drawn bearings required.
+#' @param shape_parameter The shape parameter used for both values in a beta distribution.
+#' @return A vector of bearing of length n.
 #' @details Nothing yet.
 #'
 #' @examples
