@@ -75,7 +75,7 @@ EverythingFunction <- function(N_steps = 1000, N_continents = 7, radius = 2000, 
 		euler_GC_distances <- One2ManyGreatCircleDistance(euler_pole_longitudes[i], euler_pole_latitudes[i], continent_starting_points[as.numeric(unlist(strsplit(separate_continents[i], "&"))), "Longitude"], continent_starting_points[as.numeric(unlist(strsplit(separate_continents[i], "&"))), "Latitude"])
 		
 		# Find GC distance to furthest continent (closest to euler pole "equator") in cluster (as speed will be assigned based on this):
-		furthest_continent_GC_distance <- max(abs(euler_GC_distances - rep(0.5 * pi * EarthRad)))
+		furthest_continent_GC_distance <- (0.5 * pi * EarthRad) - min(abs(euler_GC_distances - (0.5 * pi * EarthRad)))
 		
 		# Randomly draw a continent speed:
 		continent_speed <- rnorm(1, mean = continent_speed_mean, sd = continent_speed_sd)
@@ -282,15 +282,17 @@ EverythingFunction <- function(N_steps = 1000, N_continents = 7, radius = 2000, 
 			#Select continents that are different to previous time step
 			toKeep <- c(tail(linked,n=1)[[1]],  tail(linked, n=2)[[1]])[duplicated(c(tail(linked,n=1)[[1]],  tail(linked, n=2)[[1]]))]
 
+			#if (length(toKeep)==0){
+
 			#Vectors for new poles and speeds
 			new_euler_latitudes <- rep(NA,length(separate_continents))
 			new_euler_longitudes <- rep(NA,length(separate_continents))
-			#new_degrees_per_step <- vector(length=length(separate_continents))
+			new_degrees_per_step <- rep(NA, length(separate_continents))
 
 			for (y in 1:length(toKeep)) {
 				new_euler_longitudes[match(toKeep[y],separate_continents)]<- euler_pole_longitudes[match(toKeep[y],tail(linked, n=2)[[1]])]
 				new_euler_latitudes[match(toKeep[y],separate_continents)]<- euler_pole_latitudes[match(toKeep[y],tail(linked, n=2)[[1]])]
-				#new_degrees_per_step[match(toKeep[y],separate_continents)]<- degrees_per_step[match(toKeep[y],tail(linked, n=2)[[1]])]
+				new_degrees_per_step[match(toKeep[y],separate_continents)]<- degrees_per_step[match(toKeep[y],tail(linked, n=2)[[1]])]
 			}
 
 			#Make new Euler poles
@@ -300,11 +302,36 @@ EverythingFunction <- function(N_steps = 1000, N_continents = 7, radius = 2000, 
 			while ((sum(changed_euler_latitudes == 90) + sum(changed_euler_latitudes == -90)) > 0) changed_euler_latitudes <- runif((length(separate_continents)-length(tokeep)), -90, 90)
 			
 			new_euler_latitudes[is.na(new_euler_latitudes)] <- changed_euler_latitudes
+
 			# Get Greate Circle distances from Euler pole to each continent centre:
-			for (l in 1:x) euler_GC_distances <- One2ManyGreatCircleDistance(euler_pole_longitudes[i], euler_pole_latitudes[i], position[as.numeric(unlist(strsplit(separate_continents[i], "&"))), "Longitude"], continent_starting_points[as.numeric(unlist(strsplit(separate_continents[i], "&"))), "Latitude"])
+			for (l in 1:(length(separate_continents)-length(toKeep)) {
+				#Find the first NA to fill in
+				changer <- match(NA,new_degrees_per_step)
+				#Find the contients that are in the clump whose speed is going to change
+				rows <- as.numeric(unlist(strsplit(separate_continents[changer], "&")))
+				#Find the new euler pole for that clump
+				euler_long <- new_euler_longitudes[changer]
+				euler_lat <- new_euler_latitudes[changer]
+				#Find the distances of each of the continents in the clump from their new euler pole
+				euler_GC_distances <- One2ManyGreatCircleDistance(euler_long, euler_lat, position[rows, t, 1], position[rows, t, 2])
+				#Find which of those is 
+				furthest_continent_GC_distance <- (0.5 * pi * EarthRad) - min(abs(euler_GC_distances - (0.5 * pi * EarthRad)))
+		
+				# Randomly draw a continent speed:
+				continent_speed <- rnorm(1, mean = continent_speed_mean, sd = continent_speed_sd)
+		
+				# If a negative or zero speed is picked then redraw:
+				while(continent_speed <= 0) continent_speed <- rnorm(1, mean = continent_speed_mean, sd = continent_speed_sd)
+		
+				# Set degree change per step (effectively the speed):
+				new_degrees_per_step[changer] <- continent_speed / (2 * pi * furthest_continent_GC_distance) * 360
+			}
+
+
+
 
 			#Assign new speeds to different continents
-			degrees_per_step[toChange] <- 
+			changed_degrees_per_step <- 
 					
 		# Find GC distance to furthest continent (closest to euler pole "equator") in cluster (as speed will be assigned based on this):
 			furthest_continent_GC_distance <- max(abs(euler_GC_distances - rep(0.5 * pi * EarthRad)))
