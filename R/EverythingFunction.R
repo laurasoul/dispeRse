@@ -271,7 +271,10 @@ EverythingFunction <- function(N_steps = 1000, N_continents = 7, radius = 2000, 
 
 		# Get list of touching continents (to be used later for whether dispersal is allowable or not):
 		touching_continents <- HowManySeparateContinents((radius * 2), position[,t,1], position[,t,2])
-
+		if (any(touching_continents != tail(touching,n=1)[[1]])) {
+			touching <- c(touching, list(touching_continents))
+		}
+		
 		if (any(separate_continents != tail(linked,n=1)[[1]])) {
 			#Add new continental configuration to linked list
 			linked <- c(linked, list(separate_continents))
@@ -279,11 +282,13 @@ EverythingFunction <- function(N_steps = 1000, N_continents = 7, radius = 2000, 
 			#Select continents that are different to previous time step
 			toChange <- c(tail(linked,n=1)[[1]],  tail(linked, n=2)[[1]])[duplicated(c(tail(linked,n=1)[[1]],  tail(linked, n=2)[[1]]))]
 
-			#Assign new euler poles to different continents
-			euler_pole_longitudes[toChange] <- runif(sum(toChange), -180, 180)
-			euler_pole_latitudes[toChange] <- runif(sum(toChange), -90, 90)
-			while (sum(euler_pole_latitudes == 90) + sum(euler_pole_latitudes == -90)) > 0) euler_pole_latitudes[toChange] <- runif(sum(toChange), -90, 90)
+			#Make new Euler poles
+			new_euler_longitudes<- runif(length(toChange), -180, 180)
+			new_euler_latitudes<- runif(length(toChange), -90, 90)
+
+			while ((sum(euler_pole_latitudes == 90) + sum(euler_pole_latitudes == -90)) > 0) new_euler_latitudes <- runif(length(toChange), -90, 90)
 			
+
 			# Get Greate Circle distances from Euler pole to each continent centre:
 			for (l in 1:x) euler_GC_distances <- One2ManyGreatCircleDistance(euler_pole_longitudes[i], euler_pole_latitudes[i], position[as.numeric(unlist(strsplit(separate_continents[i], "&"))), "Longitude"], continent_starting_points[as.numeric(unlist(strsplit(separate_continents[i], "&"))), "Latitude"])
 
