@@ -10,8 +10,10 @@
 #' @param latitude_3 Decimalised latitude of first point on second Great Circle.
 #' @param longitude_4 Decimalised longitude of second point on second Great Circle.
 #' @param latitude_4 Decimalised latitude of second point on second Great Circle.
+#' @param EarthRad Earth radius in kilometres.
 #' @return Matrix of longitude-latitude points at which intersection(s) occur.
 #' @details Nothing yet.
+#'
 #' @examples
 #' longitude_1 <- runif(1, -180, 180)
 #' longitude_2 <- runif(1, -180, 180)
@@ -23,7 +25,7 @@
 #' latitude_4 <- runif(1, -90, 90)
 #' GreatCircleIntersection(longitude_1, latitude_1, longitude_2, latitude_2, longitude_3, latitude_3, longitude_4, latitude_4)
 
-GreatCircleIntersection <- function(longitude_1, latitude_1, longitude_2, latitude_2, longitude_3, latitude_3, longitude_4, latitude_4) {
+GreatCircleIntersection <- function(longitude_1, latitude_1, longitude_2, latitude_2, longitude_3, latitude_3, longitude_4, latitude_4, EarthRad = 6367.4447) {
 
 # Set up input for passing to geosphere functions:
 	
