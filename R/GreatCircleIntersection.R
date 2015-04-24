@@ -1,17 +1,17 @@
-#' Point(s) at which two arcs intersect on a sphere
+#' Point(s) at which two Great Circles intersect on a sphere
 #'
-#' Given two arcs reqturns point(s) at which they intersect on a sphere.
+#' Given two Great Circles returns point(s) at which they intersect on a sphere.
 #'
-#' @param longitude_1 Decimalised longitude of first point on first arc.
-#' @param latitude_1 Decimalised latitude of first point on first arc.
-#' @param longitude_2 Decimalised longitude of second point on first arc.
-#' @param latitude_2 Decimalised latitude of second point on first arc.
-#' @param longitude_3 Decimalised longitude of first point on second arc.
-#' @param latitude_3 Decimalised latitude of first point on second arc.
-#' @param longitude_4 Decimalised longitude of second point on second arc.
-#' @param latitude_4 Decimalised latitude of second point on second arc.
+#' @param longitude_1 Decimalised longitude of first point on first Great Circle.
+#' @param latitude_1 Decimalised latitude of first point on first Great Circle.
+#' @param longitude_2 Decimalised longitude of second point on first Great Circle.
+#' @param latitude_2 Decimalised latitude of second point on first Great Circle.
+#' @param longitude_3 Decimalised longitude of first point on second Great Circle.
+#' @param latitude_3 Decimalised latitude of first point on second Great Circle.
+#' @param longitude_4 Decimalised longitude of second point on second Great Circle.
+#' @param latitude_4 Decimalised latitude of second point on second Great Circle.
 #' @return Matrix of longitude-latitude points at which intersection(s) occur.
-#' @details Assumes shortest distance between points describes arc.
+#' @details Nothing yet.
 #' @examples
 #' longitude_1 <- runif(1, -180, 180)
 #' longitude_2 <- runif(1, -180, 180)
@@ -32,7 +32,7 @@ GreatCircleIntersection <- function(longitude_1, latitude_1, longitude_2, latitu
 	p3 <- c(longitude_3, latitude_3)
 	p4 <- c(longitude_4, latitude_4)
 	
-# geosphere functions:
+# All geosphere functions below this point:
 	
 # Author: Robert J. Hijmans
 # April 2010
@@ -223,36 +223,6 @@ GreatCircleIntersection <- function(longitude_1, latitude_1, longitude_2, latitu
 	
 	res[keep,] <- pts / toRad
 
-# Non-geosphere part of function:
-	
-	distance_to_first_intersection_1 <- GreatCircleDistanceFromLongLat(longitude_1, latitude_1, res[, "lon1"], res[, "lat1"])
-	
-	distance_to_second_intersection_1 <- GreatCircleDistanceFromLongLat(longitude_1, latitude_1, res[, "lon2"], res[, "lat2"])
-
-	distance_to_other_point_1 <- GreatCircleDistanceFromLongLat(longitude_1, latitude_1, longitude_2, latitude_2)
-
-	distance_to_first_intersection_2 <- GreatCircleDistanceFromLongLat(longitude_3, latitude_3, res[, "lon1"], res[, "lat1"])
-	
-	distance_to_second_intersection_2 <- GreatCircleDistanceFromLongLat(longitude_3, latitude_3, res[, "lon2"], res[, "lat2"])
-	
-	distance_to_other_point_2 <- GreatCircleDistanceFromLongLat(longitude_3, latitude_3, longitude_4, latitude_4)
-	
-	# Create empty delete rows vector:
-	delete.rows <- vector(mode="numeric")
-	
-	# Make result into matrix:
-	res <- matrix(res, ncol=2, byrow=TRUE, dimnames=list(c(), c("Longitude", "Latitude")))
-	
-	# Case if first point is an intersection:
-	if(!(distance_to_other_point_1 >= distance_to_first_intersection_1 && distance_to_other_point_2 >= distance_to_first_intersection_2)) delete.rows <- c(delete.rows, 1)
-
-	# Case if second point is an intersection:
-	if(!(distance_to_other_point_1 >= distance_to_second_intersection_1 && distance_to_other_point_2 >= distance_to_second_intersection_2)) delete.rows <- c(delete.rows, 2)
-	
-	res <- res[-delete.rows, ]
-
-	res <- matrix(res, ncol=2, byrow=TRUE, dimnames=list(c(), c("Longitude", "Latitude")))
-	
 	return(res)
 	
 }
