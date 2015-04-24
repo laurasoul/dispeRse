@@ -2,36 +2,20 @@
 % Please edit documentation in R/RandomBearingDraw.R
 \name{RandomBearingDraw}
 \alias{RandomBearingDraw}
-\title{Global function to simulate evolution on a sphere}
+\title{Make random draws for bearing}
 \usage{
 RandomBearingDraw(n = 1, shape_parameter = 1)
 }
 \arguments{
-\item{N_steps}{The number of time steps in the simulation.}
+\item{n}{The number of randomly drawn bearings required.}
 
-\item{N_continents}{The (maximum) number of individual continents.}
-
-\item{radius}{The radius of each circular continent.}
-
-\item{start_configuration}{One of "random separate", "random overlap", "supercontinent", or "max separate".}
-
-\item{squishiness}{A value from 0 (continents can never overlap) to 1 (continents can overlap completely).}
-
-\item{stickiness}{Probability of two conjoined continents remaining conjoined in the next time step.}
-
-\item{continent_speed_mean}{Mean continent speed (kilometers per time step).}
-
-\item{continent_speed_sd}{Standard deviation of continent speed (kilometers per time step).}
-
-\item{EarthRad}{Radius of the Earth in kilometres.}
-
-\item{polar}{Whether continents are allowed to exist exactly at the poles.}
+\item{shape_parameter}{The shape parameter used for both values in a beta distribution.}
 }
 \value{
-A magic table of awesomeness.
+A vector of bearing of length n.
 }
 \description{
-Global function to generate simulated continents and clades on a sphere
+Make random draws for bearings with bias towards North-South or East-West
 }
 \details{
 Nothing yet.
