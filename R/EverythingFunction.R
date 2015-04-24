@@ -274,21 +274,32 @@ EverythingFunction <- function(N_steps = 1000, N_continents = 7, radius = 2000, 
 		if (any(touching_continents != tail(touching,n=1)[[1]])) {
 			touching <- c(touching, list(touching_continents))
 		}
-		
+
 		if (any(separate_continents != tail(linked,n=1)[[1]])) {
 			#Add new continental configuration to linked list
 			linked <- c(linked, list(separate_continents))
 
 			#Select continents that are different to previous time step
-			toChange <- c(tail(linked,n=1)[[1]],  tail(linked, n=2)[[1]])[duplicated(c(tail(linked,n=1)[[1]],  tail(linked, n=2)[[1]]))]
+			toKeep <- c(tail(linked,n=1)[[1]],  tail(linked, n=2)[[1]])[duplicated(c(tail(linked,n=1)[[1]],  tail(linked, n=2)[[1]]))]
+
+			#Vectors for new poles and speeds
+			new_euler_latitudes <- rep(NA,length(separate_continents))
+			new_euler_longitudes <- rep(NA,length(separate_continents))
+			#new_degrees_per_step <- vector(length=length(separate_continents))
+
+			for (y in 1:length(toKeep)) {
+				new_euler_longitudes[match(toKeep[y],separate_continents)]<- euler_pole_longitudes[match(toKeep[y],tail(linked, n=2)[[1]])]
+				new_euler_latitudes[match(toKeep[y],separate_continents)]<- euler_pole_latitudes[match(toKeep[y],tail(linked, n=2)[[1]])]
+				#new_degrees_per_step[match(toKeep[y],separate_continents)]<- degrees_per_step[match(toKeep[y],tail(linked, n=2)[[1]])]
+			}
 
 			#Make new Euler poles
-			new_euler_longitudes<- runif(length(toChange), -180, 180)
-			new_euler_latitudes<- runif(length(toChange), -90, 90)
+			new_euler_longitudes[is.na(new_euler_longitudes)]<- runif((length(separate_continents)-length(toKeep)), -180, 180)
 
-			while ((sum(euler_pole_latitudes == 90) + sum(euler_pole_latitudes == -90)) > 0) new_euler_latitudes <- runif(length(toChange), -90, 90)
+			changed_euler_latitudes<- runif((length(separate_continents)-length(toKeep)), -90, 90)
+			while ((sum(changed_euler_latitudes == 90) + sum(changed_euler_latitudes == -90)) > 0) changed_euler_latitudes <- runif((length(separate_continents)-length(tokeep)), -90, 90)
 			
-
+			new_euler_latitudes[is.na(new_euler_latitudes)] <- changed_euler_latitudes
 			# Get Greate Circle distances from Euler pole to each continent centre:
 			for (l in 1:x) euler_GC_distances <- One2ManyGreatCircleDistance(euler_pole_longitudes[i], euler_pole_latitudes[i], position[as.numeric(unlist(strsplit(separate_continents[i], "&"))), "Longitude"], continent_starting_points[as.numeric(unlist(strsplit(separate_continents[i], "&"))), "Latitude"])
 
