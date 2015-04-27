@@ -124,7 +124,7 @@ EverythingFunction <- function(N_steps = 1000, N_continents = 7, radius = 2000, 
 			where <- which_supercontinent(k, tail(linked, n=1)[[1]])
 
 			#Find distance of circle from pole
-			distance <- GreatCircleDistanceFromLongLat(long1=start_long,lat1=start_lat, long2=euler_pole_longitudes[where], lat2=euler_pole_latitudes[where])
+			distance <- GreatCircleDistanceFromLongLat(long1=start_long,lat1=start_lat, long2=euler_pole_longitudes[where], lat2=euler_pole_latitudes[where], Warn = FALSE)
 			
 			#Find bearing of circle from pole
 			init_bearing <- BearingBetweenTwoLongLatPoints(euler_pole_longitudes[where], euler_pole_latitudes[where], start_long, start_lat)
@@ -180,7 +180,7 @@ EverythingFunction <- function(N_steps = 1000, N_continents = 7, radius = 2000, 
 				continent_1_degrees_per_step = degrees_per_step[where_1]
 				continent_2_degrees_per_step = degrees_per_step[where_2]
 				
-				proportion[coll] <- ColliderReverser(min_separation, position[cont_1, t-1, 1], position[cont_1, t-1, 2], temp_position[cont_1,1], temp_position[cont_1,2], position[cont_2, t-1, 1], position[cont_2, t-1, 2], temp_position[cont_2,1], temp_position[cont_2,2], continent_1_euler_longitude, continent_1_euler_latitude, continent_2_euler_longitude, continent_2_euler_latitude, continent_1_degrees_per_step, continent_2_degrees_per_step, EarthRad = 6367.4447)
+				proportion[coll] <- ColliderReverser(min_separation, position[cont_1, t-1, 1], position[cont_1, t-1, 2], temp_position[cont_1,1], temp_position[cont_1,2], position[cont_2, t-1, 1], position[cont_2, t-1, 2], temp_position[cont_2,1], temp_position[cont_2,2], continent_1_euler_longitude, continent_1_euler_latitude, continent_2_euler_longitude, continent_2_euler_latitude, continent_1_degrees_per_step, continent_2_degrees_per_step, EarthRad = 6367.4447, Warn = FALSE)
 			
 			}
 
@@ -205,7 +205,7 @@ EverythingFunction <- function(N_steps = 1000, N_continents = 7, radius = 2000, 
 				cont_to_rev <- all_involved[rev]
 				start_long <- position[cont_to_rev, t-1, 1]
 				start_lat <- position[cont_to_rev, t-1, 2]
-				distance <- GreatCircleDistanceFromLongLat(long1=start_long,lat1=start_lat, long2=euler_pole_longitudes[where_1], lat2=euler_pole_latitudes[where_1])
+				distance <- GreatCircleDistanceFromLongLat(long1=start_long,lat1=start_lat, long2=euler_pole_longitudes[where_1], lat2=euler_pole_latitudes[where_1], Warn = FALSE)
 			
 				#Find bearing of circle from pole
 				init_bearing <- BearingBetweenTwoLongLatPoints(euler_pole_longitudes[where_1], euler_pole_latitudes[where_1], start_long, start_lat)
@@ -232,7 +232,7 @@ EverythingFunction <- function(N_steps = 1000, N_continents = 7, radius = 2000, 
 				cont_to_rev <- all_involved_2[rev]
 				start_long <- position[cont_to_rev, t-1, 1]
 				start_lat <- position[cont_to_rev, t-1, 2]
-				distance <- GreatCircleDistanceFromLongLat(long1=start_long,lat1=start_lat, long2=euler_pole_longitudes[where_2], lat2=euler_pole_latitudes[where_2])
+				distance <- GreatCircleDistanceFromLongLat(long1=start_long,lat1=start_lat, long2=euler_pole_longitudes[where_2], lat2=euler_pole_latitudes[where_2], Warn = FALSE)
 			
 				#Find bearing of circle from pole
 				init_bearing <- BearingBetweenTwoLongLatPoints(euler_pole_longitudes[where_2], euler_pole_latitudes[where_2], start_long, start_lat)
@@ -439,6 +439,6 @@ EverythingFunction <- function(N_steps = 1000, N_continents = 7, radius = 2000, 
 # When rotating around Euler pole could theoretically pick clockwise or anticlockwise, but as we are allowing poles to be on either side of planet this takes care of that for us!
 # Number continents in plots
 	
-plot(position[1, , 1], position[1, , 2], xlim=c(-180, 180), ylim=c(-90, 90), col=rainbow(N_steps))
+#plot(position[1, , 1], position[1, , 2], xlim=c(-180, 180), ylim=c(-90, 90), col=rainbow(N_steps))
 
-for(i in 2:N_continents) points(position[i,,1], position[i,,2], col=rainbow(N_steps))
+#for(i in 2:N_continents) points(position[i,,1], position[i,,2], col=rainbow(N_steps))

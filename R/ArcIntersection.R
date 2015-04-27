@@ -42,22 +42,22 @@ ArcIntersection <- function(longitude_1, latitude_1, longitude_2, latitude_2, lo
 	if(length(sort(match("arc", type)))) {
 	
 		# Calculate distance from first point on first arc to first intersection point:
-		distance_to_first_intersection_1 <- GreatCircleDistanceFromLongLat(longitude_1, latitude_1, res[, "lon1"], res[, "lat1"], EarthRad = EarthRad)
+		distance_to_first_intersection_1 <- GreatCircleDistanceFromLongLat(longitude_1, latitude_1, res[, "lon1"], res[, "lat1"], EarthRad = EarthRad, Warn = FALSE)
 		
 		# Calculate distance from first point on first arc to second intersection point:
-		distance_to_second_intersection_1 <- GreatCircleDistanceFromLongLat(longitude_1, latitude_1, res[, "lon2"], res[, "lat2"], EarthRad = EarthRad)
+		distance_to_second_intersection_1 <- GreatCircleDistanceFromLongLat(longitude_1, latitude_1, res[, "lon2"], res[, "lat2"], EarthRad = EarthRad, Warn = FALSE)
 		
 		# Calculate distance from first point on second arc to first intersection point:
-		distance_to_first_intersection_2 <- GreatCircleDistanceFromLongLat(longitude_3, latitude_3, res[, "lon1"], res[, "lat1"], EarthRad = EarthRad)
+		distance_to_first_intersection_2 <- GreatCircleDistanceFromLongLat(longitude_3, latitude_3, res[, "lon1"], res[, "lat1"], EarthRad = EarthRad, Warn = FALSE)
 		
 		# Calculate distance from first point on second arc to second intersection point:
-		distance_to_second_intersection_2 <- GreatCircleDistanceFromLongLat(longitude_3, latitude_3, res[, "lon2"], res[, "lat2"], EarthRad = EarthRad)
+		distance_to_second_intersection_2 <- GreatCircleDistanceFromLongLat(longitude_3, latitude_3, res[, "lon2"], res[, "lat2"], EarthRad = EarthRad, Warn = FALSE)
 
 		# If first element is an arc:
 		if(type[1] == "arc") {
 			
 			# Set distance as smallest Great Circle distance between the two points:
-			distance_to_other_point_1 <- GreatCircleDistanceFromLongLat(longitude_1, latitude_1, longitude_2, latitude_2, EarthRad = EarthRad)
+			distance_to_other_point_1 <- GreatCircleDistanceFromLongLat(longitude_1, latitude_1, longitude_2, latitude_2, EarthRad = EarthRad, Warn = FALSE)
 		
 		# If first element is a Great Circle:
 		} else {
@@ -71,7 +71,7 @@ ArcIntersection <- function(longitude_1, latitude_1, longitude_2, latitude_2, lo
 		if(type[2] == "arc") {
 			
 			# Set distance as smallest Great Circle distance between the two points:
-			distance_to_other_point_2 <- GreatCircleDistanceFromLongLat(longitude_3, latitude_3, longitude_4, latitude_4, EarthRad = EarthRad)
+			distance_to_other_point_2 <- GreatCircleDistanceFromLongLat(longitude_3, latitude_3, longitude_4, latitude_4, EarthRad = EarthRad, Warn = FALSE)
 		
 		# If second element is a Great Circle:
 		} else {

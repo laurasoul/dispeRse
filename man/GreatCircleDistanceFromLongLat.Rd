@@ -4,7 +4,8 @@
 \alias{GreatCircleDistanceFromLongLat}
 \title{Great circle distance from a set of coordinates}
 \usage{
-GreatCircleDistanceFromLongLat(long1, lat1, long2, lat2, EarthRad = 6367.4447)
+GreatCircleDistanceFromLongLat(long1, lat1, long2, lat2, EarthRad = 6367.4447,
+  Warn = TRUE)
 }
 \arguments{
 \item{long1}{Decimalised longitude for first point.}
@@ -16,6 +17,8 @@ GreatCircleDistanceFromLongLat(long1, lat1, long2, lat2, EarthRad = 6367.4447)
 \item{lat2}{Decimalised latitude for second point.}
 
 \item{EarthRad}{Radius of the Earth in kilometres.}
+
+\item{Warn}{Whether or not to print warnings.}
 }
 \value{
 Great circle distance in kilometres.

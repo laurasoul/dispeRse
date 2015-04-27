@@ -18,9 +18,9 @@
 #' @param continent_1_degrees_per_step Degrees per step (speed) of first continent.
 #' @param continent_2_degrees_per_step Degrees per step (speed) of second continent.
 #' @param EarthRad Radius of the Earth in kilometres.
+#' @param Warn Whether or not to print warnings.
 #' @return Proportion (0 to 1) of time step at which the minimum separation distance collision occurs.
 #' @details Nothing yet.
-#'
 #' @examples
 #' min_separation <- 500
 #'
@@ -71,13 +71,13 @@
 #'   continent_1_euler_longitude, continent_1_euler_latitude, continent_2_euler_longitude,
 #'   continent_2_euler_latitude, continent_1_degrees_per_step, continent_2_degrees_per_step)
 
-ColliderReverser <- function(min_separation, continent_1_longitude_t0, continent_1_latitude_t0, continent_1_longitude_t1, continent_1_latitude_t1, continent_2_longitude_t0, continent_2_latitude_t0, continent_2_longitude_t1, continent_2_latitude_t1, continent_1_euler_longitude, continent_1_euler_latitude, continent_2_euler_longitude, continent_2_euler_latitude, continent_1_degrees_per_step, continent_2_degrees_per_step, EarthRad = 6367.4447) {
+ColliderReverser <- function(min_separation, continent_1_longitude_t0, continent_1_latitude_t0, continent_1_longitude_t1, continent_1_latitude_t1, continent_2_longitude_t0, continent_2_latitude_t0, continent_2_longitude_t1, continent_2_latitude_t1, continent_1_euler_longitude, continent_1_euler_latitude, continent_2_euler_longitude, continent_2_euler_latitude, continent_1_degrees_per_step, continent_2_degrees_per_step, EarthRad = 6367.4447, Warn = TRUE) {
 	
 	# Get t0 distance between continents for checks on input data:
-	t0_distance <- GreatCircleDistanceFromLongLat(continent_1_longitude_t0, continent_1_latitude_t0, continent_2_longitude_t0, continent_2_latitude_t0)
+	t0_distance <- GreatCircleDistanceFromLongLat(continent_1_longitude_t0, continent_1_latitude_t0, continent_2_longitude_t0, continent_2_latitude_t0, Warn = FALSE)
 	
 	# Get t1 distance between continents for checks on input data:
-	t1_distance <- GreatCircleDistanceFromLongLat(continent_1_longitude_t1, continent_1_latitude_t1, continent_2_longitude_t1, continent_2_latitude_t1)
+	t1_distance <- GreatCircleDistanceFromLongLat(continent_1_longitude_t1, continent_1_latitude_t1, continent_2_longitude_t1, continent_2_latitude_t1, Warn = FALSE)
 
 	# Check that contientns do converge in the interval:
 	if(t0_distance < t1_distance) stop("Continents are not converging between t0 and t1.")
@@ -92,7 +92,7 @@ ColliderReverser <- function(min_separation, continent_1_longitude_t0, continent
 		degree_modifier <- 0
 		
 		# Warn user of outcome:
-		print("WARNING: Continents have already collided (within floating point error) at t0. Returning zero.")
+		if(Warn) print("WARNING: Continents have already collided (within floating point error) at t0. Returning zero.")
 
 	}
 	
@@ -103,7 +103,7 @@ ColliderReverser <- function(min_separation, continent_1_longitude_t0, continent
 		degree_modifier <- 1
 		
 		# Warn user of outcome:
-		print("WARNING: Continents collided (within floating point error) at t1. Returning one.")
+		if(Warn) print("WARNING: Continents collided (within floating point error) at t1. Returning one.")
 		
 	}
 	
@@ -117,10 +117,10 @@ ColliderReverser <- function(min_separation, continent_1_longitude_t0, continent
 		continent_2_start_bearing <- BearingBetweenTwoLongLatPoints(continent_2_euler_longitude, continent_2_euler_latitude, continent_2_longitude_t0, continent_2_latitude_t0)
 		
 		# Get GC distance from Euler pole of first continent to first continent centre:
-		continent_1_euler_distance <- GreatCircleDistanceFromLongLat(continent_1_euler_longitude, continent_1_euler_latitude, continent_1_longitude_t0, continent_1_latitude_t0, EarthRad = EarthRad)
+		continent_1_euler_distance <- GreatCircleDistanceFromLongLat(continent_1_euler_longitude, continent_1_euler_latitude, continent_1_longitude_t0, continent_1_latitude_t0, EarthRad = EarthRad, Warn = FALSE)
 		
 		# Get GC distance from Euler pole of second continent to second continent centre:
-		continent_2_euler_distance <- GreatCircleDistanceFromLongLat(continent_2_euler_longitude, continent_2_euler_latitude, continent_2_longitude_t0, continent_2_latitude_t0, EarthRad = EarthRad)
+		continent_2_euler_distance <- GreatCircleDistanceFromLongLat(continent_2_euler_longitude, continent_2_euler_latitude, continent_2_longitude_t0, continent_2_latitude_t0, EarthRad = EarthRad, Warn = FALSE)
 		
 		# Scalar which describes the proportion of a step at which continents are exactly minimum separation apart (will be modified!):
 		degree_modifier <- 0.5
@@ -135,13 +135,13 @@ ColliderReverser <- function(min_separation, continent_1_longitude_t0, continent
 		y <- EndPoint(continent_2_euler_longitude, continent_2_euler_latitude, (continent_2_start_bearing + (continent_2_degrees_per_step * degree_modifier)) %% 360, continent_2_euler_distance)[c("long", "lat")]
 		
 		# As long as we have not reached the point where the distacne between the two continents 
-		while(!all.equal(GreatCircleDistanceFromLongLat(x$long, x$lat, y$long, y$lat, EarthRad = EarthRad), min_separation) == TRUE) {
+		while(!all.equal(GreatCircleDistanceFromLongLat(x$long, x$lat, y$long, y$lat, EarthRad = EarthRad, Warn = FALSE), min_separation) == TRUE) {
 			
 			# First establish current distance between continents based on best guess for degree modifier:
-			current_distance <- GreatCircleDistanceFromLongLat(x$long, x$lat, y$long, y$lat)
+			current_distance <- GreatCircleDistanceFromLongLat(x$long, x$lat, y$long, y$lat, Warn = FALSE)
 			
 			# Do we need to increase the degree modifier value?:
-			if(GreatCircleDistanceFromLongLat(x$long, x$lat, y$long, y$lat, EarthRad = EarthRad) > min_separation) {
+			if(GreatCircleDistanceFromLongLat(x$long, x$lat, y$long, y$lat, EarthRad = EarthRad, Warn = FALSE) > min_separation) {
 				
 				# Create potential better value by adding step size to modifier:
 				limit <- degree_modifier + stepsize
@@ -161,7 +161,7 @@ ColliderReverser <- function(min_separation, continent_1_longitude_t0, continent
 			new_y <- EndPoint(continent_2_euler_longitude, continent_2_euler_latitude, (continent_2_start_bearing + (continent_2_degrees_per_step * limit)) %% 360, continent_2_euler_distance)[c("long", "lat")]
 			
 			# Get new distance based on potential better modifer:
-			new_distance <- GreatCircleDistanceFromLongLat(new_x$long, new_x$lat, new_y$long, new_y$lat, EarthRad = EarthRad)
+			new_distance <- GreatCircleDistanceFromLongLat(new_x$long, new_x$lat, new_y$long, new_y$lat, EarthRad = EarthRad, Warn = FALSE)
 			
 			# If new distance is closer to minimum separation:
 			if(abs(current_distance - min_separation) > abs(new_distance - min_separation)) {
