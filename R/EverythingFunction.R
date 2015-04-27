@@ -110,7 +110,7 @@ EverythingFunction <- function(N_steps = 1000, N_continents = 7, radius = 2000, 
 	#for loops to move everything
 	for (t in 2:(N_steps + 1)) {
 		
-		cat(t, " ")
+		cat(t - 1, " ")
 		
 		#distances apart before they move
 		starting_distances <- GreatCircleDistanceMatrix(position[,t-1,1], position[,t-1,2])
