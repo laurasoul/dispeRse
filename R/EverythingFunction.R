@@ -27,7 +27,7 @@
 # - Bearings after each step change
 # - Total land area all circles - minus
 
-EverythingFunction <- function(N_steps = 1000, N_continents = 7, radius = 2000, start_configuration = "supercontinent", squishiness = 0.25, stickiness = 0.95, continent_speed_mean = 5, continent_speed_sd = 2, EarthRad = 6367.4447, polar = FALSE) {
+EverythingFunction <- function(N_steps = 1000, organism_multiplier = 1, N_continents = 7, radius = 2000, start_configuration = "supercontinent", squishiness = 0.25, stickiness = 0.95, continent_speed_mean = 5, continent_speed_sd = 2, EarthRad = 6367.4447, polar = FALSE) {
 
 # Need more top-level conditionals, e.g. N steps must be a positive integer, speed mean and sd must also be positive
 # Others may be caught by subfunctions so no need to repeat
@@ -89,7 +89,24 @@ EverythingFunction <- function(N_steps = 1000, N_continents = 7, radius = 2000, 
 		degrees_per_step[i] <- continent_speed / (2 * pi * furthest_continent_GC_distance) * 360
 		
 	}
-	
+
+	#starting information for the tree
+	begin_cont <- ceiling(runif(1, 0, N_continents))
+	life_begins <- EndPoint(continent_starting_points[begin_cont, "Longitude"], continent_starting_points[begin_cont, "Latitude"], runif(1,0,360), runif(1,0,radius))
+	extra.rows <- matrix(NA,nrow=2,ncol= (N_steps * organism_multiplier) + 1)
+	organism_lat_matrix <- matrix(nrow=2,ncol=(N_steps * organism_multiplier) + 1)
+    organism_long_matrix <- matrix(nrow=2,ncol=(N_steps * organism_multiplier) + 1)
+    organism_lat_matrix[,1] <- life_begins$lat
+    organism_long_matrix[,1] <- life_begins$lon
+    rownames(organism_lat_matrix) <- rep(begin_cont, 2)
+    rownames(organism_long_matrix) <- rep(begin_cont, 2)
+    edge <- rbind(c(1, 2), c(1, 3)) # this is a starting edge matrix
+    edge.length <- rep(NA, 2)
+    stem.depth <- numeric(2)
+    alive <- rep(TRUE, 2) # marker for live lineages
+    t <- 0; # time(step) at any point in the tree
+    next.node <- 4
+
 	# Now need to move them!
 	#List to store which circles are in each supercontinent (new element added only when it changes)
 	linked <- list()
@@ -419,12 +436,28 @@ EverythingFunction <- function(N_steps = 1000, N_continents = 7, radius = 2000, 
 				# Set degree change per step (effectively the speed):
 				new_degrees_per_step[changer] <- continent_speed / (2 * pi * furthest_continent_GC_distance) * 360
 			}
+			organism_mover <- cbind()
 			euler_pole_longitudes <- new_euler_longitudes
 			euler_pole_latitudes <- new_euler_latitudes
 			degrees_per_step <- new_degrees_per_step
 		}
+<<<<<<< HEAD
+
+		#Move the animals with the continents
+		for (cont in 1:N_continents) {
+			moving <- which(rownames(organism_long_matrix)==cont)
+			#Distanace the continent they're on moved
+			for 
+			
+			#Find bearing of circle from pole
+			init_bearing <- BearingBetweenTwoLongLatPoints(euler_pole_longitudes[where_2], euler_pole_latitudes[where_2], start_long, start_lat)
+		}
+=======
 		
+>>>>>>> origin/master
 	}
+
+
 	
 	# Add final time step to continental configurations:
 	names(linked)[length(linked)] <- paste(strsplit(names(linked)[length(linked)], ":")[[1]][1], ":", t, sep="")
