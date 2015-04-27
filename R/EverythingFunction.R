@@ -175,7 +175,17 @@ EverythingFunction <- function(N_steps = 1000, organism_multiplier = 1, N_contin
 				}
 			}
 		}
-		
+
+		#Matrix of euler poles and speeds for each individual continent for moving the animals later
+		organism_mover <- matrix(nrow=N_continents, ncol= 3)
+			for (clump in 1:length(tail(linked, n=1)[[1]])) {
+				which_conts <- strsplit(tail(linked, n=1)[[1]][[clump]], "&")
+				organism_mover[which_conts,1] <- rep(euler_pole_longitudes[clump],length(which_conts))
+				organism_mover[which_conts,2] <- rep(euler_pole_latitudes[clump],length(which_conts))
+				#This bit will get overwritten if there are collisions
+				organism_mover[which_conts,3] <- rep(degrees_per_step[clump],length(which_conts))
+			}
+
 		perm_collisions <- matrix(nrow=0, ncol=2)
 
 		# Moving continents back if there has only been one collision
@@ -227,8 +237,11 @@ EverythingFunction <- function(N_steps = 1000, organism_multiplier = 1, N_contin
 				#Find bearing of circle from pole
 				init_bearing <- BearingBetweenTwoLongLatPoints(euler_pole_longitudes[where_1], euler_pole_latitudes[where_1], start_long, start_lat)
 
+				#degrees to add
+				addition <- proportion[first_collision] * degrees_per_step[where_1]
+
 				#Find the new bearing of circle from pole according to the speed specified
-				new_bearing <- (init_bearing + (proportion[first_collision] * degrees_per_step[where_1])) %% 360
+				new_bearing <- (init_bearing + addition) %% 360
 
 				#Find the new location of the circle
 				new_loc <- EndPoint(euler_pole_longitudes[where_1], euler_pole_latitudes[where_1], new_bearing, distance)
@@ -236,6 +249,8 @@ EverythingFunction <- function(N_steps = 1000, organism_multiplier = 1, N_contin
 				#Add the new loction to the position matrix
 				temp_position[cont_to_rev,1] <- new_loc$long
 				temp_position[cont_to_rev,2] <- new_loc$lat
+
+				organism_mover[cont_to_rev,3] <- addition
 				
 			}
 
@@ -436,29 +451,41 @@ EverythingFunction <- function(N_steps = 1000, organism_multiplier = 1, N_contin
 				# Set degree change per step (effectively the speed):
 				new_degrees_per_step[changer] <- continent_speed / (2 * pi * furthest_continent_GC_distance) * 360
 			}
-			organism_mover <- cbind()
+			
+
 			euler_pole_longitudes <- new_euler_longitudes
 			euler_pole_latitudes <- new_euler_latitudes
 			degrees_per_step <- new_degrees_per_step
 		}
-<<<<<<< HEAD
 
+#Need to fix t to something else so that its counting the right thing
+#Need to add in the tree bit
 		#Move the animals with the continents
 		for (cont in 1:N_continents) {
+			#Find the rows that are in the continent of focus
 			moving <- which(rownames(organism_long_matrix)==cont)
-			#Distanace the continent they're on moved
-			for 
-			
-			#Find bearing of circle from pole
-			init_bearing <- BearingBetweenTwoLongLatPoints(euler_pole_longitudes[where_2], euler_pole_latitudes[where_2], start_long, start_lat)
+			#Find out how many degrees around the euler pole that continent went
+			organism_degrees <- organism_mover[cont,3]
+			#loops through all the organisms that are currently living
+			for (organism in 1:length(moving)) {
+				organism_row <- moving[organism]
+				if(is.na(organism_long_matrix[organism_row, t])) {
+					next
+				} else {
+					first_long <- organism_long_matrix[organism_row, t]
+					first_lat <- organism_lat_matrix[organism_row, t]
+					organism_distance <- GreatCircleDistanceFromLongLat(organism_mover[cont,1], organism_mover[cont,2], first_long, first_lat)
+					organism_bearing <- BearingBetweenTwoLongLatPoints(organism_mover[cont,1], organism_mover[cont,2], first_long, first_lat)
+					new_organism_bearing <- (organism_bearing + organism_degrees) %% 360
+					new_organism_loc <- EndPoint(first_long, first_lat, new_organism_bearing, organism_distance)
+					organism_long_matrix[organism_row, t] <- new_organism_loc$long
+    				organism_lat_matrix[organism_row, t] <- new_organism_loc$lat
+			}
+					
 		}
-=======
-		
->>>>>>> origin/master
+
 	}
 
-
-	
 	# Add final time step to continental configurations:
 	names(linked)[length(linked)] <- paste(strsplit(names(linked)[length(linked)], ":")[[1]][1], ":", t, sep="")
 	
