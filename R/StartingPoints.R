@@ -121,7 +121,7 @@ StartingPoints <- function(N_continents = 7, radius = 2000, start_configuration 
 						for(i in 1:3) {
 							
 							# Get distance from open spot to ith continent centre:
-							distances_from_centres[i] <- GreatCircleDistanceFromLongLat(open_spots[, "Longitude"], open_spots[, "Latitude"], circles[i, "Longitude"], circles[i, "Latitude"], EarthRad = EarthRad)
+							distances_from_centres[i] <- GreatCircleDistanceFromLongLat(open_spots[, "Longitude"], open_spots[, "Latitude"], circles[i, "Longitude"], circles[i, "Latitude"], EarthRad = EarthRad, Warn = FALSE)
 							
 						}
 						
@@ -159,7 +159,7 @@ StartingPoints <- function(N_continents = 7, radius = 2000, start_configuration 
 							for(i in 1:nrow(circles)) {
 								
 								# Is the distance from the new continent to the ith pre-existing continent equal to the minimum continental separation?:
-								equal_check <- all.equal(as.vector(GreatCircleDistanceFromLongLat(open_spots[new_continent_point, "Longitude"], open_spots[new_continent_point, "Latitude"], circles[i, "Longitude"], circles[i, "Latitude"], EarthRad = EarthRad)), min_separation)
+								equal_check <- all.equal(as.vector(GreatCircleDistanceFromLongLat(open_spots[new_continent_point, "Longitude"], open_spots[new_continent_point, "Latitude"], circles[i, "Longitude"], circles[i, "Latitude"], EarthRad = EarthRad, Warn = FALSE)), min_separation)
 								
 								# If one of the nearest continents then add to the list:
 								if(equal_check == TRUE) adjacent_continents <- c(adjacent_continents, i)
@@ -210,7 +210,7 @@ StartingPoints <- function(N_continents = 7, radius = 2000, start_configuration 
 								for(j in 1:nrow(circles)) {
 									
 									# Get distance from ith potential new open spot to jth existing continent:
-									distance_between_centres <- as.vector(GreatCircleDistanceFromLongLat(potential_new_open_spots[i, "Longitude"], potential_new_open_spots[i, "Latitude"], circles[j, "Longitude"], circles[j, "Latitude"], EarthRad = EarthRad))
+									distance_between_centres <- as.vector(GreatCircleDistanceFromLongLat(potential_new_open_spots[i, "Longitude"], potential_new_open_spots[i, "Latitude"], circles[j, "Longitude"], circles[j, "Latitude"], EarthRad = EarthRad, Warn = FALSE))
 									
 									# If ith potential new open spot is closer to a pre-existing continent than the minimum separation allows add to unsuitable spots:
 									if(all.equal(distance_between_centres, min_separation) != TRUE && distance_between_centres < min_separation) unsuitable_spots <- as.vector(c(unsuitable_spots, i))
@@ -221,7 +221,7 @@ StartingPoints <- function(N_continents = 7, radius = 2000, start_configuration 
 								for(j in 1:nrow(open_spots)) {
 									
 									# Get distance from ith potential new open spot to jth existing open spot:
-									distance_between_centres <- as.vector(GreatCircleDistanceFromLongLat(potential_new_open_spots[i, "Longitude"], potential_new_open_spots[i, "Latitude"], open_spots[j, "Longitude"], open_spots[j, "Latitude"], EarthRad = EarthRad))
+									distance_between_centres <- as.vector(GreatCircleDistanceFromLongLat(potential_new_open_spots[i, "Longitude"], potential_new_open_spots[i, "Latitude"], open_spots[j, "Longitude"], open_spots[j, "Latitude"], EarthRad = EarthRad, Warn = FALSE))
 									
 									# If ith potential new open spot is closer to a pre-existing open spot than the minimum separation allows add to unsuitable spots:
 									if(all.equal(distance_between_centres, min_separation) != TRUE && distance_between_centres < min_separation) unsuitable_spots <- as.vector(c(unsuitable_spots, i))

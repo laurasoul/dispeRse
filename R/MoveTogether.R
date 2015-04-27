@@ -24,7 +24,7 @@ MoveTogether <- function(centers, pole, angle) {
 
     	start_long <- centers[1,i]
     	start_lat <- centers[2,i]
-    	distance <- GreatCircleDistanceFromLongLat(long1=start_long,lat1=start_lat, long2=pole[1], lat2=pole[2])
+    	distance <- GreatCircleDistanceFromLongLat(long1=start_long,lat1=start_lat, long2=pole[1], lat2=pole[2], Warn = FALSE)
     	init_bearing <- BearingBetweenTwoLongLatPoints(pole[1], pole[2], start_long, start_lat)
     	new_bearing <- (init_bearing + angle) %% 360
     	new_loc <- EndPoint(pole[1], pole[2], new_bearing, distance)

@@ -7,13 +7,15 @@
 #' @param long2 Decimalised longitude for second point.
 #' @param lat2 Decimalised latitude for second point.
 #' @param EarthRad Radius of the Earth in kilometres.
+#' @param Warn Whether or not to print warnings.
 #' @return Great circle distance in kilometres.
 #' @details Nothing yet.
+#'
 #' @examples
 #' # Return one-degree of latitude (approximately 111 kilometres):
 #' GreatCircleDistanceFromLongLat(0, 0, 0, 1)
 
-GreatCircleDistanceFromLongLat <- function(long1, lat1, long2, lat2, EarthRad = 6367.4447) {
+GreatCircleDistanceFromLongLat <- function(long1, lat1, long2, lat2, EarthRad = 6367.4447, Warn = TRUE) {
 	
 	# If latitude and longitude describe different points:
 	if(all.equal(long1, long2) != TRUE || all.equal(lat1, lat2) != TRUE) {

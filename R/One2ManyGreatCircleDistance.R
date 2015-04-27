@@ -20,7 +20,7 @@ One2ManyGreatCircleDistance <- function(point_longitude, point_latitude, point_l
 	for(i in 1:length(point_longitudes)) {
 		
 		# Store minimal Great Circle distance:
-		GC_distances[i] <- GreatCircleDistanceFromLongLat(point_longitude, point_latitude, point_longitudes[i], point_latitudes[i], EarthRad = EarthRad)
+		GC_distances[i] <- GreatCircleDistanceFromLongLat(point_longitude, point_latitude, point_longitudes[i], point_latitudes[i], EarthRad = EarthRad, Warn = FALSE)
 		
 	}
 	

@@ -10,7 +10,7 @@ ColliderReverser(min_separation, continent_1_longitude_t0,
   continent_2_latitude_t1, continent_1_euler_longitude,
   continent_1_euler_latitude, continent_2_euler_longitude,
   continent_2_euler_latitude, continent_1_degrees_per_step,
-  continent_2_degrees_per_step, EarthRad = 6367.4447)
+  continent_2_degrees_per_step, EarthRad = 6367.4447, Warn = TRUE)
 }
 \arguments{
 \item{min_separation}{The minimum separation between continents in kilometres.}
@@ -44,6 +44,8 @@ ColliderReverser(min_separation, continent_1_longitude_t0,
 \item{continent_2_degrees_per_step}{Degrees per step (speed) of second continent.}
 
 \item{EarthRad}{Radius of the Earth in kilometres.}
+
+\item{Warn}{Whether or not to print warnings.}
 }
 \value{
 Proportion (0 to 1) of time step at which the minimum separation distance collision occurs.
