@@ -262,7 +262,7 @@ EverythingFunction <- function(N_steps = 1000, N_continents = 7, radius = 2000, 
 					comp2 <- new_distances[p, b] <= min_separation
 					
 					if (comp1 != TRUE && comp2 == TRUE) {
-						
+					
 						collisions <- rbind(collisions, c(p, b))
 						
 					}
@@ -362,6 +362,9 @@ EverythingFunction <- function(N_steps = 1000, N_continents = 7, radius = 2000, 
 				# Set degree change per step (effectively the speed):
 				new_degrees_per_step[changer] <- continent_speed / (2 * pi * furthest_continent_GC_distance) * 360
 			}
+			euler_pole_longitudes <- new_euler_longitudes
+			euler_pole_latitudes <- new_euler_latitudes
+			degrees_per_step <- new_degrees_per_step
 		}
 	}
 	
