@@ -359,11 +359,15 @@ EverythingFunction <- function(N_steps = 1000, N_continents = 7, radius = 2000, 
 			
 			# Add new continental configuration to linked list
 			linked <- c(linked, list(separate_continents))
+
+			# Update time step for previous continental configuration:
+			names(linked)[(length(linked) - 1)] <- paste(strsplit(names(linked[(length(linked) - 1)]), ":")[[1]][1], ":", t - 1, sep="")
 			
-#names(linked)[length(linked)] <- paste(t, ":", t, sep="")
+			# Add time step to new continental configuration:
+			names(linked)[length(linked)] <- paste(t, ":", t, sep="")
 			
-			#Select continents that are different to previous time step
-			toKeep <- c(tail(linked,n=1)[[1]],  tail(linked, n=2)[[1]])[duplicated(c(tail(linked,n=1)[[1]],  tail(linked, n=2)[[1]]))]
+			# Select continents that are different to previous time step
+			toKeep <- c(tail(linked,n=1)[[1]], tail(linked, n=2)[[1]])[duplicated(c(tail(linked,n=1)[[1]], tail(linked, n=2)[[1]]))]
 
 			#Vectors for new poles and speeds
 			new_euler_latitudes <- rep(NA, length(separate_continents))
@@ -421,6 +425,9 @@ EverythingFunction <- function(N_steps = 1000, N_continents = 7, radius = 2000, 
 		}
 		
 	}
+	
+	# Add final time step to continental configurations:
+	names(linked)[length(linked)] <- paste(strsplit(names(linked)[length(linked)], ":")[[1]][1], ":", t, sep="")
 	
 	output <- list(position, linked)
 	
