@@ -43,20 +43,14 @@ ContinentSplitter <- function(min_separation, longitudes, latitudes, continent_n
 	# If there are unprotected links (and can continue with separation):
 	if(sum(unprotected_links[lower.tri(unprotected_links)]) > 0) {
 	
-		# Pick a random link from the matrix:
-		link_position <- sample(which(intercontinent_links == 1))[1]
-		
-		# Set starting link (from continent to continent):
-		start_link <- sort(c(link_position %% nrow(intercontinent_links), ceiling(link_position / nrow(intercontinent_links))))
+		# Pick random starting link (from continent to continent):
+		start_link <- which(intercontinent_links == 1, arr.ind=TRUE)[sample(1:sum(intercontinent_links == 1))[1],]
 		
 		# Whilst randomly chosen link is a protected link:
 		while(unprotected_links[start_link[1], start_link[2]] == 0) {
 			
-			# Pick a new random link from the matrix:
-			link_position <- sample(which(intercontinent_links == 1))[1]
-			
-			# Update start link:
-			start_link <- sort(c(link_position %% nrow(intercontinent_links), ceiling(link_position / nrow(intercontinent_links))))
+			# Pick new random starting link (from continent to continent):
+			start_link <- which(intercontinent_links == 1, arr.ind=TRUE)[sample(1:sum(intercontinent_links == 1))[1],]
 			
 		}
 		
