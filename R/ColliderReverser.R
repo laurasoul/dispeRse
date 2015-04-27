@@ -97,7 +97,7 @@ ColliderReverser <- function(min_separation, continent_1_longitude_t0, continent
 	}
 	
 	# If minimum separation threshold is reached at end (t1):
-	if(all.equal(t0_distance, min_separation)[1] == TRUE) {
+	if(all.equal(t1_distance, min_separation)[1] == TRUE) {
 		
 		# Set degree modifier to zero:
 		degree_modifier <- 1
