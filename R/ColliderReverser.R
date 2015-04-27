@@ -38,20 +38,38 @@
 #' continent_2_longitude_t0 <- -2
 #' continent_2_latitude_t0 <- 1
 #'
-#' continent_1_start_bearing <- BearingBetweenTwoLongLatPoints(continent_1_euler_longitude, continent_1_euler_latitude, continent_1_longitude_t0, continent_1_latitude_t0)
-#' continent_2_start_bearing <- BearingBetweenTwoLongLatPoints(continent_2_euler_longitude, continent_2_euler_latitude, continent_2_longitude_t0, continent_2_latitude_t0)
-#' continent_1_euler_distance <- GreatCircleDistanceFromLongLat(continent_1_euler_longitude, continent_1_euler_latitude, continent_1_longitude_t0, continent_1_latitude_t0)
-#' continent_2_euler_distance <- GreatCircleDistanceFromLongLat(continent_2_euler_longitude, continent_2_euler_latitude, continent_2_longitude_t0, continent_2_latitude_t0)
+#' continent_1_start_bearing <- 
+#'   BearingBetweenTwoLongLatPoints(continent_1_euler_longitude,
+#'   continent_1_euler_latitude, continent_1_longitude_t0, continent_1_latitude_t0)
+#' continent_2_start_bearing <-
+#'   BearingBetweenTwoLongLatPoints(continent_2_euler_longitude,
+#'   continent_2_euler_latitude, continent_2_longitude_t0, continent_2_latitude_t0)
+#' continent_1_euler_distance <-
+#'   GreatCircleDistanceFromLongLat(continent_1_euler_longitude, continent_1_euler_latitude,
+#'   continent_1_longitude_t0, continent_1_latitude_t0)
+#' continent_2_euler_distance <-
+#'   GreatCircleDistanceFromLongLat(continent_2_euler_longitude, continent_2_euler_latitude,
+#'   continent_2_longitude_t0, continent_2_latitude_t0)
 #'
-#' continent_1_longitude_t1 <- EndPoint(continent_1_euler_longitude, continent_1_euler_latitude, continent_1_start_bearing + continent_1_degrees_per_step, continent_1_euler_distance)$long
-#' continent_1_latitude_t1 <- EndPoint(continent_1_euler_longitude, continent_1_euler_latitude, continent_1_start_bearing + continent_1_degrees_per_step, continent_1_euler_distance)$lat
-#' continent_2_longitude_t1 <- EndPoint(continent_2_euler_longitude, continent_2_euler_latitude, continent_2_start_bearing + continent_2_degrees_per_step, continent_2_euler_distance)$long
-#' continent_2_latitude_t1 <- EndPoint(continent_2_euler_longitude, continent_2_euler_latitude, continent_2_start_bearing + continent_2_degrees_per_step, continent_2_euler_distance)$lat
+#' continent_1_longitude_t1 <- EndPoint(continent_1_euler_longitude, continent_1_euler_latitude,
+#'   continent_1_start_bearing + continent_1_degrees_per_step, continent_1_euler_distance)$long
+#' continent_1_latitude_t1 <- EndPoint(continent_1_euler_longitude, continent_1_euler_latitude,
+#'   continent_1_start_bearing + continent_1_degrees_per_step, continent_1_euler_distance)$lat
+#' continent_2_longitude_t1 <- EndPoint(continent_2_euler_longitude, continent_2_euler_latitude,
+#'   continent_2_start_bearing + continent_2_degrees_per_step, continent_2_euler_distance)$long
+#' continent_2_latitude_t1 <- EndPoint(continent_2_euler_longitude, continent_2_euler_latitude,
+#'   continent_2_start_bearing + continent_2_degrees_per_step, continent_2_euler_distance)$lat
 #'
-#' GreatCircleDistanceFromLongLat(continent_1_longitude_t0, continent_1_latitude_t0, continent_2_longitude_t0, continent_2_latitude_t0)
-#' GreatCircleDistanceFromLongLat(continent_1_longitude_t1, continent_1_latitude_t1, continent_2_longitude_t1, continent_2_latitude_t1)
+#' GreatCircleDistanceFromLongLat(continent_1_longitude_t0, continent_1_latitude_t0,
+#'   continent_2_longitude_t0, continent_2_latitude_t0)
+#' GreatCircleDistanceFromLongLat(continent_1_longitude_t1, continent_1_latitude_t1,
+#'   continent_2_longitude_t1, continent_2_latitude_t1)
 #'
-#' ColliderReverser(min_separation, continent_1_longitude_t0, continent_1_latitude_t0, continent_1_longitude_t1, continent_1_latitude_t1, continent_2_longitude_t0, continent_2_latitude_t0, continent_2_longitude_t1, continent_2_latitude_t1, continent_1_euler_longitude, continent_1_euler_latitude, continent_2_euler_longitude, continent_2_euler_latitude, continent_1_degrees_per_step, continent_2_degrees_per_step)
+#' ColliderReverser(min_separation, continent_1_longitude_t0, continent_1_latitude_t0,
+#'   continent_1_longitude_t1, continent_1_latitude_t1, continent_2_longitude_t0,
+#'   continent_2_latitude_t0, continent_2_longitude_t1, continent_2_latitude_t1,
+#'   continent_1_euler_longitude, continent_1_euler_latitude, continent_2_euler_longitude,
+#'   continent_2_euler_latitude, continent_1_degrees_per_step, continent_2_degrees_per_step)
 
 ColliderReverser <- function(min_separation, continent_1_longitude_t0, continent_1_latitude_t0, continent_1_longitude_t1, continent_1_latitude_t1, continent_2_longitude_t0, continent_2_latitude_t0, continent_2_longitude_t1, continent_2_latitude_t1, continent_1_euler_longitude, continent_1_euler_latitude, continent_2_euler_longitude, continent_2_euler_latitude, continent_1_degrees_per_step, continent_2_degrees_per_step, EarthRad = 6367.4447) {
 	

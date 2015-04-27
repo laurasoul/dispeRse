@@ -2,7 +2,7 @@
 % Please edit documentation in R/StartingPoints.R
 \name{StartingPoints}
 \alias{StartingPoints}
-\title{Generate a matrix of longitudes and latitudes of contienntal centres}
+\title{Generate a matrix of longitudes and latitudes of continental centres}
 \usage{
 StartingPoints(N_continents = 7, radius = 2000,
   start_configuration = "supercontinent", squishiness = 0.25,
@@ -16,6 +16,8 @@ StartingPoints(N_continents = 7, radius = 2000,
 \item{start_configuration}{One of "random separate", "random overlap", "supercontinent", or "max separate".}
 
 \item{squishiness}{A value from 0 (continents can never overlap) to 1 (continents can overlap completely)}
+
+\item{EarthRad}{Eartn radius in kilometres.}
 
 \item{polar}{TRUE/FALSE Is there a continent starting on the south pole?}
 }

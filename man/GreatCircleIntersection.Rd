@@ -44,6 +44,7 @@ latitude_1 <- runif(1, -90, 90)
 latitude_2 <- runif(1, -90, 90)
 latitude_3 <- runif(1, -90, 90)
 latitude_4 <- runif(1, -90, 90)
-GreatCircleIntersection(longitude_1, latitude_1, longitude_2, latitude_2, longitude_3, latitude_3, longitude_4, latitude_4)
+GreatCircleIntersection(longitude_1, latitude_1, longitude_2, latitude_2,
+  longitude_3, latitude_3, longitude_4, latitude_4)
 }
 

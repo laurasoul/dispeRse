@@ -1,10 +1,12 @@
 #' One-to-many Great Circle Distances
 #'
 #' Returns a set of distances from a single point of longitude and latitude
-#' @param longs A vector of decimalised longitudes.
-#' @param lats A vector of decimalised latitudes.
+#' @param point_longitude Decimalised longitude of single point.
+#' @param point_latitude Decimalised latitude of single point.
+#' @param point_longitudes Decimalised longitudes of many points.
+#' @param point_latitudes Decimalised latitudes of many points.
 #' @param EarthRad Radius of the Earth in kilometres.
-#' @return A distancematrix of minimum Great Circle Distances.
+#' @return A vector of minimum Great Circle Distances between single point and each of many points.
 #' @details Nothing yet.
 #' @examples
 #' One2ManyGreatCircleDistance(0, 0, c(-179, 0, 179), c(89, 0, -89))

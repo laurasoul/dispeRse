@@ -8,14 +8,18 @@ One2ManyGreatCircleDistance(point_longitude, point_latitude, point_longitudes,
   point_latitudes, EarthRad = 6367.4447)
 }
 \arguments{
+\item{point_longitude}{Decimalised longitude of single point.}
+
+\item{point_latitude}{Decimalised latitude of single point.}
+
+\item{point_longitudes}{Decimalised longitudes of many points.}
+
+\item{point_latitudes}{Decimalised latitudes of many points.}
+
 \item{EarthRad}{Radius of the Earth in kilometres.}
-
-\item{longs}{A vector of decimalised longitudes.}
-
-\item{lats}{A vector of decimalised latitudes.}
 }
 \value{
-A distancematrix of minimum Great Circle Distances.
+A vector of minimum Great Circle Distances between single point and each of many points.
 }
 \description{
 Returns a set of distances from a single point of longitude and latitude

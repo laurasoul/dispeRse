@@ -40,7 +40,7 @@ Global function to generate simulated continents and clades on a sphere
 Nothing yet.
 }
 \examples{
-EverythingFunction <- function(N_steps = 1000, N_continents = 7, radius = 2000,
+EverythingFunction(N_steps = 10, N_continents = 2, radius = 2000,
   start_configuration = "supercontinent", squishiness = 0.25, stickiness = 0.95,
   continent_speed_mean = 5, continent_speed_sd = 2, EarthRad = 6367.4447,
   polar = FALSE)

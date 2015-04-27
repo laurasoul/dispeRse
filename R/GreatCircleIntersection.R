@@ -13,7 +13,6 @@
 #' @param EarthRad Earth radius in kilometres.
 #' @return Matrix of longitude-latitude points at which intersection(s) occur.
 #' @details Nothing yet.
-#'
 #' @examples
 #' longitude_1 <- runif(1, -180, 180)
 #' longitude_2 <- runif(1, -180, 180)
@@ -23,7 +22,8 @@
 #' latitude_2 <- runif(1, -90, 90)
 #' latitude_3 <- runif(1, -90, 90)
 #' latitude_4 <- runif(1, -90, 90)
-#' GreatCircleIntersection(longitude_1, latitude_1, longitude_2, latitude_2, longitude_3, latitude_3, longitude_4, latitude_4)
+#' GreatCircleIntersection(longitude_1, latitude_1, longitude_2, latitude_2,
+#'   longitude_3, latitude_3, longitude_4, latitude_4)
 
 GreatCircleIntersection <- function(longitude_1, latitude_1, longitude_2, latitude_2, longitude_3, latitude_3, longitude_4, latitude_4, EarthRad = 6367.4447) {
 
@@ -68,6 +68,29 @@ GreatCircleIntersection <- function(longitude_1, latitude_1, longitude_2, latitu
 			stop('this is not a valid (closed) polygon. The first vertex is not equal to the last vertex')	
 		}
 		return(x)
+	}
+	
+# Author: Robert J. Hijmans
+# October 2009
+# version 1.0
+# license GPL3
+	
+	antipodal <- function(p1, p2, tol=1e-9) {
+		p1 <- .pointsToMatrix(p1) 
+		p2 <- .pointsToMatrix(p2) 
+		p <- cbind(p1[,1], p1[,2], p2[,1], p2[,2])	
+		p[,c(1,3)] <- .normalizeLonDeg(p[,c(1,3)])
+		diflon <- abs(p[,1] - p[,3]) 
+		diflat <- abs(p[,2] + p[,4])
+		(diflat < tol) & (diflon > (180 - tol))
+	}
+	
+	
+	antipode <- function(p) {
+		p <- .pointsToMatrix(p)
+		p[,1] <- .normalizeLonDeg(p[,1] + 180)
+		p[,2] <- -p[,2]
+		return( p )
 	}
 	
 # Author: Robert J. Hijmans & Jacob van Etten
