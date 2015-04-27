@@ -94,7 +94,8 @@ EverythingFunction <- function(N_steps = 1000, N_continents = 7, radius = 2000, 
 	#List to store which circles are in each supercontinent (new element added only when it changes)
 	linked <- list()
 	linked[[1]] <- separate_continents
-
+	names(linked)[[1]] <- "1:1"
+	
 	#List to store which circles are in each supercontinent (new element added only when it changes)
 	touching <- list()
 	touching[[1]] <- touching_continents
@@ -110,7 +111,7 @@ EverythingFunction <- function(N_steps = 1000, N_continents = 7, radius = 2000, 
 	for (t in 2:(N_steps + 1)) {
 		
 		cat(t, " ")
-
+		
 		#distances apart before they move
 		starting_distances <- GreatCircleDistanceMatrix(position[,t-1,1], position[,t-1,2])
 
@@ -163,10 +164,10 @@ EverythingFunction <- function(N_steps = 1000, N_continents = 7, radius = 2000, 
 		# Moving continents back if there has only been one collision
 		while(nrow(collisions) > 0) {
 
-			#set up vector to store proportional changes after collisions
+			# Set up vector to store proportional changes after collisions
 			proportion <- vector()
 
-			#Find out proportions to reduce to for all potential collisions
+			# Find out proportions to reduce to for all potential collisions
 			for (coll in 1:nrow(collisions)) {
 				cont_1 <- collisions[coll,1]
 				cont_2 <- collisions[coll,2]
@@ -178,17 +179,19 @@ EverythingFunction <- function(N_steps = 1000, N_continents = 7, radius = 2000, 
 				continent_2_euler_latitude = euler_pole_latitudes[where_2]
 				continent_1_degrees_per_step = degrees_per_step[where_1]
 				continent_2_degrees_per_step = degrees_per_step[where_2]
+				
 				proportion[coll] <- ColliderReverser(min_separation, position[cont_1, t-1, 1], position[cont_1, t-1, 2], temp_position[cont_1,1], temp_position[cont_1,2], position[cont_2, t-1, 1], position[cont_2, t-1, 2], temp_position[cont_2,1], temp_position[cont_2,2], continent_1_euler_longitude, continent_1_euler_latitude, continent_2_euler_longitude, continent_2_euler_latitude, continent_1_degrees_per_step, continent_2_degrees_per_step, EarthRad = 6367.4447)
+			
 			}
 
 			# Select proportion to move for first collision
 			first_collision <- match(min(proportion),proportion)
 
 			# Find the two continents that collided first
-			cont_involved <- collisions[first_collision,]
+			cont_involved <- sort(collisions[first_collision, ])
 
 			# Add to matrix of definite collisions that cannot be separated in the next step
-			perm_collisions <- rbind(perm_collisions,cont_involved)
+			perm_collisions <- rbind(perm_collisions, cont_involved)
 
 			# Move first clump back
 			head_of_collision_1 <- cont_involved[1]
@@ -216,6 +219,7 @@ EverythingFunction <- function(N_steps = 1000, N_continents = 7, radius = 2000, 
 				#Add the new loction to the position matrix
 				temp_position[cont_to_rev,1] <- new_loc$long
 				temp_position[cont_to_rev,2] <- new_loc$lat
+				
 			}
 
 			#Move the second clump back
@@ -242,6 +246,7 @@ EverythingFunction <- function(N_steps = 1000, N_continents = 7, radius = 2000, 
 				#Add the new loction to the position matrix
 				temp_position[cont_to_rev,1] <- new_loc$long
 				temp_position[cont_to_rev,2] <- new_loc$lat
+				
 			}
 
 			#Recalculate the new distances
@@ -251,9 +256,9 @@ EverythingFunction <- function(N_steps = 1000, N_continents = 7, radius = 2000, 
 			comp2 <- vector()
 
 			# Check whether any other collisions have still occurred
-			collisions<-matrix(nrow=0, ncol=2)
+			collisions <- matrix(nrow=0, ncol=2)
 			
-			for (b in 1:(N_continents-1)) {
+			for (b in 1:(N_continents - 1)) {
 				
 				for (p in (b+1):N_continents) {
 					
@@ -263,7 +268,13 @@ EverythingFunction <- function(N_steps = 1000, N_continents = 7, radius = 2000, 
 					
 					if (comp1 != TRUE && comp2 == TRUE) {
 					
-						collisions <- rbind(collisions, c(p, b))
+						# If collision has not already been recorded:
+						if(length(sort(match(paste(sort(c(b, p)), collapse=""), apply(perm_collisions, 1, paste, collapse="")))) == 0) {
+						
+							# Record collision:
+							collisions <- rbind(collisions, c(p, b))
+							
+						}
 						
 					}
 					
@@ -271,34 +282,72 @@ EverythingFunction <- function(N_steps = 1000, N_continents = 7, radius = 2000, 
 				
 			}
 			
-			# As long as collisions has length:
-			if(length(collisions) > 0) {
+		}
 
-				# Check new collisions do not include already discovered permanent collisions:
-				already_collided_rows <- match(apply(apply(perm_collisions, 1, sort), 2, paste, collapse="&"), apply(apply(collisions, 1, sort), 2, paste, collapse="&"))
+		# When it finishes while loop can now 'ossify' the positions and move to selecting separations
+		position[, t, 1] <- temp_position[, 1]
+		position[, t, 2] <- temp_position[, 2]
+
+# Finding out if anything gets separated
+		
+		# How many separate continents are there now? (after collisions may have occurred):
+		separate_continents <- HowManySeparateContinents(min_separation, position[,t,1], position[,t,2])
+		
+		# Make random uniform draws for each continental cluster:
+		separation_draws <- runif(length(grep("&", separate_continents)))
+		
+		# Case if a separation occurs (drawn value is equal to or exceeds stickiness):
+		if(any(separation_draws >= stickiness)) {
+		
+			# Get clusters of continents to split apart:
+			clusters_to_split <- separate_continents[grep("&", separate_continents)][which(separation_draws >= stickiness)]
+			
+			# For each cluster to split apart:
+			for(i in 1:length(clusters_to_split)) {
 				
-				# If already discvered collisions need to be removed:
-				if(length(already_collided_rows) > 0) {
+				# Get numbers of continents involved:
+				cluster_continent_numbers <- sort(strsplit(clusters_to_split[i], "&")[[1]])
+				
+				# Get longitudes of continents in cluster:
+				cluster_longitudes <- position[as.numeric(cluster_continent_numbers), t, 1]
+
+				# Get latitudes of continents in cluster:
+				cluster_latitudes <- position[as.numeric(cluster_continent_numbers), t, 2]
+				
+				# Make protected links an empty matrix:
+				cluster_protected_links <- matrix(nrow = 0, ncol = 2)
+				
+				# If there are recent collisions (that will potentially need to be excluded from new splits):
+				if(length(perm_collisions) > 0) {
 					
-					# Remove already discovered collisions to leave novel colisions only:
-					collisions <- collisions[-already_collided_rows, ]
-					
+					# For each new collision:
+					for(j in 1:nrow(perm_collisions)) {
+						
+						# If new collision occurs within the cluster:
+						if(all(intersect(as.character(perm_collisions[j, ]), cluster_continent_numbers) == as.character(perm_collisions[j, ]))) {
+						
+							# Add new collision to protected links list:
+							cluster_protected_links <- rbind(cluster_protected_links, perm_collisions[j, ])
+							
+						}
+						
+						
+					}
+
 				}
+				
+				# Get splits (new clusters) of separated cluster:
+				splits <- ContinentSplitter(min_separation, cluster_longitudes, cluster_latitudes, cluster_continent_numbers, cluster_protected_links, EarthRad)
+				
+				# Update separate continents vector:
+				separate_continents <- sort(c(separate_continents[-match(clusters_to_split[i], separate_continents)], splits))
 				
 			}
 			
 		}
 
-		#When it finishes while loop can now 'ossify' the positions and move to selecting separations
-		position[,t,1] <- temp_position[,1]
-		position[,t,2] <- temp_position[,2]
-
-		#Finding out if anything gets separated
+# Now change the Euler poles and speeds
 		
-
-		#Now change the Euler poles and speeds
-		separate_continents <- HowManySeparateContinents(min_separation, position[,t,1], position[,t,2])
-
 		# Get list of touching continents (to be used later for whether dispersal is allowable or not):
 		touching_continents <- HowManySeparateContinents((radius * 2), position[,t,1], position[,t,2])
 		if (any(touching_continents != tail(touching,n=1)[[1]])) {
@@ -310,13 +359,15 @@ EverythingFunction <- function(N_steps = 1000, N_continents = 7, radius = 2000, 
 			
 			# Add new continental configuration to linked list
 			linked <- c(linked, list(separate_continents))
-
+			
+#names(linked)[length(linked)] <- paste(t, ":", t, sep="")
+			
 			#Select continents that are different to previous time step
 			toKeep <- c(tail(linked,n=1)[[1]],  tail(linked, n=2)[[1]])[duplicated(c(tail(linked,n=1)[[1]],  tail(linked, n=2)[[1]]))]
 
 			#Vectors for new poles and speeds
-			new_euler_latitudes <- rep(NA,length(separate_continents))
-			new_euler_longitudes <- rep(NA,length(separate_continents))
+			new_euler_latitudes <- rep(NA, length(separate_continents))
+			new_euler_longitudes <- rep(NA, length(separate_continents))
 			new_degrees_per_step <- rep(NA, length(separate_continents))
 
 			if (length(toKeep) != 0){
@@ -332,15 +383,15 @@ EverythingFunction <- function(N_steps = 1000, N_continents = 7, radius = 2000, 
 			new_euler_longitudes[is.na(new_euler_longitudes)]<- runif((length(separate_continents)-length(toKeep)), -180, 180)
 
 			changed_euler_latitudes<- runif((length(separate_continents)-length(toKeep)), -90, 90)
-			while ((sum(changed_euler_latitudes == 90) + sum(changed_euler_latitudes == -90)) > 0) changed_euler_latitudes <- runif((length(separate_continents)-length(tokeep)), -90, 90)
+			while((sum(changed_euler_latitudes == 90) + sum(changed_euler_latitudes == -90)) > 0) changed_euler_latitudes <- runif((length(separate_continents)-length(tokeep)), -90, 90)
 			
 			new_euler_latitudes[is.na(new_euler_latitudes)] <- changed_euler_latitudes
 
 			# Get Great Circle distances from Euler pole to each continent centre:
 			for (l in 1:(length(separate_continents)-length(toKeep))) {
 				
-				#Find the first NA to fill in
-				changer <- match(NA,new_degrees_per_step)
+				# Find the first NA to fill in:
+				changer <- match(NA, new_degrees_per_step)
 				
 				#Find the contients that are in the clump whose speed is going to change
 				rows <- as.numeric(unlist(strsplit(separate_continents[changer], "&")))
@@ -368,6 +419,7 @@ EverythingFunction <- function(N_steps = 1000, N_continents = 7, radius = 2000, 
 			euler_pole_latitudes <- new_euler_latitudes
 			degrees_per_step <- new_degrees_per_step
 		}
+		
 	}
 	
 	output <- list(position, linked)
@@ -380,6 +432,6 @@ EverythingFunction <- function(N_steps = 1000, N_continents = 7, radius = 2000, 
 # When rotating around Euler pole could theoretically pick clockwise or anticlockwise, but as we are allowing poles to be on either side of planet this takes care of that for us!
 # Number continents in plots
 	
-#plot(position[1,,1], position[1,,2], xlim=c(-180, 180), ylim=c(-90, 90), col=rainbow(N_steps))
+plot(position[1, , 1], position[1, , 2], xlim=c(-180, 180), ylim=c(-90, 90), col=rainbow(N_steps))
 
-#for(i in 2:N_continents) points(position[i,,1], position[i,,2], col=rainbow(N_steps))
+for(i in 2:N_continents) points(position[i,,1], position[i,,2], col=rainbow(N_steps))
