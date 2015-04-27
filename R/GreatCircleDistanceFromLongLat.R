@@ -39,7 +39,7 @@ GreatCircleDistanceFromLongLat <- function(long1, lat1, long2, lat2, EarthRad = 
 	} else {
 		
 		# Warn user that they may have accidentally submitted identical points:
-		print("WARNING: points are identical within floating point error.")
+		if(Warn) print("WARNING: points are identical within floating point error.")
 		
 		# Set distacne to zero:
 		great_circle_distance <- 0
