@@ -305,8 +305,10 @@ EverythingFunction <- function(N_steps = 1000, N_continents = 7, radius = 2000, 
 			touching <- c(touching, list(touching_continents))
 		}
 
-		if (any(separate_continents != tail(linked,n=1)[[1]])) {
-			#Add new continental configuration to linked list
+		# If the continental clustering has changed:
+		if (paste(sort(separate_continents), collapse="") != paste(sort(tail(linked,n=1)[[1]]), collapse="")) {
+			
+			# Add new continental configuration to linked list
 			linked <- c(linked, list(separate_continents))
 
 			#Select continents that are different to previous time step
@@ -326,7 +328,7 @@ EverythingFunction <- function(N_steps = 1000, N_continents = 7, radius = 2000, 
 				}
 			}
 
-			#Make new Euler poles
+			# Make new Euler poles
 			new_euler_longitudes[is.na(new_euler_longitudes)]<- runif((length(separate_continents)-length(toKeep)), -180, 180)
 
 			changed_euler_latitudes<- runif((length(separate_continents)-length(toKeep)), -90, 90)
@@ -334,7 +336,7 @@ EverythingFunction <- function(N_steps = 1000, N_continents = 7, radius = 2000, 
 			
 			new_euler_latitudes[is.na(new_euler_latitudes)] <- changed_euler_latitudes
 
-			# Get Greate Circle distances from Euler pole to each continent centre:
+			# Get Great Circle distances from Euler pole to each continent centre:
 			for (l in 1:(length(separate_continents)-length(toKeep))) {
 				
 				#Find the first NA to fill in
