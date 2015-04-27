@@ -85,7 +85,6 @@ GreatCircleIntersection <- function(longitude_1, latitude_1, longitude_2, latitu
 		(diflat < tol) & (diflon > (180 - tol))
 	}
 	
-	
 	antipode <- function(p) {
 		p <- .pointsToMatrix(p)
 		p[,1] <- .normalizeLonDeg(p[,1] + 180)
@@ -99,20 +98,6 @@ GreatCircleIntersection <- function(longitude_1, latitude_1, longitude_2, latitu
 # license GPL3
 	
 	.pointsToMatrix <- function(p, checkLonLat=TRUE, poly=FALSE) {
-		if (inherits(p, 'SpatialPoints')) {
-			test <- !is.projected(p)
-			if (! isTRUE (test) ) {
-				if (is.na(test)) {
-					warning('Coordinate reference system of SpatialPoints object is not set. Assuming it is degrees (longitude/latitude)!')  			
-				} else {
-					stop('Points are projected. They should be in degrees (longitude/latitude)')  
-				}
-# or rather transform them ....?
-			}
-			p <- coordinates(p)
-		} else if (is.data.frame(p)) {
-			p <- as.matrix(p)
-		} else 
 		
 		if (is.vector(p)){
 			if (length(p) != 2) {
