@@ -513,8 +513,8 @@ EverythingFunction <- function(N_steps = 1000, organism_multiplier = 1, N_contin
                 new.rows.lat <- new.rows.long <- extra.rows
                 new.rows.lat[, ot+1] <- organism_lat_matrix[x, ot+1] #updates the long and lat matricies with new coordiantes for each lineage
                 new.rows.long[, ot+1] <- organism_long_matrix[x, ot+1]
-                rownames(new.rows.lat) <- rownames(organism_lat_matrix[x,])
-                rownames(new.rows.long) <- rownames(organism_long_matrix[x,])
+                rownames(new.rows.lat) <- rep(rownames(organism_lat_matrix)[x],2)
+                rownames(new.rows.long) <- rep(rownames(organism_long_matrix)[x],2)
                 organism_lat_matrix <- rbind(organism_lat_matrix,new.rows.lat)
                 organism_long_matrix <- rbind(organism_long_matrix,new.rows.long)
                 alive[alive][random_lineage] <- FALSE
