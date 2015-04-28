@@ -92,7 +92,7 @@ map()
 # For discrete function
 for (i in 1:nrow(run$latitudes)) {
 
-    lines(run$longitudes[i, ], run$latitudes[i, ])
+    lines(run$longitudes[i, ], run$latitudes[i, ], col = "red")
 
 }
 ```
