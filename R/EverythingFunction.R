@@ -19,11 +19,11 @@
 #' @return A magic table of awesomeness.
 #' @details Nothing yet.
 #'
-#' @examples
-#' EverythingFunction(N_steps = 10, N_continents = 2, radius = 2000,
-#'   start_configuration = "supercontinent", squishiness = 0.25, stickiness = 0.95,
-#'   continent_speed_mean = 5, continent_speed_sd = 2, EarthRad = 6367.4447,
-#'   polar = FALSE)
+#' #@examples
+#' #EverythingFunction(N_steps = 10, N_continents = 2, radius = 2000,
+#' #  start_configuration = "supercontinent", squishiness = 0.25, stickiness = 0.95,
+#' #  continent_speed_mean = 5, continent_speed_sd = 2, EarthRad = 6367.4447,
+#' #  polar = FALSE)
 
 # Outputs:
 # - N separated continents (distance matrix with values less than 2 radii)
