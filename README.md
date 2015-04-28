@@ -84,13 +84,13 @@ Script to perform (and plot) a random walk on a tree on a sphere in discrete tim
 
 ```r
 # For discrete function
-run <- TreeWalkerDiscrete(b = 0.1, d = 0.05, steps = 50, slon = 0, slat = 0, steplengthsd = 100)
+run <- TreeWalkerDiscrete(b = 0.1, d = 0.05, steps = 50, slon = 0, slat = 0, steplengthsd = 1000)
 
 # Plot map:
 map()
 
 # For discrete function
-for (i in 1:nrow(run$latitudes) {
+for (i in 1:nrow(run$latitudes)) {
 
     lines(run$longitudes[i, ], run$latitudes[i, ])
 
