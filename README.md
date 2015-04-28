@@ -48,7 +48,7 @@ for(i in 1:1000) {
 }
 ```
 
-Script to perform (and plot) a random walk on a tree on a sphere:
+Script to perform (and plot) a random walk on a tree on a sphere in continuous time:
 
 ```r
 # Add and load the Claddis package into R:
@@ -68,9 +68,6 @@ tree <- rtree(10)
 # Run function setting start point at equator-Greenwich Meridian intersection:
 out <- TreeWalkerContinuous(tree, slon = 0, slat = 0, niter = 100, steplengthmean = 0, steplengthsd = 1000)
 
-# For discrete function
-run<-TreeWalkerDiscrete(b=0.1, d=0.05, steps=50, long=0, lat= 0, step.dev=100)
-
 # Plot map:
 map()
 
@@ -81,10 +78,22 @@ for(i in 1:length(out)) {
 	lines(out[[i]][2, ], out[[i]][3, ], col=rainbow(length(out))[i])
 
 }
+```
+
+Script to perform (and plot) a random walk on a tree on a sphere in discrete time:
+
+```r
+# For discrete function
+run <- TreeWalkerDiscrete(b = 0.1, d = 0.05, steps = 50, slon = 0, slat = 0, steplengthsd = 100)
+
+# Plot map:
+map()
 
 # For discrete function
 for (i in 1:nrow(run$latitudes) {
-    lines(run$longitudes[i,], run$latitudes[i,])
+
+    lines(run$longitudes[i, ], run$latitudes[i, ])
+
 }
 ```
 
