@@ -4,13 +4,16 @@
 \alias{EverythingFunction}
 \title{Global function to simulate evolution on a sphere}
 \usage{
-EverythingFunction(N_steps = 1000, N_continents = 7, radius = 2000,
-  start_configuration = "supercontinent", squishiness = 0.25,
-  stickiness = 0.95, continent_speed_mean = 5, continent_speed_sd = 2,
+EverythingFunction(N_steps = 1000, organism_multiplier = 1,
+  N_continents = 7, radius = 2000, start_configuration = "supercontinent",
+  squishiness = 0.25, stickiness = 0.95, continent_speed_mean = 5,
+  continent_speed_sd = 2, organism_step_sd = 100, b = 0.1, d = 0.05,
   EarthRad = 6367.4447, polar = FALSE)
 }
 \arguments{
 \item{N_steps}{The number of time steps in the simulation.}
+
+\item{organism_multiplier}{Number of extra organism time steps to use per continent time step}
 
 \item{N_continents}{The (maximum) number of individual continents.}
 
@@ -26,6 +29,12 @@ EverythingFunction(N_steps = 1000, N_continents = 7, radius = 2000,
 
 \item{continent_speed_sd}{Standard deviation of continent speed (kilometers per time step).}
 
+\item{organism_step_sd}{standard deviation used for random walk draws for organisms}
+
+\item{b}{per-lineage birth (speciation) rate}
+
+\item{d}{per-lineage death (extinction) rate}
+
 \item{EarthRad}{Radius of the Earth in kilometres.}
 
 \item{polar}{Whether continents are allowed to exist exactly at the poles.}
@@ -38,11 +47,13 @@ Global function to generate simulated continents and clades on a sphere
 }
 \details{
 Nothing yet.
+
+#
 }
 \examples{
-EverythingFunction(N_steps = 10, N_continents = 2, radius = 2000,
-  start_configuration = "supercontinent", squishiness = 0.25, stickiness = 0.95,
-  continent_speed_mean = 5, continent_speed_sd = 2, EarthRad = 6367.4447,
-  polar = FALSE)
+#EverythingFunction(N_steps = 10, N_continents = 2, radius = 2000,
+#  start_configuration = "supercontinent", squishiness = 0.25, stickiness = 0.95,
+#  continent_speed_mean = 5, continent_speed_sd = 2, EarthRad = 6367.4447,
+#  polar = FALSE)
 }
 
