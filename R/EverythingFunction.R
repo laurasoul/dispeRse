@@ -31,7 +31,7 @@
 # - Bearings after each step change
 # - Total land area all circles - minus
 
-EverythingFunction <- function(N_steps = 1000, organism_multiplier = 1, N_continents = 7, radius = 2000, start_configuration = "supercontinent", squishiness = 0.25, stickiness = 0.95, continent_speed_mean = 5, continent_speed_sd = 2, organism_step_sd = 1, b = 0.1, d = 0.05, EarthRad = 6367.4447, polar = FALSE) {
+EverythingFunction <- function(N_steps = 1000, organism_multiplier = 1, N_continents = 7, radius = 2000, start_configuration = "random separate", squishiness = 0.25, stickiness = 0.95, continent_speed_mean = 5, continent_speed_sd = 2, organism_step_sd = 100, b = 0.1, d = 0.05, EarthRad = 6367.4447, polar = FALSE) {
 
 # Need more top-level conditionals, e.g. N steps must be a positive integer, speed mean and sd must also be positive
 # Others may be caught by subfunctions so no need to repeat
@@ -530,7 +530,6 @@ EverythingFunction <- function(N_steps = 1000, organism_multiplier = 1, N_contin
                 alive[alive][random_lineage] <- FALSE
             }###4
         }#1A
-    print(organism_long_matrix)
     }
 
     #Things to do right at the end to turn it into a phylo object
@@ -559,19 +558,19 @@ EverythingFunction <- function(N_steps = 1000, organism_multiplier = 1, N_contin
 	
 	output <- list(position, linked, obj, organism_long_matrix, organism_lat_matrix)
 	
-	names(output) <- c("continent_positions", "continent_clusters", "tree", "organism longitudes", "organism latitudes")
+	names(output) <- c("continent_positions", "continent_clusters", "tree", "organism_longitudes", "organism_latitudes")
 	
 	return(output)
-	
 }
+
+
+
+
 # When rotating around Euler pole could theoretically pick clockwise or anticlockwise, but as we are allowing poles to be on either side of planet this takes care of that for us!
 # Number continents in plots
 	
-#plot(position[1, , 1], position[1, , 2], xlim=c(-180, 180), ylim=c(-90, 90), col=rainbow(N_steps))
 
-#for(i in 2:N_continents) points(position[i,,1], position[i,,2], col=rainbow(N_steps))
-
-#plot(organism_long_matrix[1,], organism_lat_matrix[1,], xlim=c(-180, 180), ylim=c(-90, 90), type = "l")
-#for (i in 2:nrow(organism_long_matrix))   lines(organism_long_matrix[i,], organism_lat_matrix[i,])
-#points(position[1, , 1], position[1, , 2], col=rainbow(N_steps))
-plot(organism_long_matrix[1,], organism_lat_matrix[1,], xlim=c(50, 120), ylim=c(-90, -50), type = "l")
+#try <- EverythingFunction()	
+#plot(try$organism_longitudes[1,], try$organism_latitudes[1,], xlim=c(-180, 180), ylim=c(-90, 90), type = "l")
+#for (i in 1:nrow(try$organism_longitudes))   lines(try$organism_longitudes[i,], try$organism_latitudes[i,])
+#for(i in 1:N_continents) points(try$continent_positions[i,,1], try$continent_positions[i,,2], col=rainbow(N_steps))
