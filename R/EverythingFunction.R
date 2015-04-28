@@ -492,7 +492,7 @@ EverythingFunction <- function(N_steps = 1000, organism_multiplier = 1, N_contin
 		}
 		
 		for (f in 1:organism_multiplier) {
-            if (sum(alive) == 0) stop("Everything has gone extinct")
+            if (sum(alive) == 0) stop("METEOR IMPACT!! EVERYTHING HAS GONE EXTINCT! AAAAHHHHHH!!!")
             dt<-1
             ot <- ot + dt
             for (m in 1:nrow(organism_lat_matrix)) {
