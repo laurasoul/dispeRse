@@ -24,7 +24,7 @@ Script to perform (and plot) a random walk on a sphere:
 ```r
 # Load libraries:
 library(dispeRse)
-install.packages("sphereplot", dependencies=T)
+install.packages("sphereplot", dependencies = TRUE)
 library(sphereplot)
 
 # Plot spherical grid:
@@ -58,7 +58,7 @@ library(Claddis)
 
 # Load libraries:
 library(dispeRse)
-install.packages(c("ape", "maps"), dependencies=T)
+install.packages(c("ape", "maps"), dependencies = TRUE)
 library(ape)
 library(maps)
 
