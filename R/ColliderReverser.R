@@ -71,16 +71,6 @@
 #'   continent_1_euler_longitude, continent_1_euler_latitude, continent_2_euler_longitude,
 #'   continent_2_euler_latitude, continent_1_degrees_per_step, continent_2_degrees_per_step)
 
-continent_1_longitude_t0 <- position[cont_1, t-1, 1]
-continent_1_latitude_t0 <- position[cont_1, t-1, 2]
-continent_1_longitude_t1 <- temp_position[cont_1,1]
-continent_1_latitude_t1 <- temp_position[cont_1,2]
-continent_2_longitude_t0 <- position[cont_2, t-1, 1]
-continent_2_latitude_t0 <- position[cont_2, t-1, 2]
-continent_2_longitude_t1 <- temp_position[cont_2,1]
-continent_2_latitude_t1 <- temp_position[cont_2,2]
-
-
 ColliderReverser <- function(min_separation, continent_1_longitude_t0, continent_1_latitude_t0, continent_1_longitude_t1, continent_1_latitude_t1, continent_2_longitude_t0, continent_2_latitude_t0, continent_2_longitude_t1, continent_2_latitude_t1, continent_1_euler_longitude, continent_1_euler_latitude, continent_2_euler_longitude, continent_2_euler_latitude, continent_1_degrees_per_step, continent_2_degrees_per_step, EarthRad = 6367.4447, Warn = TRUE) {
 	
 	# Get t0 distance between continents for checks on input data:
@@ -204,4 +194,3 @@ ColliderReverser <- function(min_separation, continent_1_longitude_t0, continent
 	return(degree_modifier)
 	
 }
-
