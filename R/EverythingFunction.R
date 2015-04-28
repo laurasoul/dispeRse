@@ -31,7 +31,7 @@
 # - Bearings after each step change
 # - Total land area all circles - minus
 
-EverythingFunction <- function(N_steps = 1000, organism_multiplier = 1, N_continents = 7, radius = 2000, start_configuration = "supercontinent", squishiness = 0.25, stickiness = 0.95, continent_speed_mean = 5, continent_speed_sd = 2, organism_step_sd = 100, b = 0.1, d = 0.05, EarthRad = 6367.4447, polar = FALSE) {
+EverythingFunction <- function(N_steps = 1000, organism_multiplier = 1, N_continents = 7, radius = 2000, start_configuration = "supercontinent", squishiness = 0.25, stickiness = 0.95, continent_speed_mean = 5, continent_speed_sd = 2, organism_step_sd = 1, b = 0.1, d = 0.05, EarthRad = 6367.4447, polar = FALSE) {
 
 # Need more top-level conditionals, e.g. N steps must be a positive integer, speed mean and sd must also be positive
 # Others may be caught by subfunctions so no need to repeat
@@ -170,12 +170,12 @@ EverythingFunction <- function(N_steps = 1000, organism_multiplier = 1, N_contin
 
 		#Making a vector of whether any continents have collided and should be linked
 		collisions<-matrix(nrow=0, ncol=2)
-		for (b in 1:(N_continents-1)) {
-			for (p in (b+1):N_continents) {
-				comp1 <- all.equal(new_distances[p,b],starting_distances[p,b])
-				comp2 <- new_distances[p,b] <= min_separation
+		for (q in 1:(N_continents-1)) {
+			for (p in (q+1):N_continents) {
+				comp1 <- all.equal(new_distances[p,q],starting_distances[p,q])
+				comp2 <- new_distances[p,q] <= min_separation
 				if (comp1 != TRUE && comp2 == TRUE) {
-					collisions<-rbind(collisions,c(p,b))
+					collisions<-rbind(collisions,c(p,q))
 				}
 			}
 		}
@@ -183,7 +183,7 @@ EverythingFunction <- function(N_steps = 1000, organism_multiplier = 1, N_contin
 		#Matrix of euler poles and speeds for each individual continent for moving the animals later
 		organism_mover <- matrix(nrow=N_continents, ncol= 3)
 			for (clump in 1:length(tail(linked, n=1)[[1]])) {
-				which_conts <- strsplit(tail(linked, n=1)[[1]][[clump]], "&")
+				which_conts <- as.numeric(strsplit(tail(linked, n=1)[[1]][[clump]], "&")[[1]])
 				organism_mover[which_conts,1] <- rep(euler_pole_longitudes[clump],length(which_conts))
 				organism_mover[which_conts,2] <- rep(euler_pole_latitudes[clump],length(which_conts))
 				#This bit will get overwritten if there are collisions
@@ -423,7 +423,7 @@ EverythingFunction <- function(N_steps = 1000, organism_multiplier = 1, N_contin
 			new_euler_longitudes[is.na(new_euler_longitudes)]<- runif((length(separate_continents)-length(toKeep)), -180, 180)
 
 			changed_euler_latitudes<- runif((length(separate_continents)-length(toKeep)), -90, 90)
-			while((sum(changed_euler_latitudes == 90) + sum(changed_euler_latitudes == -90)) > 0) changed_euler_latitudes <- runif((length(separate_continents)-length(tokeep)), -90, 90)
+			while((sum(changed_euler_latitudes == 90) + sum(changed_euler_latitudes == -90)) > 0) changed_euler_latitudes <- runif((length(separate_continents)-length(toKeep)), -90, 90)
 			
 			new_euler_latitudes[is.na(new_euler_latitudes)] <- changed_euler_latitudes
 
@@ -466,26 +466,29 @@ EverythingFunction <- function(N_steps = 1000, organism_multiplier = 1, N_contin
 		for (cont in 1:N_continents) {
 			#Find the rows that are in the continent of focus
 			moving <- which(rownames(organism_long_matrix)==cont)
-			#Find out how many degrees around the euler pole that continent went
-			organism_degrees <- organism_mover[cont,3]
-			#loops through all the organisms that are currently living
-			for (organism in 1:length(moving)) {
-				organism_row <- moving[organism]
-				if(is.na(organism_long_matrix[organism_row, ot + 1])) {
-					next
-				} else {
-					first_long <- organism_long_matrix[organism_row, ot + 1]
-					first_lat <- organism_lat_matrix[organism_row, ot + 1]
-					organism_distance <- GreatCircleDistanceFromLongLat(organism_mover[cont,1], organism_mover[cont,2], first_long, first_lat)
-					organism_bearing <- BearingBetweenTwoLongLatPoints(organism_mover[cont,1], organism_mover[cont,2], first_long, first_lat)
-					new_organism_bearing <- (organism_bearing + organism_degrees) %% 360
-					new_organism_loc <- EndPoint(first_long, first_lat, new_organism_bearing, organism_distance)
-					organism_long_matrix[organism_row, ot + 1] <- new_organism_loc$long
-    				organism_lat_matrix[organism_row, ot + 1] <- new_organism_loc$lat
-				}
-					
-			}
 
+			if (length(moving)==0) {
+				next 
+			} else {
+				#Find out how many degrees around the euler pole that continent went
+				organism_degrees <- organism_mover[cont,3]
+				#loops through all the organisms that are currently living
+				for (organism in 1:length(moving)) {
+					organism_row <- moving[organism]
+					if(is.na(organism_long_matrix[organism_row, ot + 1])) {
+						next
+					} else {
+						first_long <- organism_long_matrix[organism_row, ot + 1]
+						first_lat <- organism_lat_matrix[organism_row, ot + 1]
+						organism_distance <- GreatCircleDistanceFromLongLat(organism_mover[cont,1], organism_mover[cont,2], first_long, first_lat)
+						organism_bearing <- BearingBetweenTwoLongLatPoints(organism_mover[cont,1], organism_mover[cont,2], first_long, first_lat)
+						new_organism_bearing <- (organism_bearing + organism_degrees) %% 360
+						new_organism_loc <- EndPoint(organism_mover[cont,1], organism_mover[cont,2], new_organism_bearing, organism_distance)
+						organism_long_matrix[organism_row, ot + 1] <- new_organism_loc$long
+    					organism_lat_matrix[organism_row, ot + 1] <- new_organism_loc$lat
+					}
+				}
+			}
 		}
 		
 		for (f in 1:organism_multiplier) {
@@ -510,8 +513,10 @@ EverythingFunction <- function(N_steps = 1000, organism_multiplier = 1, N_contin
                 new.rows.lat <- new.rows.long <- extra.rows
                 new.rows.lat[, ot+1] <- organism_lat_matrix[x, ot+1] #updates the long and lat matricies with new coordiantes for each lineage
                 new.rows.long[, ot+1] <- organism_long_matrix[x, ot+1]
+                rownames(new.rows.lat) <- rownames(organism_lat_matrix[x,])
+                rownames(new.rows.long) <- rownames(organism_long_matrix[x,])
                 organism_lat_matrix <- rbind(organism_lat_matrix,new.rows.lat)
-                long.matrix <- rbind(organism_long_matrix,new.rows.long)
+                organism_long_matrix <- rbind(organism_long_matrix,new.rows.long)
                 alive[alive][random_lineage] <- FALSE
                 edge <- rbind(edge, c(parent, next.node), c(parent, next.node + 1))
                 next.node <- next.node + 2
@@ -525,7 +530,7 @@ EverythingFunction <- function(N_steps = 1000, organism_multiplier = 1, N_contin
                 alive[alive][random_lineage] <- FALSE
             }###4
         }#1A
-    
+    print(organism_long_matrix)
     }
 
     #Things to do right at the end to turn it into a phylo object
@@ -565,3 +570,8 @@ EverythingFunction <- function(N_steps = 1000, organism_multiplier = 1, N_contin
 #plot(position[1, , 1], position[1, , 2], xlim=c(-180, 180), ylim=c(-90, 90), col=rainbow(N_steps))
 
 #for(i in 2:N_continents) points(position[i,,1], position[i,,2], col=rainbow(N_steps))
+
+#plot(organism_long_matrix[1,], organism_lat_matrix[1,], xlim=c(-180, 180), ylim=c(-90, 90), type = "l")
+#for (i in 2:nrow(organism_long_matrix))   lines(organism_long_matrix[i,], organism_lat_matrix[i,])
+#points(position[1, , 1], position[1, , 2], col=rainbow(N_steps))
+plot(organism_long_matrix[1,], organism_lat_matrix[1,], xlim=c(50, 120), ylim=c(-90, -50), type = "l")
