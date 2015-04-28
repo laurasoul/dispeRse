@@ -12,6 +12,10 @@
 #' @param continent_speed_sd Standard deviation of continent speed (kilometers per time step).
 #' @param EarthRad Radius of the Earth in kilometres.
 #' @param polar Whether continents are allowed to exist exactly at the poles.
+#' @param b per-lineage birth (speciation) rate
+#' @param d per-lineage death (extinction) rate
+#' @param organism_step_sd standard deviation used for random walk draws for organisms
+#' @param organism_multiplier Number of extra organism time steps to use per continent time step
 #' @return A magic table of awesomeness.
 #' @details Nothing yet.
 #'
@@ -27,7 +31,7 @@
 # - Bearings after each step change
 # - Total land area all circles - minus
 
-EverythingFunction <- function(N_steps = 1000, organism_multiplier = 1, N_continents = 7, radius = 2000, start_configuration = "supercontinent", squishiness = 0.25, stickiness = 0.95, continent_speed_mean = 5, continent_speed_sd = 2, EarthRad = 6367.4447, polar = FALSE) {
+EverythingFunction <- function(N_steps = 1000, organism_multiplier = 1, N_continents = 7, radius = 2000, start_configuration = "supercontinent", squishiness = 0.25, stickiness = 0.95, continent_speed_mean = 5, continent_speed_sd = 2, organism_step_sd = 100, b = 0.1, d = 0.05, EarthRad = 6367.4447, polar = FALSE) {
 
 # Need more top-level conditionals, e.g. N steps must be a positive integer, speed mean and sd must also be positive
 # Others may be caught by subfunctions so no need to repeat
@@ -104,7 +108,7 @@ EverythingFunction <- function(N_steps = 1000, organism_multiplier = 1, N_contin
     edge.length <- rep(NA, 2)
     stem.depth <- numeric(2)
     alive <- rep(TRUE, 2) # marker for live lineages
-    t <- 0; # time(step) at any point in the tree
+    ot <- 0; # time(step) at any point in the tree
     next.node <- 4
 
 	# Now need to move them!
@@ -127,7 +131,7 @@ EverythingFunction <- function(N_steps = 1000, organism_multiplier = 1, N_contin
 	#for loops to move everything
 	for (t in 2:(N_steps + 1)) {
 		
-		cat(t - 1, " ")
+		cat(t, " ")
 		
 		#distances apart before they move
 		starting_distances <- GreatCircleDistanceMatrix(position[,t-1,1], position[,t-1,2])
@@ -290,21 +294,21 @@ EverythingFunction <- function(N_steps = 1000, organism_multiplier = 1, N_contin
 			# Check whether any other collisions have still occurred
 			collisions <- matrix(nrow=0, ncol=2)
 			
-			for (b in 1:(N_continents - 1)) {
+			for (q in 1:(N_continents - 1)) {
 				
-				for (p in (b+1):N_continents) {
+				for (p in (q+1):N_continents) {
 					
-					comp1 <- all.equal(new_distances[p, b], starting_distances[p, b])
+					comp1 <- all.equal(new_distances[p, q], starting_distances[p, q])
 					
-					comp2 <- new_distances[p, b] <= min_separation
+					comp2 <- new_distances[p, q] <= min_separation
 					
 					if (comp1 != TRUE && comp2 == TRUE) {
 					
 						# If collision has not already been recorded:
-						if(length(sort(match(paste(sort(c(b, p)), collapse=""), apply(perm_collisions, 1, paste, collapse="")))) == 0) {
+						if(length(sort(match(paste(sort(c(q, p)), collapse=""), apply(perm_collisions, 1, paste, collapse="")))) == 0) {
 						
 							# Record collision:
-							collisions <- rbind(collisions, c(p, b))
+							collisions <- rbind(collisions, c(p, q))
 							
 						}
 						
@@ -451,14 +455,12 @@ EverythingFunction <- function(N_steps = 1000, organism_multiplier = 1, N_contin
 				# Set degree change per step (effectively the speed):
 				new_degrees_per_step[changer] <- continent_speed / (2 * pi * furthest_continent_GC_distance) * 360
 			}
-			
-
+		
 			euler_pole_longitudes <- new_euler_longitudes
 			euler_pole_latitudes <- new_euler_latitudes
 			degrees_per_step <- new_degrees_per_step
 		}
 
-#Need to fix t to something else so that its counting the right thing
 #Need to add in the tree bit
 		#Move the animals with the continents
 		for (cont in 1:N_continents) {
@@ -469,29 +471,90 @@ EverythingFunction <- function(N_steps = 1000, organism_multiplier = 1, N_contin
 			#loops through all the organisms that are currently living
 			for (organism in 1:length(moving)) {
 				organism_row <- moving[organism]
-				if(is.na(organism_long_matrix[organism_row, t])) {
+				if(is.na(organism_long_matrix[organism_row, ot + 1])) {
 					next
 				} else {
-					first_long <- organism_long_matrix[organism_row, t]
-					first_lat <- organism_lat_matrix[organism_row, t]
+					first_long <- organism_long_matrix[organism_row, ot + 1]
+					first_lat <- organism_lat_matrix[organism_row, ot + 1]
 					organism_distance <- GreatCircleDistanceFromLongLat(organism_mover[cont,1], organism_mover[cont,2], first_long, first_lat)
 					organism_bearing <- BearingBetweenTwoLongLatPoints(organism_mover[cont,1], organism_mover[cont,2], first_long, first_lat)
 					new_organism_bearing <- (organism_bearing + organism_degrees) %% 360
 					new_organism_loc <- EndPoint(first_long, first_lat, new_organism_bearing, organism_distance)
-					organism_long_matrix[organism_row, t] <- new_organism_loc$long
-    				organism_lat_matrix[organism_row, t] <- new_organism_loc$lat
-			}
+					organism_long_matrix[organism_row, ot + 1] <- new_organism_loc$long
+    				organism_lat_matrix[organism_row, ot + 1] <- new_organism_loc$lat
+				}
 					
+			}
+
 		}
+		
+		for (f in 1:organism_multiplier) {
+            if (sum(alive) == 0) stop("Everything has gone extinct")
+            dt<-1
+            ot <- ot + dt
+            for (m in 1:nrow(organism_lat_matrix)) {
+                if (alive[m]) {
+                    starting<-c(organism_lat_matrix[m,ot],organism_long_matrix[m,ot])
+                    moveto<-EndPoint(starting[2],starting[1],runif(1,0,360),abs(rnorm(1,0,organism_step_sd))) #generates a random walk step and calculates new position
+                    organism_lat_matrix[m,ot+1]<-moveto$lat
+                    organism_long_matrix[m,ot+1]<-moveto$long
+                }
+            }
 
-	}
+            r <- runif(1)
+            if (r <= b/(b + d)) { ###4 #this creates a bifucation in the tree
+                random_lineage <- round(runif(1, min = 1, max = sum(alive)))
+                e <- matrix(edge[alive,], ncol = 2)
+                parent <- e[random_lineage,2]
+                x <- which(edge[,2] == parent)
+                new.rows.lat <- new.rows.long <- extra.rows
+                new.rows.lat[, ot+1] <- organism_lat_matrix[x, ot+1] #updates the long and lat matricies with new coordiantes for each lineage
+                new.rows.long[, ot+1] <- organism_long_matrix[x, ot+1]
+                organism_lat_matrix <- rbind(organism_lat_matrix,new.rows.lat)
+                long.matrix <- rbind(organism_long_matrix,new.rows.long)
+                alive[alive][random_lineage] <- FALSE
+                edge <- rbind(edge, c(parent, next.node), c(parent, next.node + 1))
+                next.node <- next.node + 2
+                alive <- c(alive, TRUE, TRUE)
+                stem.depth <- c(stem.depth, ot, ot)
+                edge.length[x] <- ot - stem.depth[x]
+                edge.length<-c(edge.length, NA, NA)
+            } else {###4 This terminates one of the current lineages on the tree
+                random_lineage <- round(runif(1, min = 1, max = sum(alive)))
+                edge.length[alive][random_lineage] <- t - stem.depth[alive][random_lineage]
+                alive[alive][random_lineage] <- FALSE
+            }###4
+        }#1A
+    
+    }
 
+    #Things to do right at the end to turn it into a phylo object
+    edge.length[alive] <- ot - stem.depth[alive];
+    n <- -1
+    for (f in 1:max(edge)) {
+        if (any(edge[,1] == f)) {
+           	edge[which(edge[,1] == f), 1] <- n
+           	edge[which(edge[,2] == f), 2] <- n
+           	n <- n - 1;
+        }
+    }
+    
+    edge[edge > 0] <- 1:sum(edge > 0)
+   	tip.label <- 1:sum(edge > 0)
+    mode(edge) <- "character"
+    mode(tip.label) <- "character"
+    obj <- list(edge = edge, edge.length = edge.length, tip.label=tip.label)
+    class(obj) <- "phylo"
+    obj <- old2new.phylo(obj)
+    obj$tip.label = paste("s", 1:Ntip(obj), sep = "")
+   	
+    
 	# Add final time step to continental configurations:
 	names(linked)[length(linked)] <- paste(strsplit(names(linked)[length(linked)], ":")[[1]][1], ":", t, sep="")
 	
-	output <- list(position, linked)
+	output <- list(position, linked, obj, organism_long_matrix, organism_lat_matrix)
 	
-	names(output) <- c("continent_positions", "continent_clusters")
+	names(output) <- c("continent_positions", "continent_clusters", "tree", "organism longitudes", "organism latitudes")
 	
 	return(output)
 	
