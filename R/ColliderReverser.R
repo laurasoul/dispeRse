@@ -178,7 +178,7 @@ ColliderReverser <- function(min_separation, continent_1_longitude_t0, continent
 				# Update degree modifier itself:
 				degree_modifier <- limit
 				
-			# If current distacne is stil our best estimate:
+			# If current distance is stil our best estimate:
 			} else {
 				
 				# Shrink the step size so we can hone in closer:
