@@ -144,7 +144,7 @@ ColliderReverser <- function(min_separation, continent_1_longitude_t0, continent
 			current_distance <- GreatCircleDistanceFromLongLat(x$long, x$lat, y$long, y$lat, Warn = FALSE)
 			
 			# Do we need to increase the degree modifier value?:
-			if(GreatCircleDistanceFromLongLat(x$long, x$lat, y$long, y$lat, EarthRad = EarthRad, Warn = FALSE) > min_separation) {
+			if(current_distance > min_separation) {
 				
 				# Create potential better value by adding step size to modifier:
 				limit <- degree_modifier + stepsize
