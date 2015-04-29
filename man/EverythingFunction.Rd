@@ -5,10 +5,11 @@
 \title{Global function to simulate evolution on a sphere}
 \usage{
 EverythingFunction(N_steps = 1000, organism_multiplier = 1,
-  N_continents = 7, radius = 2000, start_configuration = "supercontinent",
-  squishiness = 0.25, stickiness = 0.95, continent_speed_mean = 5,
-  continent_speed_sd = 2, organism_step_sd = 100, b = 0.1, d = 0.05,
-  EarthRad = 6367.4447, polar = FALSE)
+  N_continents = 7, radius = 2000,
+  start_configuration = "random separate", squishiness = 0.25,
+  stickiness = 0.95, continent_speed_mean = 5, continent_speed_sd = 2,
+  organism_step_sd = 100, b = 0.1, d = 0.05, EarthRad = 6367.4447,
+  polar = FALSE)
 }
 \arguments{
 \item{N_steps}{The number of time steps in the simulation.}
