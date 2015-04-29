@@ -499,6 +499,12 @@ EverythingFunction <- function(N_steps = 1000, organism_multiplier = 1, N_contin
                 if (alive[m]) {
                     starting<-c(organism_lat_matrix[m,ot],organism_long_matrix[m,ot])
                     moveto<-EndPoint(starting[2],starting[1],runif(1,0,360),abs(rnorm(1,0,organism_step_sd))) #generates a random walk step and calculates new position
+                    on_cont <- as.numeric(rownames(organism_lat_matrix)[m])
+                    dist_from_center <- GreatCircleDistanceFromLongLat(position[on_cont, t, 1], position[on_cont, t, 2], moveto$long, moveto$lat)
+                    while (dist_from_center >= radius) {
+                    	moveto <- EndPoint(starting[2],starting[1],runif(1,0,360),abs(rnorm(1,0,organism_step_sd)))
+                    	dist_from_center <- GreatCircleDistanceFromLongLat(position[on_cont, t, 1], position[on_cont, t, 2], moveto$long, moveto$lat)
+                    }
                     organism_lat_matrix[m,ot+1]<-moveto$lat
                     organism_long_matrix[m,ot+1]<-moveto$long
                 }
@@ -574,3 +580,7 @@ EverythingFunction <- function(N_steps = 1000, organism_multiplier = 1, N_contin
 #plot(try$organism_longitudes[1,], try$organism_latitudes[1,], xlim=c(-180, 180), ylim=c(-90, 90), type = "l")
 #for (i in 1:nrow(try$organism_longitudes))   lines(try$organism_longitudes[i,], try$organism_latitudes[i,])
 #for(i in 1:N_continents) points(try$continent_positions[i,,1], try$continent_positions[i,,2], col=rainbow(N_steps))
+
+#plot(organism_long_matix[1,], organism_lat_matrix[1,], xlim=c(-180, 180), ylim=c(-90, 90), type = "l")
+#for (i in 1:nrow(organism_long_matrix))   lines(organism_long_matrix[i,], organism_lat_matrix[i,])
+#for(i in 1:N_continents) points(position[i,,1], position[i,,2], col=rainbow(N_steps))
