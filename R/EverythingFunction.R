@@ -386,7 +386,7 @@ EverythingFunction <- function(N_steps = 1000, organism_multiplier = 1, N_contin
 		
 		# Get list of touching continents (to be used later for whether dispersal is allowable or not):
 		touching_continents <- HowManySeparateContinents((radius * 2), position[,t,1], position[,t,2])
-		if (any(touching_continents != tail(touching,n=1)[[1]])) {
+		if (paste(sort(touching_continents), collapse="") != paste(sort(tail(touching,n=1)[[1]]), collapse="")) {
 			touching <- c(touching, list(touching_continents))
 		}
 
@@ -500,7 +500,14 @@ EverythingFunction <- function(N_steps = 1000, organism_multiplier = 1, N_contin
                     starting<-c(organism_lat_matrix[m,ot],organism_long_matrix[m,ot])
                     moveto<-EndPoint(starting[2],starting[1],runif(1,0,360),abs(rnorm(1,0,organism_step_sd))) #generates a random walk step and calculates new position
                     on_cont <- as.numeric(rownames(organism_lat_matrix)[m])
+                    friends <- as.numeric(strsplit(tail(touching, n=1)[[1]][which_supercontinent(on_cont, tail(touching, n=1)[[1]])], "&")[[1]])
+                    friends <- friends[-which(friends==on_cont)]
                     dist_from_center <- GreatCircleDistanceFromLongLat(position[on_cont, t, 1], position[on_cont, t, 2], moveto$long, moveto$lat)
+                    if (length(friends)) {
+                    	for (g in 1:length(friends)) {
+                    		
+                    	}
+                    }
                     while (dist_from_center >= radius) {
                     	moveto <- EndPoint(starting[2],starting[1],runif(1,0,360),abs(rnorm(1,0,organism_step_sd)))
                     	dist_from_center <- GreatCircleDistanceFromLongLat(position[on_cont, t, 1], position[on_cont, t, 2], moveto$long, moveto$lat)
