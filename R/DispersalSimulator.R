@@ -3,6 +3,7 @@
 #' Global function to generate simulated continents and clades on a sphere
 #'
 #' @param N_steps The number of time steps in the simulation.
+#' @param organism_multiplier The number of organism time steps to be taken per continent time step.
 #' @param N_continents The (maximum) number of individual continents.
 #' @param radius The radius of each circular continent.
 #' @param start_configuration One of "random separate", "random overlap", "supercontinent", or "max separate".
@@ -20,10 +21,10 @@
 #' @details Nothing yet.
 #'
 #' #@examples
-#' #EverythingFunction(N_steps = 10, N_continents = 2, radius = 2000,
-#' #  start_configuration = "supercontinent", squishiness = 0.25, stickiness = 0.95,
-#' #  continent_speed_mean = 5, continent_speed_sd = 2, EarthRad = 6367.4447,
-#' #  polar = FALSE)
+#' #DispersalSimulator(N_steps = 100, organism_multiplier = 5, N_continents = 2, radius = 2000,
+#' #  start_configuration = "random separate", squishiness = 0.25, stickiness = 0.95,
+#' #  continent_speed_mean = 5, continent_speed_sd = 2, organism_step_sd = 100, b = 0.1, d = 0.05,
+#' #  EarthRad = 6367.4447,  polar = FALSE)
 
 # Outputs:
 # - N separated continents (distance matrix with values less than 2 radii)
@@ -31,7 +32,7 @@
 # - Bearings after each step change
 # - Total land area all circles - minus
 
-EverythingFunction <- function(N_steps = 1000, organism_multiplier = 1, N_continents = 7, radius = 2000, start_configuration = "random separate", squishiness = 0.25, stickiness = 0.95, continent_speed_mean = 5, continent_speed_sd = 2, organism_step_sd = 100, b = 0.1, d = 0.05, EarthRad = 6367.4447, polar = FALSE) {
+DispersalSimulator <- function(N_steps = 1000, organism_multiplier = 5, N_continents = 7, radius = 2000, start_configuration = "random separate", squishiness = 0.25, stickiness = 0.95, continent_speed_mean = 5, continent_speed_sd = 2, organism_step_sd = 100, b = 0.1, d = 0.05, EarthRad = 6367.4447, polar = FALSE) {
 
 # Need more top-level conditionals, e.g. N steps must be a positive integer, speed mean and sd must also be positive
 # Others may be caught by subfunctions so no need to repeat
@@ -95,6 +96,7 @@ EverythingFunction <- function(N_steps = 1000, organism_multiplier = 1, N_contin
 	}
 
 	#starting information for the tree
+	dispersals <- matrix(nrow=0, ncol=5)
 	begin_cont <- ceiling(runif(1, 0, N_continents))
 	life_begins <- EndPoint(continent_starting_points[begin_cont, "Longitude"], continent_starting_points[begin_cont, "Latitude"], runif(1,0,360), runif(1,0,radius))
 	extra.rows <- matrix(NA,nrow=2,ncol= (N_steps * organism_multiplier) + 1)
@@ -475,7 +477,7 @@ EverythingFunction <- function(N_steps = 1000, organism_multiplier = 1, N_contin
 				#loops through all the organisms that are currently living
 				for (organism in 1:length(moving)) {
 					organism_row <- moving[organism]
-					if(is.na(organism_long_matrix[organism_row, ot + 1])) {
+					if (is.na(organism_long_matrix[organism_row, ot + 1])) {
 						next
 					} else {
 						first_long <- organism_long_matrix[organism_row, ot + 1]
@@ -501,19 +503,36 @@ EverythingFunction <- function(N_steps = 1000, organism_multiplier = 1, N_contin
                     moveto<-EndPoint(starting[2],starting[1],runif(1,0,360),abs(rnorm(1,0,organism_step_sd))) #generates a random walk step and calculates new position
                     on_cont <- as.numeric(rownames(organism_lat_matrix)[m])
                     friends <- as.numeric(strsplit(tail(touching, n=1)[[1]][which_supercontinent(on_cont, tail(touching, n=1)[[1]])], "&")[[1]])
-                    friends <- friends[-which(friends==on_cont)]
                     dist_from_center <- GreatCircleDistanceFromLongLat(position[on_cont, t, 1], position[on_cont, t, 2], moveto$long, moveto$lat)
-                    if (length(friends)) {
+                    if (length(friends) > 1) {
+                    	all_dist <- vector(length = length(friends))
                     	for (g in 1:length(friends)) {
-                    		
+                    		all_dist [g] <- GreatCircleDistanceFromLongLat(position[friends[g], t, 1], position[friends[g], t, 2], moveto$long, moveto$lat)
                     	}
-                    }
-                    while (dist_from_center >= radius) {
-                    	moveto <- EndPoint(starting[2],starting[1],runif(1,0,360),abs(rnorm(1,0,organism_step_sd)))
-                    	dist_from_center <- GreatCircleDistanceFromLongLat(position[on_cont, t, 1], position[on_cont, t, 2], moveto$long, moveto$lat)
-                    }
-                    organism_lat_matrix[m,ot+1]<-moveto$lat
-                    organism_long_matrix[m,ot+1]<-moveto$long
+                    	while (min(all_dist) > radius) {
+                    		moveto<-EndPoint(starting[2],starting[1],runif(1,0,360),abs(rnorm(1,0,organism_step_sd)))
+                    		temp_all_dist <- vector(length = length(friends))
+                    		for (g in 1:length(friends)) {
+                    			temp_all_dist [g] <- GreatCircleDistanceFromLongLat(position[friends[g], t, 1], position[friends[g], t, 2], moveto$long, moveto$lat)
+                    		}
+                    		all_dist <- temp_all_dist
+                    	}
+                    	new_cont <- friends[which(all_dist == min(all_dist))] 
+                    	organism_lat_matrix[m,ot+1]<-moveto$lat
+                    	organism_long_matrix[m,ot+1]<-moveto$long
+                    	rownames(organism_long_matrix)[m] <- new_cont
+                    	rownames(organism_lat_matrix)[m] <- new_cont
+                    	if(new_cont != on_cont) {
+                    		dispersals <- rbind(dispersals, c(on_cont, new_cont, m, t, ot+1))
+                    	}
+                    } else {
+                    	while (dist_from_center >= radius) {
+                    		moveto <- EndPoint(starting[2],starting[1],runif(1,0,360),abs(rnorm(1,0,organism_step_sd)))
+                    		dist_from_center <- GreatCircleDistanceFromLongLat(position[on_cont, t, 1], position[on_cont, t, 2], moveto$long, moveto$lat)
+                    	}
+                    	organism_lat_matrix[m,ot+1]<-moveto$lat
+                    	organism_long_matrix[m,ot+1]<-moveto$long
+                	}
                 }
             }
 
@@ -539,7 +558,7 @@ EverythingFunction <- function(N_steps = 1000, organism_multiplier = 1, N_contin
                 edge.length<-c(edge.length, NA, NA)
             } else {###4 This terminates one of the current lineages on the tree
                 random_lineage <- round(runif(1, min = 1, max = sum(alive)))
-                edge.length[alive][random_lineage] <- t - stem.depth[alive][random_lineage]
+                edge.length[alive][random_lineage] <- ot - stem.depth[alive][random_lineage]
                 alive[alive][random_lineage] <- FALSE
             }###4
         }#1A
@@ -569,9 +588,9 @@ EverythingFunction <- function(N_steps = 1000, organism_multiplier = 1, N_contin
 	# Add final time step to continental configurations:
 	names(linked)[length(linked)] <- paste(strsplit(names(linked)[length(linked)], ":")[[1]][1], ":", t, sep="")
 	
-	output <- list(position, linked, obj, organism_long_matrix, organism_lat_matrix)
+	output <- list(position, linked, touching, obj, organism_long_matrix, organism_lat_matrix)
 	
-	names(output) <- c("continent_positions", "continent_clusters", "tree", "organism_longitudes", "organism_latitudes")
+	names(output) <- c("continent_positions", "continent_clusters", "continent_overlaps", "tree", "organism_longitudes", "organism_latitudes")
 	
 	return(output)
 }
