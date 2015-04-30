@@ -16,7 +16,6 @@
 #' @param b per-lineage birth (speciation) rate
 #' @param d per-lineage death (extinction) rate
 #' @param organism_step_sd standard deviation used for random walk draws for organisms
-#' @param organism_multiplier Number of extra organism time steps to use per continent time step
 #' @return A magic table of awesomeness.
 #' @details Nothing yet.
 #'
