@@ -39,8 +39,6 @@ DispersalSimulator(N_steps = 1000, organism_multiplier = 5,
 \item{EarthRad}{Radius of the Earth in kilometres.}
 
 \item{polar}{Whether continents are allowed to exist exactly at the poles.}
-
-\item{organism_multiplier}{Number of extra organism time steps to use per continent time step}
 }
 \value{
 A magic table of awesomeness.
