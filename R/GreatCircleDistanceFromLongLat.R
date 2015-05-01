@@ -10,7 +10,7 @@
 #' @param Warn Whether or not to print warnings.
 #' @return Great circle distance in kilometres.
 #' @details Nothing yet.
-#'
+#' @export
 #' @examples
 #' # Return one-degree of latitude (approximately 111 kilometres):
 #' GreatCircleDistanceFromLongLat(0, 0, 0, 1)

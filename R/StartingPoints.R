@@ -1,7 +1,6 @@
 #' Generate a matrix of longitudes and latitudes of continental centres
 #'
 #' Generates a matrix of longitudes and latitudes describing the centres of circular continents on a sphere
-#'
 #' @param N_continents The (maximum) number of individual continents
 #' @param radius The radius of each circular continent.
 #' @param start_configuration One of "random separate", "random overlap", "supercontinent", or "max separate".
@@ -10,6 +9,7 @@
 #' @param polar TRUE/FALSE Is there a continent starting on the south pole?
 #' @return A matrix of longitudes and latitudes describing the centres of circular continents.
 #' @details Nothing yet.
+#' @export
 #' @examples
 #' StartingPoints(N_continents = 7, radius = 2000,
 #'    start_configuration = "supercontinent", squishiness = 0.1,

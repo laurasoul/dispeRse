@@ -1,11 +1,13 @@
 #' Great Circle Distance Matrix Between Coordinates
 #'
 #' Returns a distance matrix between points of longitude and latitude
+#'
 #' @param longs A vector of decimalised longitudes.
 #' @param lats A vector of decimalised latitudes.
 #' @param EarthRad Radius of the Earth in kilometres.
 #' @return A distancematrix of minimum Great Circle Distances.
 #' @details Nothing yet.
+#' @export
 #' @examples
 #' GreatCircleDistanceMatrix(c(-179, 0, 179), c(89, 0, -89))
 

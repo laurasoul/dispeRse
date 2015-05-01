@@ -1,13 +1,13 @@
 #' Returns bearing from a set of coordinates
 #'
 #' Returns bearing in degrees for starting and ending longitude-latitude points
-#'
 #' @param start_long Decimalised longitude for start point.
 #' @param start_lat Decimalised latitude for start point.
 #' @param end_long Decimalised longitude for end point.
 #' @param end_lat Decimalised latitude for end point.
 #' @return Bearing in degrees (0 or 360 for North, 90 for East, etc.).
 #' @details Nothing yet.
+#' @export
 #' @examples
 #' # Should return bearing of North (0):
 #' BearingBetweenTwoLongLatPoints(start_long = 0, start_lat = 0,

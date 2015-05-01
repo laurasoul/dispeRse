@@ -18,7 +18,7 @@
 #' @param organism_step_sd standard deviation used for random walk draws for organisms
 #' @return A magic table of awesomeness.
 #' @details Nothing yet.
-#'
+#' @export
 #' #@examples
 #' #DispersalSimulator(N_steps = 100, organism_multiplier = 5, N_continents = 2, radius = 2000,
 #' #  start_configuration = "random separate", squishiness = 0.25, stickiness = 0.95,
@@ -30,6 +30,9 @@
 # - Long-lat of each circle centre
 # - Bearings after each step change
 # - Total land area all circles - minus
+
+# Use this line for debugging (sets values for input variables):
+#N_steps = 1000; organism_multiplier = 1; N_continents = 7; radius = 2000; start_configuration = "supercontinent"; squishiness = 0.25; stickiness = 0.95; continent_speed_mean = 5; continent_speed_sd = 2; organism_step_sd = 100; b = 0.1; d = 0.05; EarthRad = 6367.4447; polar = FALSE
 
 DispersalSimulator <- function(N_steps = 1000, organism_multiplier = 5, N_continents = 7, radius = 2000, start_configuration = "random separate", squishiness = 0.25, stickiness = 0.95, continent_speed_mean = 5, continent_speed_sd = 2, organism_step_sd = 100, b = 0.1, d = 0.05, EarthRad = 6367.4447, polar = FALSE) {
 

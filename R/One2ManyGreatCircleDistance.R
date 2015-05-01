@@ -8,6 +8,8 @@
 #' @param EarthRad Radius of the Earth in kilometres.
 #' @return A vector of minimum Great Circle Distances between single point and each of many points.
 #' @details Nothing yet.
+#' 
+#' @export
 #' @examples
 #' One2ManyGreatCircleDistance(0, 0, c(-179, 0, 179), c(89, 0, -89))
 

@@ -1,11 +1,11 @@
 #' Spherical Cap Area
 #'
 #' Returns the surface area of a cap (circle) on a sphere
-#'
 #' @param radius Radius of the cap in kilometres.
 #' @param EarthRad Radius of the Earth in kilometres.
 #' @return The surface area of the cap in square-kilometres.
 #' @details Nothing yet.
+#' @export
 #' @examples
 #' SphericalCapArea(2000)
 

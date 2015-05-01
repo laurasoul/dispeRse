@@ -8,6 +8,8 @@
 #' @param EarthRad Earth radius in kilometres.
 #' @return A vector of length equal to the number of separate continents.
 #' @details Nothing yet.
+#'
+#' @export
 #' @examples
 #' HowManySeparateContinents(100, c(179, -179), c(-89, 89))
 

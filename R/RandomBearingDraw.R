@@ -6,7 +6,7 @@
 #' @param shape_parameter The shape parameter used for both values in a beta distribution.
 #' @return A vector of bearing of length n.
 #' @details Nothing yet.
-#'
+#' @export
 #' @examples
 #' # Set seed for example:
 #' set.seed(21)

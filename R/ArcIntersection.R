@@ -14,7 +14,7 @@
 #' @param EarthRad Earth radius in kilometres.
 #' @return Matrix of longitude-latitude points at which intersection(s) occur.
 #' @details Assumes shortest distance between points describes arc. Can define Great Circle-arc intersection with \code{type} option. 
-#'
+#' @export
 #' @examples
 #' longitude_1 <- runif(1, -180, 180)
 #' longitude_2 <- runif(1, -180, 180)
