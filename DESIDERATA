@@ -11,3 +11,5 @@ A list of things we might want to add in future:
 - Use function to test existing biogeographic methods.
 - Slow speed of continents once they are touching.
 - Make a nice plotting function.
+- Standardise function inputs.
+- Ensure all functions are verbose (x = y, not just y).
