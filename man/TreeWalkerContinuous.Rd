@@ -5,7 +5,7 @@
 \title{Brownian motion (random walk) on a sphere}
 \usage{
 TreeWalkerContinuous(tree, slon = 0, slat = 0, niter = 1000,
-  steplengthmean = 0, steplengthsd = 100)
+  steplengthmean = 0, steplengthsd = 100, EarthRad = 6367.4447)
 }
 \arguments{
 \item{tree}{tree (as phylo object) to use}
@@ -19,6 +19,8 @@ TreeWalkerContinuous(tree, slon = 0, slat = 0, niter = 1000,
 \item{steplengthmean}{mean used for random walk draws}
 
 \item{steplengthsd}{standard deviation used for random walk draws}
+
+\item{EarthRad}{Earth radius in kilometres.}
 }
 \value{
 A list of edges with matrices showing times and coordinates

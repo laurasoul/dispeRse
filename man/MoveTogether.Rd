@@ -4,7 +4,7 @@
 \alias{MoveTogether}
 \title{Move multiple 'continents' about a Euler pole}
 \usage{
-MoveTogether(centers, pole, angle)
+MoveTogether(centers, pole, angle, EarthRad = 6367.4447)
 }
 \arguments{
 \item{centers}{A matix with columns corresponding to continent central positions in degrees. Row 1 for longitude row 2 for latitude. Or a long lat vector for a single continent.}
@@ -12,6 +12,8 @@ MoveTogether(centers, pole, angle)
 \item{pole}{A vector of the long lat of the pole of rotation}
 
 \item{angle}{The angle of rotation about the pole in degrees}
+
+\item{EarthRad}{Earth radius in kilometres.}
 }
 \value{
 a matix of the new long lat in degrees of the centers of each continent after moving

@@ -8,7 +8,7 @@
 #' @param slat starting latitude
 #' @param steps number of time steps to use
 #' @param steplengthsd standard deviation used for random walk draws
-#'
+#' @param EarthRad Earth radius in kilometres.
 #' @return tree a phylogenetic tree
 #' @return longitudes a matrix with rows corresponding to the tree edges and colunns to time step
 #' @return latitudes a matrix with rows corresponding to the tree edges and colunns to time step
@@ -19,7 +19,7 @@
 #' @examples
 #' TreeWalkerDiscrete(b=0.1, d=0.05, steps=50, slon=0, slat=0, steplengthsd = 100)
 
-TreeWalkerDiscrete <- function (b=0.1, d=0.05, steps=50, slon=0, slat=0, steplengthsd=100) {
+TreeWalkerDiscrete <- function (b=0.1, d=0.05, steps=50, slon=0, slat=0, steplengthsd=100, EarthRad = 6367.4447) {
 # Modified from sim.bdtree in geiger
 # The following simulates birthdeath trees to a given number of time steps t
     extra.rows <- matrix(NA,nrow=2,ncol=steps+1)
@@ -48,7 +48,7 @@ TreeWalkerDiscrete <- function (b=0.1, d=0.05, steps=50, slon=0, slat=0, steplen
             for (i in 1:nrow(lat.matrix)) {
                 if (alive[i]) {
                     starting<-c(lat.matrix[i,t],long.matrix[i,t])
-                    moveto<-EndPoint(starting[2],starting[1],runif(1,0,360),abs(rnorm(1,0,steplengthsd))) #generates a random walk step and calculates new position
+                    moveto<-EndPoint(starting[2],starting[1],runif(1,0,360),abs(rnorm(1,0,steplengthsd)), EarthRad = EarthRad) #generates a random walk step and calculates new position
                     lat.matrix[i,t+1]<-moveto$lat
                     long.matrix[i,t+1]<-moveto$long
                 }

@@ -60,7 +60,7 @@ StartingPoints <- function(N_continents = 7, radius = 2000, start_configuration 
 			if(N_continents > 1) {
 				
 				# Find centre of second continnet by randomly drawing from the circle describing all points within minimum separation of the first continent:
-				second_circle <- EndPoint(slong = first_circle_long, slat = first_circle_lat, bearing = runif(1, min = 0, max = 360), distance = min_separation)
+				second_circle <- EndPoint(slong = first_circle_long, slat = first_circle_lat, bearing = runif(1, min = 0, max = 360), distance = min_separation, EarthRad = EarthRad)
 				
 				# Add second continent to circles matrix:
 				circles <- rbind(circles, c(second_circle$long, second_circle$lat))
@@ -198,8 +198,8 @@ StartingPoints <- function(N_continents = 7, radius = 2000, start_configuration 
 		if (N==3) {
 			d<- 2*pi*EarthRad/3
 			bearing <- runif(1, c(0,360))
-			second <- EndPoint(slong, slat, bearing, distance = d)
-			third <- EndPoint(slong, slat, bearing, distance = 2*d)
+			second <- EndPoint(slong, slat, bearing, distance = d, EarthRad = EarthRad)
+			third <- EndPoint(slong, slat, bearing, distance = 2 * d, EarthRad = EarthRad)
 			points[2,] <- c(second$long, second$lat)
 			points[3,] <- c(third$long, third$lat)
 		}
@@ -210,11 +210,11 @@ StartingPoints <- function(N_continents = 7, radius = 2000, start_configuration 
 			theta <- ThetaFromChordLength(a)
 			d <- EarthRad*theta
 			bear <- runif(1, c(0,360))
-			second <- EndPoint(slong, slat, bearing=bear, distance = d)
+			second <- EndPoint(slong, slat, bearing=bear, distance = d, EarthRad = EarthRad)
 			points[2,] <- c(second$long, second$lat)
-			third <- EndPoint(slong, slat, bearing=(bear+120) %% 360, distance = d)
+			third <- EndPoint(slong, slat, bearing=(bear+120) %% 360, distance = d, EarthRad = EarthRad)
 			points[3,] <- c(third$long, third$lat)
-			fourth <- EndPoint(slong, slat, bearing=(bear+240) %% 360, distance = d)
+			fourth <- EndPoint(slong, slat, bearing=(bear+240) %% 360, distance = d, EarthRad = EarthRad)
 			points[4,] <- c(fourth$long, fourth$lat)
 		}
 
@@ -222,9 +222,9 @@ StartingPoints <- function(N_continents = 7, radius = 2000, start_configuration 
 		if (N==5) {
 			d<- 2*pi*EarthRad/3
 			bear <- runif(1, c(0,360))
-			second <- EndPoint(slong, slat, bear, distance = d)
-			third <- EndPoint(slong, slat, bear, distance = 2*d)
-			fourth <- EndPoint(slong, slat, (bear + 90) %% 360, distance=0.5*EarthRad*pi)
+			second <- EndPoint(slong, slat, bear, distance = d, EarthRad = EarthRad)
+			third <- EndPoint(slong, slat, bear, distance = 2*d, EarthRad = EarthRad)
+			fourth <- EndPoint(slong, slat, (bear + 90) %% 360, distance=0.5*EarthRad*pi, EarthRad = EarthRad)
 			fifth <- c((fourth$long-180)%%180, -fourth$lat)
 			points[2,] <- c(second$long, second$lat)
 			points[3,] <- c(third$long, third$lat)
@@ -236,10 +236,10 @@ StartingPoints <- function(N_continents = 7, radius = 2000, start_configuration 
 		if (N==6) {
 			d<- 0.5*pi*EarthRad
 			bear <- runif(1, c(0,360))
-			second <- EndPoint(slong, slat, bear, distance = d)
-			third <- EndPoint(slong, slat, bear, distance = 2*d)
-			fourth <- EndPoint(slong, slat, bear, distance = 3*d)
-			fifth <- EndPoint(slong, slat, (bear + 90) %% 360, distance=0.5*EarthRad*pi)
+			second <- EndPoint(slong, slat, bear, distance = d, EarthRad = EarthRad)
+			third <- EndPoint(slong, slat, bear, distance = 2*d, EarthRad = EarthRad)
+			fourth <- EndPoint(slong, slat, bear, distance = 3*d, EarthRad = EarthRad)
+			fifth <- EndPoint(slong, slat, (bear + 90) %% 360, distance=0.5*EarthRad*pi, EarthRad = EarthRad)
 			sixth <- c((fifth$long-180)%%180, -fifth$lat)
 			points[2,] <- c(second$long, second$lat)
 			points[3,] <- c(third$long, third$lat)
@@ -251,11 +251,11 @@ StartingPoints <- function(N_continents = 7, radius = 2000, start_configuration 
 		if (N==7) {
 			d<- 2*pi*EarthRad/5
 			bear <- runif(1, c(0,360))
-			second <- EndPoint(slong, slat, bear, distance = d)
-			third <- EndPoint(slong, slat, bear, distance = 2*d)
-			fourth <- EndPoint(slong, slat, bear, distance = 3*d)
-			fifth <- EndPoint(slong, slat, bear, distance = 4*d)
-			sixth <- EndPoint(slong, slat, (bear + 90) %% 360, distance=0.5*EarthRad*pi)
+			second <- EndPoint(slong, slat, bear, distance = d, EarthRad = EarthRad)
+			third <- EndPoint(slong, slat, bear, distance = 2*d, EarthRad = EarthRad)
+			fourth <- EndPoint(slong, slat, bear, distance = 3*d, EarthRad = EarthRad)
+			fifth <- EndPoint(slong, slat, bear, distance = 4*d, EarthRad = EarthRad)
+			sixth <- EndPoint(slong, slat, (bear + 90) %% 360, distance=0.5*EarthRad*pi, EarthRad = EarthRad)
 			seventh <- c((sixth$long-180)%%180, -sixth$lat)
 			points[2,] <- c(second$long, second$lat)
 			points[3,] <- c(third$long, third$lat)
@@ -267,16 +267,16 @@ StartingPoints <- function(N_continents = 7, radius = 2000, start_configuration 
 		# Verticies of a cube
 		if (N==8) {
 			d <- 2 * EarthRad * asin(1 / sqrt(3))
-			second <- EndPoint(slong, slat, bearing=0, distance = d)
-			third <- EndPoint(slong, slat, bearing=120, distance = d)
-			fourth <- EndPoint(slong, slat, bearing=240, distance = d)
+			second <- EndPoint(slong, slat, bearing=0, distance = d, EarthRad = EarthRad)
+			third <- EndPoint(slong, slat, bearing=120, distance = d, EarthRad = EarthRad)
+			fourth <- EndPoint(slong, slat, bearing=240, distance = d, EarthRad = EarthRad)
 			reverse <- BearingBetweenTwoLongLatPoints(second$long, second$lat, slong, slat)
-			fifth <- EndPoint(second$long, second$lat, bearing=(reverse + 120) %% 360, distance = d)
-			sixth <- EndPoint(second$long, second$lat, bearing=(reverse + 240) %% 360, distance = d)
+			fifth <- EndPoint(second$long, second$lat, bearing=(reverse + 120) %% 360, distance = d, EarthRad = EarthRad)
+			sixth <- EndPoint(second$long, second$lat, bearing=(reverse + 240) %% 360, distance = d, EarthRad = EarthRad)
 			reverse2 <- BearingBetweenTwoLongLatPoints(sixth$long, sixth$lat, second$long, second$lat)
-			seventh <- EndPoint(sixth$long, sixth$lat, bearing=(reverse2 + 120) %% 360, distance = d)
+			seventh <- EndPoint(sixth$long, sixth$lat, bearing=(reverse2 + 120) %% 360, distance = d, EarthRad = EarthRad)
 			reverse3 <- BearingBetweenTwoLongLatPoints(third$long, third$lat, slong, slat)
-			eigth <- EndPoint(third$long, third$lat, bearing=(reverse3 - 120) %% 360, distance = d)
+			eigth <- EndPoint(third$long, third$lat, bearing=(reverse3 - 120) %% 360, distance = d, EarthRad = EarthRad)
 			points[2,] <- c(second$long, second$lat)
 			points[3,] <- c(third$long, third$lat)
    			points[4,] <- c(fourth$long, fourth$lat)

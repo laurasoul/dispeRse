@@ -1,11 +1,11 @@
 #' Random walk on a sphere
 #'
 #' This function allows you calculate the final coordinates and bearing after one step of a random walk on a sphere.
-#'
 #' @param slong starting longitude
 #' @param slat starting latitude
 #' @param bearing heading in degrees from north
 #' @param distance length of step in km
+#' @param EarthRad Earth radius in kilometres.
 #' @return lat final latitude
 #' @return long final longitude
 #' @return bearing final bearing in degrees from north
@@ -13,21 +13,19 @@
 #' @author Laura C. Soul \email{lauracsoul@@gmail.com}
 #' @export
 #' @examples
-#' EndPoint(slong = 0, slat = 0, bearing = 90, distance = 111)
+#' EndPoint(slong = 0, slat = 0, bearing = 90, distance = 111, EarthRad = 6367.4447)
 
 # Perhaps add conditionals to overcome floating point error when travelling exactly N, E, S, or W
 # Similarly perhaps add something to ensure travelling from poles makes sense, e.g. going North from North Pole.
 
-EndPoint <- function(slong = 0, slat = 0, bearing = 0, distance = 1) {
+EndPoint <- function(slong = 0, slat = 0, bearing = 0, distance = 1, EarthRad = 6367.4447) {
     
-    R <- 6367.4447 #average radius
-
     slat_rad <- pi * slat / 180
     slong_rad <- pi * slong / 180
     bearing_rad <- pi * bearing / 180
 
-    end_lat_rad <- asin(sin(slat_rad) * cos(distance / R) + cos(slat_rad) * sin(distance / R) * cos(bearing_rad))
-    end_long_rad <- slong_rad + atan2(sin(bearing_rad) * sin(distance / R) * cos(slat_rad), cos(distance / R) - sin(slat_rad) * sin(end_lat_rad))
+    end_lat_rad <- asin(sin(slat_rad) * cos(distance / EarthRad) + cos(slat_rad) * sin(distance / EarthRad) * cos(bearing_rad))
+    end_long_rad <- slong_rad + atan2(sin(bearing_rad) * sin(distance / EarthRad) * cos(slat_rad), cos(distance / EarthRad) - sin(slat_rad) * sin(end_lat_rad))
     end_long_rad <- (end_long_rad + pi) %% (2 * pi) - pi
 
     end_lat <- end_lat_rad * 180 / pi

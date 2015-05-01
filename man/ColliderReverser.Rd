@@ -87,13 +87,17 @@ continent_2_euler_distance <-
   continent_2_longitude_t0, continent_2_latitude_t0)
 
 continent_1_longitude_t1 <- EndPoint(continent_1_euler_longitude, continent_1_euler_latitude,
-  continent_1_start_bearing + continent_1_degrees_per_step, continent_1_euler_distance)$long
+  continent_1_start_bearing + continent_1_degrees_per_step, continent_1_euler_distance,
+  EarthRad = EarthRad)$long
 continent_1_latitude_t1 <- EndPoint(continent_1_euler_longitude, continent_1_euler_latitude,
-  continent_1_start_bearing + continent_1_degrees_per_step, continent_1_euler_distance)$lat
+  continent_1_start_bearing + continent_1_degrees_per_step, continent_1_euler_distance,
+  EarthRad = EarthRad)$lat
 continent_2_longitude_t1 <- EndPoint(continent_2_euler_longitude, continent_2_euler_latitude,
-  continent_2_start_bearing + continent_2_degrees_per_step, continent_2_euler_distance)$long
+  continent_2_start_bearing + continent_2_degrees_per_step, continent_2_euler_distance,
+  EarthRad = EarthRad)$long
 continent_2_latitude_t1 <- EndPoint(continent_2_euler_longitude, continent_2_euler_latitude,
-  continent_2_start_bearing + continent_2_degrees_per_step, continent_2_euler_distance)$lat
+  continent_2_start_bearing + continent_2_degrees_per_step, continent_2_euler_distance,
+  EarthRad = EarthRad)$lat
 
 GreatCircleDistanceFromLongLat(continent_1_longitude_t0, continent_1_latitude_t0,
   continent_2_longitude_t0, continent_2_latitude_t0)

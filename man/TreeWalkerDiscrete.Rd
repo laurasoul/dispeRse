@@ -5,7 +5,7 @@
 \title{Generate random birth-death tree with associated coordinates}
 \usage{
 TreeWalkerDiscrete(b = 0.1, d = 0.05, steps = 50, slon = 0, slat = 0,
-  steplengthsd = 100)
+  steplengthsd = 100, EarthRad = 6367.4447)
 }
 \arguments{
 \item{b}{per-lineage birth (speciation) rate}
@@ -19,6 +19,8 @@ TreeWalkerDiscrete(b = 0.1, d = 0.05, steps = 50, slon = 0, slat = 0,
 \item{slat}{starting latitude}
 
 \item{steplengthsd}{standard deviation used for random walk draws}
+
+\item{EarthRad}{Earth radius in kilometres.}
 }
 \value{
 tree a phylogenetic tree
