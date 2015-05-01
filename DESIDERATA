@@ -5,7 +5,6 @@ A list of things we might want to add in future:
 - Both of the above could be attached to a sea-level function.
 - Magic portal for sweepstakes dispersal.
 - Mountain ranges (additional dispersal barrier) where continents collide.
-- Dispersals constrained by direction (e.g., E-W easier than N-S).
 - Climactic bands (and association for taxa) that also limit dispersal.
 - Measure continental/land/shelf area and have as extra output.
 - Use function to test existing biogeographic methods.
@@ -15,3 +14,8 @@ A list of things we might want to add in future:
 - Ensure all functions are verbose (x = y, not just y).
 - Species-area effect on b and d.
 - CHeck clade start point not biased towards continent centre.
+
+Already added:
+
+- Dispersals can be biased by direction (e.g., E-W easier than N-S).
+
