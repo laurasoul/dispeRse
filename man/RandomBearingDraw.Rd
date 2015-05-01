@@ -2,20 +2,20 @@
 % Please edit documentation in R/RandomBearingDraw.R
 \name{RandomBearingDraw}
 \alias{RandomBearingDraw}
-\title{Make random draws for bearing}
+\title{Make random draws for bearings}
 \usage{
 RandomBearingDraw(n = 1, shape_parameter = 1)
 }
 \arguments{
 \item{n}{The number of randomly drawn bearings required.}
 
-\item{shape_parameter}{The shape parameter used for both values in a beta distribution.}
+\item{shape_parameter}{The shape parameter used as both values in a beta distribution.}
 }
 \value{
-A vector of bearing of length n.
+A vector of bearing(s) of length n.
 }
 \description{
-Make random draws for bearings with bias towards North-South or East-West
+Make random draws for bearings allowing bias towards North-South or East-West
 }
 \details{
 Nothing yet.

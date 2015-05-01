@@ -8,8 +8,8 @@ DispersalSimulator(N_steps = 1000, organism_multiplier = 5,
   N_continents = 7, radius = 2000,
   start_configuration = "random separate", squishiness = 0.25,
   stickiness = 0.95, continent_speed_mean = 5, continent_speed_sd = 2,
-  organism_step_sd = 100, b = 0.1, d = 0.05, EarthRad = 6367.4447,
-  polar = FALSE)
+  organism_step_sd = 100, organism_step_shape = 1, b = 0.1, d = 0.05,
+  EarthRad = 6367.4447, polar = FALSE)
 }
 \arguments{
 \item{N_steps}{The number of time steps in the simulation.}
@@ -30,11 +30,13 @@ DispersalSimulator(N_steps = 1000, organism_multiplier = 5,
 
 \item{continent_speed_sd}{Standard deviation of continent speed (kilometers per time step).}
 
-\item{organism_step_sd}{standard deviation used for random walk draws for organisms}
+\item{organism_step_sd}{Standard deviation used for random walk draws for organisms.}
 
-\item{b}{per-lineage birth (speciation) rate}
+\item{organism_step_shape}{Shape parameter to use for drawing bearings for organisms.}
 
-\item{d}{per-lineage death (extinction) rate}
+\item{b}{Per-lineage birth (speciation) rate.}
+
+\item{d}{Per-lineage death (extinction) rate.}
 
 \item{EarthRad}{Radius of the Earth in kilometres.}
 

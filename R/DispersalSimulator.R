@@ -1,6 +1,7 @@
 #' Global function to simulate evolution on a sphere
 #'
 #' Global function to generate simulated continents and clades on a sphere
+#'
 #' @param N_steps The number of time steps in the simulation.
 #' @param organism_multiplier The number of organism time steps to be taken per continent time step.
 #' @param N_continents The (maximum) number of individual continents.
@@ -12,9 +13,10 @@
 #' @param continent_speed_sd Standard deviation of continent speed (kilometers per time step).
 #' @param EarthRad Radius of the Earth in kilometres.
 #' @param polar Whether continents are allowed to exist exactly at the poles.
-#' @param b per-lineage birth (speciation) rate
-#' @param d per-lineage death (extinction) rate
-#' @param organism_step_sd standard deviation used for random walk draws for organisms
+#' @param b Per-lineage birth (speciation) rate.
+#' @param d Per-lineage death (extinction) rate.
+#' @param organism_step_sd Standard deviation used for random walk draws for organisms.
+#' @param organism_step_shape Shape parameter to use for drawing bearings for organisms.
 #' @return A magic table of awesomeness.
 #' @details Nothing yet.
 #' @author Laura C. Soul \email{lauracsoul@@gmail.com} and Graeme T. Lloyd \email{graemetlloyd@@gmail.com}
@@ -34,9 +36,9 @@
 # - Total land area all circles - minus
 
 # Use this line for debugging (sets values for input variables):
-#N_steps = 1000; organism_multiplier = 1; N_continents = 7; radius = 2000; start_configuration = "supercontinent"; squishiness = 0.25; stickiness = 0.95; continent_speed_mean = 5; continent_speed_sd = 2; organism_step_sd = 100; b = 0.1; d = 0.05; EarthRad = 6367.4447; polar = FALSE
+#N_steps = 1000; organism_multiplier = 1; N_continents = 7; radius = 2000; start_configuration = "supercontinent"; squishiness = 0.25; stickiness = 0.95; continent_speed_mean = 5; continent_speed_sd = 2; organism_step_sd = 100; organism_step_shape = 1; b = 0.1; d = 0.05; EarthRad = 6367.4447; polar = FALSE
 
-DispersalSimulator <- function(N_steps = 1000, organism_multiplier = 5, N_continents = 7, radius = 2000, start_configuration = "random separate", squishiness = 0.25, stickiness = 0.95, continent_speed_mean = 5, continent_speed_sd = 2, organism_step_sd = 100, b = 0.1, d = 0.05, EarthRad = 6367.4447, polar = FALSE) {
+DispersalSimulator <- function(N_steps = 1000, organism_multiplier = 5, N_continents = 7, radius = 2000, start_configuration = "random separate", squishiness = 0.25, stickiness = 0.95, continent_speed_mean = 5, continent_speed_sd = 2, organism_step_sd = 100, organism_step_shape = 1, b = 0.1, d = 0.05, EarthRad = 6367.4447, polar = FALSE) {
 
 # Need more top-level conditionals, e.g. N steps must be a positive integer, speed mean and sd must also be positive
 # Others may be caught by subfunctions so no need to repeat
@@ -102,6 +104,7 @@ DispersalSimulator <- function(N_steps = 1000, organism_multiplier = 5, N_contin
 	#starting information for the tree
 	dispersals <- matrix(nrow = 0, ncol = 5, dimnames = list(c(), c("From_continent", "To_continent", "Branch", "Continent_time_step", "Animal_time_step")))
 	begin_cont <- ceiling(runif(1, 0, N_continents))
+# NEED TO MODIFY THE NEXT LINE AS BIASES START TOWARDS CONTINENT CENTRE
 	life_begins <- EndPoint(continent_starting_points[begin_cont, "Longitude"], continent_starting_points[begin_cont, "Latitude"], runif(1, 0, 360), runif(1, 0, radius), EarthRad = EarthRad)
 	extra.rows <- matrix(NA, nrow = 2, ncol = (N_steps * organism_multiplier) + 1)
 	organism_lat_matrix <- matrix(nrow = 2, ncol = (N_steps * organism_multiplier) + 1)
@@ -122,6 +125,7 @@ DispersalSimulator <- function(N_steps = 1000, organism_multiplier = 5, N_contin
 	linked <- list()
 	linked[[1]] <- separate_continents
 	names(linked)[[1]] <- "1:1"
+# ADD NAMES TO TOUCHING
 	
 	#List to store which circles are in each supercontinent (new element added only when it changes)
 	touching <- list()
@@ -513,8 +517,8 @@ DispersalSimulator <- function(N_steps = 1000, organism_multiplier = 5, N_contin
             for (m in 1:nrow(organism_lat_matrix)) {
                 if (alive[m]) {
                     starting <- c(organism_lat_matrix[m, ot], organism_long_matrix[m, ot])
-                    moveto <- EndPoint(starting[2], starting[1], runif(1, 0, 360), abs(rnorm(1, 0, organism_step_sd)), EarthRad = EarthRad) #generates a random walk step and calculates new position
-                    on_cont <- as.numeric(rownames(organism_lat_matrix)[m])
+                    moveto <- EndPoint(starting[2], starting[1], RandomBearingDraw(n = 1, shape_parameter = organism_step_shape), abs(rnorm(1, 0, organism_step_sd)), EarthRad = EarthRad) #generates a random walk step and calculates new position
+					on_cont <- as.numeric(rownames(organism_lat_matrix)[m])
                     friends <- as.numeric(strsplit(tail(touching, n = 1)[[1]][which_supercontinent(on_cont, tail(touching, n = 1)[[1]])], "&")[[1]])
                     dist_from_center <- GreatCircleDistanceFromLongLat(position[on_cont, t, 1], position[on_cont, t, 2], moveto$long, moveto$lat)
                     if (length(friends) > 1) {
@@ -523,8 +527,8 @@ DispersalSimulator <- function(N_steps = 1000, organism_multiplier = 5, N_contin
                     		all_dist[g] <- GreatCircleDistanceFromLongLat(position[friends[g], t, 1], position[friends[g], t, 2], moveto$long, moveto$lat)
                     	}
                     	while (min(all_dist) > radius) {
-                    		moveto <- EndPoint(starting[2], starting[1], runif(1, 0, 360), abs(rnorm(1, 0, organism_step_sd)), EarthRad = EarthRad)
-                    		temp_all_dist <- vector(length = length(friends))
+                    		moveto <- EndPoint(starting[2], starting[1], RandomBearingDraw(n = 1, shape_parameter = organism_step_shape), abs(rnorm(1, 0, organism_step_sd)), EarthRad = EarthRad)
+							temp_all_dist <- vector(length = length(friends))
                     		for (g in 1:length(friends)) {
                     			temp_all_dist[g] <- GreatCircleDistanceFromLongLat(position[friends[g], t, 1], position[friends[g], t, 2], moveto$long, moveto$lat)
                     		}
@@ -541,8 +545,8 @@ DispersalSimulator <- function(N_steps = 1000, organism_multiplier = 5, N_contin
 						
                     } else {
                     	while (dist_from_center >= radius) {
-                    		moveto <- EndPoint(starting[2], starting[1], runif(1, 0, 360), abs(rnorm(1, 0, organism_step_sd)), EarthRad = EarthRad)
-                    		dist_from_center <- GreatCircleDistanceFromLongLat(position[on_cont, t, 1], position[on_cont, t, 2], moveto$long, moveto$lat)
+                    		moveto <- EndPoint(starting[2], starting[1], RandomBearingDraw(n = 1, shape_parameter = organism_step_shape), abs(rnorm(1, 0, organism_step_sd)), EarthRad = EarthRad)
+							dist_from_center <- GreatCircleDistanceFromLongLat(position[on_cont, t, 1], position[on_cont, t, 2], moveto$long, moveto$lat)
                     	}
                     	organism_lat_matrix[m, ot + 1] <- moveto$lat
                     	organism_long_matrix[m, ot + 1] <- moveto$long
