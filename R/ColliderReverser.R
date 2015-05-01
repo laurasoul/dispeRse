@@ -80,13 +80,13 @@ ColliderReverser <- function(min_separation, continent_1_longitude_t0, continent
 	t1_distance <- GreatCircleDistanceFromLongLat(continent_1_longitude_t1, continent_1_latitude_t1, continent_2_longitude_t1, continent_2_latitude_t1, Warn = FALSE)
 
 	# Check that continents did not converge before time window:
-	if(min_separation > t0_distance) stop("ERROR: Continents converged before t0.")
+	if(all.equal(as.vector(min_separation), as.vector(t0_distance)) != TRUE && min_separation > t0_distance) stop("ERROR: Continents converged before t0.")
 	
 	# Check that continents do converge in the interval:
 	if(t0_distance < t1_distance) stop("ERROR: Continents are not converging between t0 and t1.")
 
 	# Check that continents cross minimum separation threshold in time window (i.e., between t0 and t1):
-	if(min_separation < t1_distance) stop("ERROR: Continents do not cross minimum separation threshold within time window.")
+	if(all.equal(as.vector(min_separation), as.vector(t0_distance)) != TRUE && min_separation < t1_distance) stop("ERROR: Continents do not cross minimum separation threshold within time window.")
 	
 	# If minimum separation threshold has been reached at start (t0):
 	if(all.equal(t0_distance, min_separation)[1] == TRUE) {
