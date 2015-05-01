@@ -129,10 +129,15 @@ DispersalSimulator <- function(N_steps = 1000, organism_multiplier = 5, N_contin
 
 	temp_position<-matrix(nrow = N_continents, ncol=2)
 
+	progress <- seq(1, N_steps, floor(N_steps/50))
+	cat("Starting time steps \n")
+	cat("Progress \n")
+	cat("- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - \n")
+
 	#for loops to move everything
 	for (t in 2:(N_steps + 1)) {
 		
-		cat(t, " ")
+		#cat(t, " ")
 		
 		#distances apart before they move
 		starting_distances <- GreatCircleDistanceMatrix(position[,t-1,1], position[,t-1,2])
@@ -561,6 +566,9 @@ DispersalSimulator <- function(N_steps = 1000, organism_multiplier = 5, N_contin
                 alive[alive][random_lineage] <- FALSE
             }###4
         }#1A
+        if (any(progress == t)) {
+        	cat("- ")
+        }
     }
 
     #Things to do right at the end to turn it into a phylo object
