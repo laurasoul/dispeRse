@@ -598,9 +598,9 @@ DispersalSimulator <- function(N_steps = 1000, organism_multiplier = 5, N_contin
 	# Add final time step to continental configurations:
 	names(linked)[length(linked)] <- paste(strsplit(names(linked)[length(linked)], ":")[[1]][1], ":", t, sep="")
 	
-	output <- list(position, linked, touching, obj, organism_long_matrix, organism_lat_matrix)
+	output <- list(position, linked, touching, obj, organism_long_matrix, organism_lat_matrix, dispersals)
 	
-	names(output) <- c("continent_positions", "continent_clusters", "continent_overlaps", "tree", "organism_longitudes", "organism_latitudes")
+	names(output) <- c("continent_positions", "continent_clusters", "continent_overlaps", "tree", "organism_longitudes", "organism_latitudes", "dispersals")
 	
 	return(output)
 	
