@@ -24,17 +24,20 @@ IntercontinentalLinks <- function(min_separation, longitudes, latitudes, EarthRa
 		# For each column:
 		for(j in (i + 1):nrow(intercontinental_distance_matrix)) {
 			
-			# If continents are linked:
+			# If continents are linked at minimum separation distance (within floating point error):
 			if(all.equal(intercontinental_distance_matrix[i, j], min_separation) == TRUE) {
 				
 				# Record a one for the link:
 				intercontinental_links[j, i] <- intercontinental_links[i, j] <- 1
 				
-			# If continents are not linked:
+			# If continents are not linked at minimum separation distance (within floating point error):
 			} else {
 				
-				# Record a zero for no link:
-				intercontinental_links[j, i] <- intercontinental_links[i, j] <- 0
+				# If continents are linked at shorter than minimum separation record a one for the link:
+				if(intercontinental_distance_matrix[i, j] < min_separation) intercontinental_links[j, i] <- intercontinental_links[i, j] <- 1
+				
+				# If continents are not linked at shorter than minimum separation record a zero for no link:
+				if(intercontinental_distance_matrix[i, j] > min_separation)intercontinental_links[j, i] <- intercontinental_links[i, j] <- 0
 				
 			}
 			
