@@ -1,0 +1,13 @@
+A list of things we might want to add in future:
+
+- Polar ice caps (including waxing/waning).
+- Shelf/land areas for continents (concentric circles).
+- Both of the above could be attached to a sea-level function.
+- Magic portal for sweepstakes dispersal.
+- Mountain ranges (additional dispersal barrier) where continents collide.
+- Dispersals constrained by direction (e.g., E-W easier than N-S).
+- Climactic bands (and association for taxa) that also limit dispersal.
+- Measure continental/land/shelf area and have as extra output.
+- Use function to test existing biogeographic methods.
+- Slow speed of continents once they are touching.
+- Make a nice plotting function.
