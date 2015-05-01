@@ -19,7 +19,9 @@
 #' @return A magic table of awesomeness.
 #' @details Nothing yet.
 #' @export
-#' #@examples
+#' @import ape
+#' @import geiger
+#' @examples
 #' #DispersalSimulator(N_steps = 100, organism_multiplier = 5, N_continents = 2, radius = 2000,
 #' #  start_configuration = "random separate", squishiness = 0.25, stickiness = 0.95,
 #' #  continent_speed_mean = 5, continent_speed_sd = 2, organism_step_sd = 100, b = 0.1, d = 0.05,
@@ -140,8 +142,6 @@ DispersalSimulator <- function(N_steps = 1000, organism_multiplier = 5, N_contin
 	#for loops to move everything
 	for (t in 2:(N_steps + 1)) {
 		
-		#cat(t, " ")
-		
 		#distances apart before they move
 		starting_distances <- GreatCircleDistanceMatrix(position[,t-1,1], position[,t-1,2])
 
@@ -191,14 +191,14 @@ DispersalSimulator <- function(N_steps = 1000, organism_multiplier = 5, N_contin
 
 		#Matrix of euler poles and speeds for each individual continent for moving the animals later
 		organism_mover <- matrix(nrow=N_continents, ncol= 3)
-			for (clump in 1:length(tail(linked, n=1)[[1]])) {
-				which_conts <- as.numeric(strsplit(tail(linked, n=1)[[1]][[clump]], "&")[[1]])
-				organism_mover[which_conts,1] <- rep(euler_pole_longitudes[clump],length(which_conts))
-				organism_mover[which_conts,2] <- rep(euler_pole_latitudes[clump],length(which_conts))
-				#This bit will get overwritten if there are collisions
-				organism_mover[which_conts,3] <- rep(degrees_per_step[clump],length(which_conts))
-			}
-
+		for (clump in 1:length(tail(linked, n=1)[[1]])) {
+			which_conts <- as.numeric(strsplit(tail(linked, n=1)[[1]][[clump]], "&")[[1]])
+			organism_mover[which_conts,1] <- rep(euler_pole_longitudes[clump],length(which_conts))
+			organism_mover[which_conts,2] <- rep(euler_pole_latitudes[clump],length(which_conts))
+			#This bit will get overwritten if there are collisions
+			organism_mover[which_conts,3] <- rep(degrees_per_step[clump],length(which_conts))
+		}
+		
 		perm_collisions <- matrix(nrow=0, ncol=2)
 
 		# Moving continents back if there has only been one collision
@@ -369,7 +369,7 @@ DispersalSimulator <- function(N_steps = 1000, organism_multiplier = 5, N_contin
 					for(j in 1:nrow(perm_collisions)) {
 						
 						# If new collision occurs within the cluster:
-						if(all(intersect(as.character(perm_collisions[j, ]), cluster_continent_numbers) == as.character(perm_collisions[j, ]))) {
+						if(length(intersect(as.character(perm_collisions[j, ]), cluster_continent_numbers)) == 2) {
 						
 							# Add new collision to protected links list:
 							cluster_protected_links <- rbind(cluster_protected_links, perm_collisions[j, ])

@@ -48,8 +48,6 @@ Global function to generate simulated continents and clades on a sphere
 }
 \details{
 Nothing yet.
-
-#
 }
 \examples{
 #DispersalSimulator(N_steps = 100, organism_multiplier = 5, N_continents = 2, radius = 2000,
