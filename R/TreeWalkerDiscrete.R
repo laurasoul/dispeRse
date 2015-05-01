@@ -14,10 +14,10 @@
 #' @return latitudes a matrix with rows corresponding to the tree edges and colunns to time step
 #' @details This function is based on the function sim.bdtree in geiger <http://cran.r-project.org/web/packages/geiger/geiger.pdf>. 
 #' @keywords random walk discrete
+#' @author Laura C. Soul \email{lauracsoul@@gmail.com}
 #' @export
 #' @examples
 #' TreeWalkerDiscrete(b=0.1, d=0.05, steps=50, slon=0, slat=0, steplengthsd = 100)
-#'
 
 TreeWalkerDiscrete <- function (b=0.1, d=0.05, steps=50, slon=0, slat=0, steplengthsd=100) {
 # Modified from sim.bdtree in geiger

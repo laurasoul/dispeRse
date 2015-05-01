@@ -24,4 +24,7 @@ Takes position of existing continents and finds the closest possible position(s)
 \examples{
 OpenSpots(c(0, 1), c(0, 0), 111.132874953663, EarthRad = 6367.4447)
 }
+\author{
+Graeme T. Lloyd \email{graemetlloyd@gmail.com}
+}
 

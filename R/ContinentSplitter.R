@@ -1,6 +1,7 @@
 #' Split apart joined continents
 #'
 #' Return two separate clumps of continents after a separation has occurred.
+#'
 #' @param min_separation The minimum separation in kilometres between continents.
 #' @param longitudes Decimalised longitudes of the continents forming the clump in \code{continent_numbers} order.
 #' @param latitudes Decimalised latitudes of the continents forming the clump in \code{continent_numbers} order.
@@ -9,6 +10,7 @@
 #' @param EarthRad Earth radius in kilometres.
 #' @return Vector of two continental clumps left after separation.
 #' @details Nothing yet.
+#' @author Graeme T. Lloyd \email{graemetlloyd@@gmail.com}
 #' @export
 #' @examples
 #' # Nothing yet

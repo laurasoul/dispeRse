@@ -1,7 +1,6 @@
 #' Global function to simulate evolution on a sphere
 #'
 #' Global function to generate simulated continents and clades on a sphere
-#'
 #' @param N_steps The number of time steps in the simulation.
 #' @param organism_multiplier The number of organism time steps to be taken per continent time step.
 #' @param N_continents The (maximum) number of individual continents.
@@ -18,6 +17,7 @@
 #' @param organism_step_sd standard deviation used for random walk draws for organisms
 #' @return A magic table of awesomeness.
 #' @details Nothing yet.
+#' @author Laura C. Soul \email{lauracsoul@@gmail.com} and Graeme T. Lloyd \email{graemetlloyd@@gmail.com}
 #' @export
 #' @import ape
 #' @import geiger

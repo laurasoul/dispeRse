@@ -24,6 +24,9 @@ centers<-rbind(c(40, -50, -170), c(34, -60, 79))
 pole<-c(90, -20)
 MoveTogether(centers, pole, angle = 5)
 }
+\author{
+Laura C. Soul \email{lauracsoul@gmail.com}
+}
 \keyword{rotate}
 \keyword{sphere}
 

@@ -28,6 +28,9 @@ This function allows you calculate the final coordinates and bearing after one s
 \examples{
 EndPoint(slong = 0, slat = 0, bearing = 90, distance = 111)
 }
+\author{
+Laura C. Soul \email{lauracsoul@gmail.com}
+}
 \keyword{random}
 \keyword{walk}
 

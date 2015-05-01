@@ -50,4 +50,7 @@ latitude_4 <- runif(1, -90, 90)
 ArcIntersection(longitude_1, latitude_1, longitude_2, latitude_2,
   longitude_3, latitude_3, longitude_4, latitude_4, EarthRad = 6367.4447)
 }
+\author{
+Graeme T. Lloyd \email{graemetlloyd@gmail.com}
+}
 

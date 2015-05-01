@@ -8,7 +8,7 @@
 #' @param EarthRad Earth radius in kilometres.
 #' @return A square matrix with intercontinental links scored as ones.
 #' @details Nothing yet.
-#'
+#' @author Graeme T. Lloyd \email{graemetlloyd@@gmail.com}
 #' @export
 #' @examples
 #' IntercontinentalLinks(0, c(179, -179), c(-89, 89))

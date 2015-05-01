@@ -1,11 +1,11 @@
 #' Make random draws for bearing
 #'
 #' Make random draws for bearings with bias towards North-South or East-West
-#'
 #' @param n The number of randomly drawn bearings required.
 #' @param shape_parameter The shape parameter used for both values in a beta distribution.
 #' @return A vector of bearing of length n.
 #' @details Nothing yet.
+#' @author Graeme T. Lloyd \email{graemetlloyd@@gmail.com}
 #' @export
 #' @examples
 #' # Set seed for example:

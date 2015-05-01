@@ -6,8 +6,8 @@
 #' @param min_separation The minimum separation between continents in kilomeres.
 #' @param EarthRad Earth radius in kilometres.
 #' @return A two-column (longitude and latitude) matrix of open spots.
+#' @author Graeme T. Lloyd \email{graemetlloyd@@gmail.com}
 #' @export
-#' 
 #' @examples
 #' OpenSpots(c(0, 1), c(0, 0), 111.132874953663, EarthRad = 6367.4447)
 

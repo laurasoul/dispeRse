@@ -1,12 +1,12 @@
 #' Move multiple 'continents' about a Euler pole
 #'
 #' Moves multiple 'continents' (which are temporarily or permanently joined) by their midpoints keeping them exactly the same distance from one another so that they behave as a single unit
-#'
 #' @param centers A matix with columns corresponding to continent central positions in degrees. Row 1 for longitude row 2 for latitude. Or a long lat vector for a single continent.
 #' @param pole A vector of the long lat of the pole of rotation
 #' @param angle The angle of rotation about the pole in degrees
 #' @return a matix of the new long lat in degrees of the centers of each continent after moving
 #' @keywords rotate sphere
+#' @author Laura C. Soul \email{lauracsoul@@gmail.com}
 #' @export
 #' @examples
 #' centers<-rbind(c(40, -50, -170), c(34, -60, 79))

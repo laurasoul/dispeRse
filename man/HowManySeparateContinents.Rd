@@ -28,4 +28,7 @@ Nothing yet.
 \examples{
 HowManySeparateContinents(100, c(179, -179), c(-89, 89))
 }
+\author{
+Graeme T. Lloyd \email{graemetlloyd@gmail.com}
+}
 

@@ -29,4 +29,7 @@ Nothing yet.
 BearingBetweenTwoLongLatPoints(start_long = 0, start_lat = 0,
   end_long = 0, end_lat = 1)
 }
+\author{
+Graeme T. Lloyd \email{graemetlloyd@gmail.com}
+}
 

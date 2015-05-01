@@ -1,6 +1,7 @@
 #' Random walk on a sphere
 #'
 #' This function allows you calculate the final coordinates and bearing after one step of a random walk on a sphere.
+#'
 #' @param slong starting longitude
 #' @param slat starting latitude
 #' @param bearing heading in degrees from north
@@ -9,6 +10,7 @@
 #' @return long final longitude
 #' @return bearing final bearing in degrees from north
 #' @keywords random walk
+#' @author Laura C. Soul \email{lauracsoul@@gmail.com}
 #' @export
 #' @examples
 #' EndPoint(slong = 0, slat = 0, bearing = 90, distance = 111)

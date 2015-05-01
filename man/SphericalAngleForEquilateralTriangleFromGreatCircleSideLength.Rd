@@ -24,4 +24,7 @@ Nothing yet.
 \examples{
 SphericalAngleForEquilateralTriangleFromGreatCircleSideLength(1000)
 }
+\author{
+Graeme T. Lloyd \email{graemetlloyd@gmail.com}
+}
 

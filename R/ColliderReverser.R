@@ -1,6 +1,7 @@
 #' Reverses a time step to coliision point
 #'
 #' If a collision happens within a time bin establishes the proportion of time elapsed
+#'
 #' @param min_separation The minimum separation between continents in kilometres.
 #' @param continent_1_longitude_t0 Decimalised longitude of first continent at t0.
 #' @param continent_1_latitude_t0 Decimalised latitude of first continent at t0.
@@ -20,6 +21,7 @@
 #' @param Warn Whether or not to print warnings.
 #' @return Proportion (0 to 1) of time step at which the minimum separation distance collision occurs.
 #' @details Nothing yet.
+#' @author Graeme T. Lloyd \email{graemetlloyd@@gmail.com}
 #' @export
 #' @examples
 #' min_separation <- 500

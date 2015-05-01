@@ -55,4 +55,7 @@ Nothing yet.
 #  continent_speed_mean = 5, continent_speed_sd = 2, organism_step_sd = 100, b = 0.1, d = 0.05,
 #  EarthRad = 6367.4447,  polar = FALSE)
 }
+\author{
+Laura C. Soul \email{lauracsoul@gmail.com} and Graeme T. Lloyd \email{graemetlloyd@gmail.com}
+}
 

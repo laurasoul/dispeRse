@@ -32,4 +32,7 @@ Nothing yet.
 \examples{
 # Nothing yet
 }
+\author{
+Graeme T. Lloyd \email{graemetlloyd@gmail.com}
+}
 

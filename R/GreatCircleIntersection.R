@@ -1,6 +1,7 @@
 #' Point(s) at which two Great Circles intersect on a sphere
 #'
 #' Given two Great Circles returns point(s) at which they intersect on a sphere.
+#'
 #' @param longitude_1 Decimalised longitude of first point on first Great Circle.
 #' @param latitude_1 Decimalised latitude of first point on first Great Circle.
 #' @param longitude_2 Decimalised longitude of second point on first Great Circle.
@@ -12,6 +13,7 @@
 #' @param EarthRad Earth radius in kilometres.
 #' @return Matrix of longitude-latitude points at which intersection(s) occur.
 #' @details Nothing yet.
+#' @author Graeme T. Lloyd \email{graemetlloyd@@gmail.com}
 #' @export
 #' @examples
 #' longitude_1 <- runif(1, -180, 180)

@@ -36,4 +36,7 @@ hist(RandomBearingDraw(n = 10000, shape_parameter = 10), xlim=c(0, 360),
 hist(RandomBearingDraw(n = 10000, shape_parameter = 0.1), xlim=c(0, 360),
   breaks=36, xlab="Bearing (degrees)")
 }
+\author{
+Graeme T. Lloyd \email{graemetlloyd@gmail.com}
+}
 

@@ -1,7 +1,6 @@
 #' Great circle distance from a set of coordinates
 #'
 #' Returns great circle distance in kilometres from a two longitude-latitude points
-#'
 #' @param long1 Decimalised longitude for first point.
 #' @param lat1 Decimalised latitude for first point.
 #' @param long2 Decimalised longitude for second point.
@@ -10,6 +9,7 @@
 #' @param Warn Whether or not to print warnings.
 #' @return Great circle distance in kilometres.
 #' @details Nothing yet.
+#' @author Graeme T. Lloyd \email{graemetlloyd@@gmail.com}
 #' @export
 #' @examples
 #' # Return one-degree of latitude (approximately 111 kilometres):

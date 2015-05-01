@@ -36,6 +36,9 @@ This function is based on the function sim.bdtree in geiger <http://cran.r-proje
 \examples{
 TreeWalkerDiscrete(b=0.1, d=0.05, steps=50, slon=0, slat=0, steplengthsd = 100)
 }
+\author{
+Laura C. Soul \email{lauracsoul@gmail.com}
+}
 \keyword{discrete}
 \keyword{random}
 \keyword{walk}

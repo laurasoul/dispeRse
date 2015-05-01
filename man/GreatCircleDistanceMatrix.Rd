@@ -25,4 +25,7 @@ Nothing yet.
 \examples{
 GreatCircleDistanceMatrix(c(-179, 0, 179), c(89, 0, -89))
 }
+\author{
+Graeme T. Lloyd \email{graemetlloyd@gmail.com}
+}
 

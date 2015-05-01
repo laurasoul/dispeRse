@@ -1,10 +1,12 @@
 #' Returns great circle distance from theta
 #'
 #' Returns great circle distance in kilometres from theta in radians
+#'
 #' @param theta Theta in radians.
 #' @param EarthRad Radius of the Earth in kilometres.
 #' @return Great circle distance in kilometres.
 #' @details Nothing yet.
+#' @author Graeme T. Lloyd \email{graemetlloyd@@gmail.com}
 #' @export
 #' @examples
 #' GreatCircleDistanceFromTheta(0.5)

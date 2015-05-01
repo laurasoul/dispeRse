@@ -26,7 +26,7 @@ LazyLoad: \tab yes\cr
 }
 
 \author{
-Laura C. Soul <
+Laura C. Soul <lauracsoul@gmail.com>
 Graeme T. Lloyd <graemetlloyd@gmail.com>
 }
 

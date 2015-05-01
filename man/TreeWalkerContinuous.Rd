@@ -30,6 +30,9 @@ Perform Brownian motion (a random walk) on a sphere.
 tree <- rtree(10)
 TreeWalkerContinuous(tree, slat = 0, slon = 0, niter = 1000, steplengthmean = 0, steplengthsd = 100)
 }
+\author{
+Graeme T. Lloyd \email{graemetlloyd@gmail.com}
+}
 \keyword{random}
 \keyword{walk}
 

@@ -23,4 +23,7 @@ Nothing yet.
 \examples{
 SphericalCapArea(2000)
 }
+\author{
+Graeme T. Lloyd \email{graemetlloyd@gmail.com}
+}
 

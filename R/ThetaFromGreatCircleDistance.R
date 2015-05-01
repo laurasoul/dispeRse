@@ -5,7 +5,9 @@
 #' @param EarthRad Radius of the Earth in kilometres.
 #' @return Theta in radians.
 #' @details Nothing yet.
+#' @author Graeme T. Lloyd \email{graemetlloyd@@gmail.com}
 #' @export
+#'
 #' @examples
 #' ThetaFromGreatCircleDistance(1000)
 

@@ -1,10 +1,12 @@
 #' Finds the spherical angle for an equilateral triangle
 #'
 #' Returns the spherical angle in degrees for an equilateral triangle of known side length
+#'
 #' @param side_length The great circle distance of a side of the triangle in kilometres.
 #' @param EarthRad Radius of the Earth in kilometres.
 #' @return Spherical angle in degrees.
 #' @details Nothing yet.
+#' @author Graeme T. Lloyd \email{graemetlloyd@@gmail.com}
 #' @export
 #' @examples
 #' SphericalAngleForEquilateralTriangleFromGreatCircleSideLength(1000)

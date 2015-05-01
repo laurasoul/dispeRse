@@ -106,4 +106,7 @@ ColliderReverser(min_separation, continent_1_longitude_t0, continent_1_latitude_
   continent_1_euler_longitude, continent_1_euler_latitude, continent_2_euler_longitude,
   continent_2_euler_latitude, continent_1_degrees_per_step, continent_2_degrees_per_step)
 }
+\author{
+Graeme T. Lloyd \email{graemetlloyd@gmail.com}
+}
 

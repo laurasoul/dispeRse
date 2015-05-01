@@ -33,4 +33,7 @@ Nothing yet.
 # Return one-degree of latitude (approximately 111 kilometres):
 GreatCircleDistanceFromLongLat(0, 0, 0, 1)
 }
+\author{
+Graeme T. Lloyd \email{graemetlloyd@gmail.com}
+}
 

@@ -23,4 +23,7 @@ Nothing yet.
 \examples{
 ThetaFromGreatCircleDistance(1000)
 }
+\author{
+Graeme T. Lloyd \email{graemetlloyd@gmail.com}
+}
 

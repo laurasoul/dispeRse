@@ -23,4 +23,7 @@ Nothing yet.
 \examples{
 ChordLengthFromTheta(0.5)
 }
+\author{
+Graeme T. Lloyd \email{graemetlloyd@gmail.com}
+}
 

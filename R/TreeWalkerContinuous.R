@@ -11,11 +11,11 @@
 #'
 #' @return A list of edges with matrices showing times and coordinates
 #' @keywords random walk
+#' @author Graeme T. Lloyd \email{graemetlloyd@@gmail.com}
 #' @export
 #' @examples
 #' tree <- rtree(10)
 #' TreeWalkerContinuous(tree, slat = 0, slon = 0, niter = 1000, steplengthmean = 0, steplengthsd = 100)
-#'
 
 TreeWalkerContinuous <- function(tree, slon = 0, slat = 0, niter = 1000, steplengthmean = 0, steplengthsd = 100) {
 	
