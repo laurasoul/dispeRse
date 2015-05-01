@@ -603,6 +603,7 @@ DispersalSimulator <- function(N_steps = 1000, organism_multiplier = 5, N_contin
 	names(output) <- c("continent_positions", "continent_clusters", "continent_overlaps", "tree", "organism_longitudes", "organism_latitudes")
 	
 	return(output)
+	
 }
 
 
@@ -610,9 +611,15 @@ DispersalSimulator <- function(N_steps = 1000, organism_multiplier = 5, N_contin
 
 # When rotating around Euler pole could theoretically pick clockwise or anticlockwise, but as we are allowing poles to be on either side of planet this takes care of that for us!
 # Number continents in plots
-	
+# Adjust probabilitites for actual time intended to represent!!!!!! E.g., b and d due to extra animal loops.	
 
-#try <- EverythingFunction()	
+#try <- output
+#plot(try$organism_longitudes[1,], try$organism_latitudes[1,], xlim=c(-180, 180), ylim=c(-90, 90), type = "l")
+#for (i in 1:nrow(try$organism_longitudes))   lines(try$organism_longitudes[i,], try$organism_latitudes[i,])
+#for(i in 1:N_continents) points(try$continent_positions[i,,1], try$continent_positions[i,,2], col=rainbow(N_steps))
+
+
+#try <- EverythingFunction()
 #plot(try$organism_longitudes[1,], try$organism_latitudes[1,], xlim=c(-180, 180), ylim=c(-90, 90), type = "l")
 #for (i in 1:nrow(try$organism_longitudes))   lines(try$organism_longitudes[i,], try$organism_latitudes[i,])
 #for(i in 1:N_continents) points(try$continent_positions[i,,1], try$continent_positions[i,,2], col=rainbow(N_steps))
