@@ -100,7 +100,7 @@ DispersalSimulator <- function(N_steps = 1000, organism_multiplier = 5, N_contin
 	}
 
 	#starting information for the tree
-	dispersals <- matrix(nrow=0, ncol=5)
+	dispersals <- matrix(nrow = 0, ncol = 5, dimnames = list(c(), c("From_continent", "To_continent", "Branch", "Continent_time_step", "Animal_time_step")))
 	begin_cont <- ceiling(runif(1, 0, N_continents))
 	life_begins <- EndPoint(continent_starting_points[begin_cont, "Longitude"], continent_starting_points[begin_cont, "Latitude"], runif(1,0,360), runif(1,0,radius))
 	extra.rows <- matrix(NA,nrow=2,ncol= (N_steps * organism_multiplier) + 1)
@@ -617,7 +617,6 @@ DispersalSimulator <- function(N_steps = 1000, organism_multiplier = 5, N_contin
 #plot(try$organism_longitudes[1,], try$organism_latitudes[1,], xlim=c(-180, 180), ylim=c(-90, 90), type = "l")
 #for (i in 1:nrow(try$organism_longitudes))   lines(try$organism_longitudes[i,], try$organism_latitudes[i,])
 #for(i in 1:N_continents) points(try$continent_positions[i,,1], try$continent_positions[i,,2], col=rainbow(N_steps))
-
 
 #try <- EverythingFunction()
 #plot(try$organism_longitudes[1,], try$organism_latitudes[1,], xlim=c(-180, 180), ylim=c(-90, 90), type = "l")
