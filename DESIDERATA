@@ -14,3 +14,4 @@ A list of things we might want to add in future:
 - Standardise function inputs.
 - Ensure all functions are verbose (x = y, not just y).
 - Species-area effect on b and d.
+- CHeck clade start point not biased towards continent centre.
