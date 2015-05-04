@@ -13,9 +13,11 @@ A list of things we might want to add in future:
 - Standardise function inputs.
 - Ensure all functions are verbose (x = y, not just y).
 - Species-area effect on b and d.
-- CHeck clade start point not biased towards continent centre.
+- Check clade start point not biased towards continent centre.
+- Get actual data out (inputs to get distance matrices and perform Mantel tests).
+- Make tree ladderizable and have long-lat matrix match tree$edge.
+- Need to solve inheritance problem so clades/continents/latitudinal bands etc. can have separate b, d, step sd etc.
 
 Already added:
 
 - Dispersals can be biased by direction (e.g., E-W easier than N-S).
-
