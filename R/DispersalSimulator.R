@@ -101,11 +101,17 @@ DispersalSimulator <- function(N_steps = 1000, organism_multiplier = 5, N_contin
 		
 	}
 
-	#starting information for the tree
+# Starting information for the tree:
+	
+	# Create marix that will store each intercontinental dispersal:
 	dispersals <- matrix(nrow = 0, ncol = 5, dimnames = list(c(), c("From_continent", "To_continent", "Branch", "Continent_time_step", "Animal_time_step")))
+	
+	# Pick a random continent on which the clade begins:
 	begin_cont <- ceiling(runif(1, 0, N_continents))
 # NEED TO MODIFY THE NEXT LINE AS BIASES START TOWARDS CONTINENT CENTRE
 	life_begins <- EndPoint(continent_starting_points[begin_cont, "Longitude"], continent_starting_points[begin_cont, "Latitude"], runif(1, 0, 360), runif(1, 0, radius), EarthRad = EarthRad)
+
+	
 	extra.rows <- matrix(NA, nrow = 2, ncol = (N_steps * organism_multiplier) + 1)
 	organism_lat_matrix <- matrix(nrow = 2, ncol = (N_steps * organism_multiplier) + 1)
     organism_long_matrix <- matrix(nrow = 2, ncol = (N_steps * organism_multiplier) + 1)
@@ -120,16 +126,24 @@ DispersalSimulator <- function(N_steps = 1000, organism_multiplier = 5, N_contin
     ot <- 0 # time(step) at any point in the tree
     next.node <- 4
 
-	# Now need to move them!
-	#List to store which circles are in each supercontinent (new element added only when it changes)
-	linked <- list()
+# Moving continents:
+	
+	# Create empty lists to store which circles are in each supercontinent or that are touching allowing dispersal (new elements will be added only when these change):
+	touching <- linked <- list()
+	
+	# Use starting values to fill first item in list:
 	linked[[1]] <- separate_continents
+
+	# Use starting values to fill first item in list:
+	touching[[1]] <- touching_continents
+	
+	# Number based on first time step (technically this should be zero as no steps have occurred, but here we are using one):
 	names(linked)[[1]] <- "1:1"
-# ADD NAMES TO TOUCHING
+	
+	# Number based on first time step (technically this should be zero as no steps have occurred, but here we are using one):
+	names(touching)[[1]] <- "1:1"
 	
 	#List to store which circles are in each supercontinent (new element added only when it changes)
-	touching <- list()
-	touching[[1]] <- touching_continents
 
 	#Array to store the positions of every continent at each time step
 	position <- array(NA, c(N_continents, N_steps + 1, 2), c("continent", "timestep", "coordinate"))
@@ -395,14 +409,25 @@ DispersalSimulator <- function(N_steps = 1000, organism_multiplier = 5, N_contin
 			}
 			
 		}
+		
+		# Get current list of touching continents (to be used later for whether dispersal is allowable or not):
+		touching_continents <- HowManySeparateContinents((radius * 2), position[, t, 1], position[, t, 2])
+		
+		# If touching relationships between continetns have changed:
+		if (paste(sort(touching_continents), collapse="") != paste(sort(tail(touching, n = 1)[[1]]), collapse="")) {
+			
+			# Add new element to the touching list:
+			touching <- c(touching, list(touching_continents))
+
+			# Update time step for previous continental configuration:
+			names(touching)[(length(touching) - 1)] <- paste(strsplit(names(touching[(length(touching) - 1)]), ":")[[1]][1], ":", t - 1, sep="")
+			
+			# Add time step to new continental configuration:
+			names(touching)[length(touching)] <- paste(t, ":", t, sep="")
+
+		}
 
 # Now change the Euler poles and speeds
-		
-		# Get list of touching continents (to be used later for whether dispersal is allowable or not):
-		touching_continents <- HowManySeparateContinents((radius * 2), position[, t, 1], position[, t, 2])
-		if (paste(sort(touching_continents), collapse="") != paste(sort(tail(touching, n = 1)[[1]]), collapse="")) {
-			touching <- c(touching, list(touching_continents))
-		}
 
 		# If the continental clustering has changed:
 		if (paste(sort(separate_continents), collapse="") != paste(sort(tail(linked, n = 1)[[1]]), collapse="")) {
@@ -609,6 +634,9 @@ DispersalSimulator <- function(N_steps = 1000, organism_multiplier = 5, N_contin
 	# Add final time step to continental configurations:
 	names(linked)[length(linked)] <- paste(strsplit(names(linked)[length(linked)], ":")[[1]][1], ":", t, sep="")
 	
+	# Add final time step to continental configurations:
+	names(touching)[length(touching)] <- paste(strsplit(names(touching)[length(touching)], ":")[[1]][1], ":", t, sep="")
+
 	output <- list(position, linked, touching, obj, organism_long_matrix, organism_lat_matrix, dispersals)
 	
 	names(output) <- c("continent_positions", "continent_clusters", "continent_overlaps", "tree", "organism_longitudes", "organism_latitudes", "dispersals")
@@ -620,9 +648,7 @@ DispersalSimulator <- function(N_steps = 1000, organism_multiplier = 5, N_contin
 
 
 
-# When rotating around Euler pole could theoretically pick clockwise or anticlockwise, but as we are allowing poles to be on either side of planet this takes care of that for us!
 # Number continents in plots
-# Adjust probabilitites for actual time intended to represent!!!!!! E.g., b and d due to extra animal loops.	
 
 #try <- output
 #plot(try$organism_longitudes[1,], try$organism_latitudes[1,], xlim=c(-180, 180), ylim=c(-90, 90), type = "l")
