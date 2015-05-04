@@ -36,7 +36,7 @@
 # - Total land area all circles - minus
 
 # Use this line for debugging (sets values for input variables):
-#N_steps = 1000; organism_multiplier = 1; N_continents = 7; radius = 2000; start_configuration = "supercontinent"; squishiness = 0.25; stickiness = 0.95; continent_speed_mean = 5; continent_speed_sd = 2; organism_step_sd = 100; organism_step_shape = 1; b = 0.1; d = 0.05; EarthRad = 6367.4447; polar = FALSE
+#N_steps = 200; organism_multiplier = 1; N_continents = 7; radius = 2000; start_configuration = "supercontinent"; squishiness = 0.25; stickiness = 0.95; continent_speed_mean = 5; continent_speed_sd = 2; organism_step_sd = 100; organism_step_shape = 1; b = 0.1; d = 0.05; EarthRad = 6367.4447; polar = FALSE
 
 DispersalSimulator <- function(N_steps = 1000, organism_multiplier = 5, N_continents = 7, radius = 2000, start_configuration = "random separate", squishiness = 0.25, stickiness = 0.95, continent_speed_mean = 5, continent_speed_sd = 2, organism_step_sd = 100, organism_step_shape = 1, b = 0.1, d = 0.05, EarthRad = 6367.4447, polar = FALSE) {
 
@@ -108,9 +108,21 @@ DispersalSimulator <- function(N_steps = 1000, organism_multiplier = 5, N_contin
 	
 	# Pick a random continent on which the clade begins:
 	begin_cont <- ceiling(runif(1, 0, N_continents))
-# NEED TO MODIFY THE NEXT LINE AS BIASES START TOWARDS CONTINENT CENTRE
-	life_begins <- EndPoint(continent_starting_points[begin_cont, "Longitude"], continent_starting_points[begin_cont, "Latitude"], runif(1, 0, 360), runif(1, 0, radius), EarthRad = EarthRad)
+	
+	# Start by drawing two values from long-lat limits as though continent were centered at equator-Greenwich meridean intersection (means degrees are same disatnce value):
+	begin_coordinates <- runif(n = 2, min = -radius / (2 * pi * EarthRad) * 360, max = radius / (2 * pi * EarthRad) * 360)
+	
+	# Whilst the draw is not on the continent redraw long and lat values:
+	while(GreatCircleDistanceFromLongLat(0, 0, begin_coordinates[1], begin_coordinates[2]) > radius) begin_coordinates <- runif(n = 2, min = -radius / (2 * pi * EarthRad) * 360, max = radius / (2 * pi * EarthRad) * 360)
+	
+	# Get bearing from continent centre to point where clade begins:
+	bearing_to_clade_start <- BearingBetweenTwoLongLatPoints(0, 0, begin_coordinates[1], begin_coordinates[2])
 
+	# Get distance from continent centre to point where clade begins:
+	distance_to_clade_start <- GreatCircleDistanceFromLongLat(0, 0, begin_coordinates[1], begin_coordinates[2], EarthRad = EarthRad, Warn = FALSE)
+	
+	# Get coordinates of point where clade begins:
+	life_begins <- EndPoint(continent_starting_points[begin_cont, "Longitude"], continent_starting_points[begin_cont, "Latitude"], bearing_to_clade_start, distance_to_clade_start, EarthRad = EarthRad)
 	
 	extra.rows <- matrix(NA, nrow = 2, ncol = (N_steps * organism_multiplier) + 1)
 	organism_lat_matrix <- matrix(nrow = 2, ncol = (N_steps * organism_multiplier) + 1)
@@ -610,7 +622,7 @@ DispersalSimulator <- function(N_steps = 1000, organism_multiplier = 5, N_contin
         }
     }
 
-    #Things to do right at the end to turn it into a phylo object
+    # Things to do right at the end to turn it into a phylo object
     edge.length[alive] <- ot - stem.depth[alive]
     n <- -1
     for (f in 1:max(edge)) {
