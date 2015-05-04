@@ -1,4 +1,4 @@
-#' Collision point
+#' Point where dispersal route hits coast
 #'
 #' Finds point at which an organism collides with the coast when dispersing
 #'
@@ -15,10 +15,10 @@
 #' @author Graeme T. Lloyd \email{graemetlloyd@@gmail.com}
 #' @export
 #' @examples
-#' #CollisionPoint()
+#' #DivingBoard()
 
 # Get chord length from theta in radians and radius in km:
-CollisionPoint <- function(start_longitude, start_latitude, end_longitude, end_latitude, continent_longitude, continent_latitude, continent_radius, EarthRad = 6367.4447) {
+DivingBoard <- function(start_longitude, start_latitude, end_longitude, end_latitude, continent_longitude, continent_latitude, continent_radius, EarthRad = 6367.4447) {
 	
 # Check input data (does colllision actually occur?)
 	
