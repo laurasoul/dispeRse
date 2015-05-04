@@ -17,7 +17,10 @@ A list of things we might want to add in future:
 - Get actual data out (inputs to get distance matrices and perform Mantel tests).
 - Make tree ladderizable and have long-lat matrix match tree$edge.
 - Need to solve inheritance problem so clades/continents/latitudinal bands etc. can have separate b, d, step sd etc.
+- Think about adjust probabilitites for actual time intended to represent! E.g., b and d may need to be lower due to extra animal loops. And more generally actual time should perhaps be a consideration as relativity could make it confusing for the user.
+- Standardise language regarding continental units (individual continents and clumps).
 
 Already added:
 
 - Dispersals can be biased by direction (e.g., E-W easier than N-S).
+- Allow continents to move clockwise or anticlockwise (this is allowed in practice as Euler poles can be on either side of the planet).
