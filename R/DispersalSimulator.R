@@ -1,7 +1,6 @@
 #' Global function to simulate evolution on a sphere
 #'
 #' Global function to generate simulated continents and clades on a sphere
-#'
 #' @param N_steps The number of time steps in the simulation.
 #' @param organism_multiplier The number of organism time steps to be taken per continent time step.
 #' @param N_continents The (maximum) number of individual continents.
@@ -11,12 +10,13 @@
 #' @param stickiness Probability of two conjoined continents remaining conjoined in the next time step.
 #' @param continent_speed_mean Mean continent speed (kilometers per time step).
 #' @param continent_speed_sd Standard deviation of continent speed (kilometers per time step).
-#' @param EarthRad Radius of the Earth in kilometres.
-#' @param polar Whether continents are allowed to exist exactly at the poles.
-#' @param b Per-lineage birth (speciation) rate.
-#' @param d Per-lineage death (extinction) rate.
 #' @param organism_step_sd Standard deviation used for random walk draws for organisms.
 #' @param organism_step_shape Shape parameter to use for drawing bearings for organisms.
+#' @param sweepstakes The probability of a sweepstakes dispersal occuring each time an organism hits the coast.
+#' @param b Per-lineage birth (speciation) rate.
+#' @param d Per-lineage death (extinction) rate.
+#' @param EarthRad Radius of the Earth in kilometres.
+#' @param polar Whether continents are allowed to exist exactly at the poles.
 #' @return A magic table of awesomeness.
 #' @details Nothing yet.
 #' @author Laura C. Soul \email{lauracsoul@@gmail.com} and Graeme T. Lloyd \email{graemetlloyd@@gmail.com}
@@ -36,20 +36,13 @@
 # - Total land area all circles - minus
 
 # Use this line for debugging (sets values for input variables):
-#N_steps = 200; organism_multiplier = 1; N_continents = 7; radius = 2000; start_configuration = "supercontinent"; squishiness = 0.25; stickiness = 0.95; continent_speed_mean = 5; continent_speed_sd = 2; organism_step_sd = 100; organism_step_shape = 1; b = 0.1; d = 0.05; EarthRad = 6367.4447; polar = FALSE
+#N_steps = 200; organism_multiplier = 1; N_continents = 7; radius = 2000; start_configuration = "supercontinent"; squishiness = 0.25; stickiness = 0.95; continent_speed_mean = 5; continent_speed_sd = 2; organism_step_sd = 100; organism_step_shape = 1; b = 0.1; d = 0.05; sweepstakes = 0; EarthRad = 6367.4447; polar = FALSE
 
-DispersalSimulator <- function(N_steps = 1000, organism_multiplier = 5, N_continents = 7, radius = 2000, start_configuration = "random separate", squishiness = 0.25, stickiness = 0.95, continent_speed_mean = 5, continent_speed_sd = 2, organism_step_sd = 100, organism_step_shape = 1, b = 0.1, d = 0.05, EarthRad = 6367.4447, polar = FALSE) {
+DispersalSimulator <- function(N_steps = 1000, organism_multiplier = 5, N_continents = 7, radius = 2000, start_configuration = "random separate", squishiness = 0.25, stickiness = 0.95, continent_speed_mean = 5, continent_speed_sd = 2, organism_step_sd = 100, organism_step_shape = 1, b = 0.1, d = 0.05, sweepstakes = 0, EarthRad = 6367.4447, polar = FALSE) {
 
 # Need more top-level conditionals, e.g. N steps must be a positive integer, speed mean and sd must also be positive
 # Others may be caught by subfunctions so no need to repeat
 # Add progress bar?
-	
-	# Subfunction to find out which supercontinent a circle belongs to:
-	which_supercontinent <- function(cont, sprconts){
-		cont <- as.character(cont)
-		result <- which(unlist(lapply(lapply(lapply(strsplit(sprconts, "&"), match, cont), sort), length)) == 1)
-		return(result)
-	}
 	
 	# Start by picking continent start points:
 	continent_starting_points <- StartingPoints(N_continents = N_continents, radius = radius, start_configuration = start_configuration, squishiness = squishiness, EarthRad = EarthRad, polar = polar)
@@ -127,8 +120,8 @@ DispersalSimulator <- function(N_steps = 1000, organism_multiplier = 5, N_contin
 	extra.rows <- matrix(NA, nrow = 2, ncol = (N_steps * organism_multiplier) + 1)
 	organism_lat_matrix <- matrix(nrow = 2, ncol = (N_steps * organism_multiplier) + 1)
     organism_long_matrix <- matrix(nrow = 2, ncol = (N_steps * organism_multiplier) + 1)
-    organism_lat_matrix[, 1] <- life_begins$lat
-    organism_long_matrix[, 1] <- life_begins$lon
+    organism_lat_matrix[, 1] <- life_begins$latitude
+    organism_long_matrix[, 1] <- life_begins$longitude
     rownames(organism_lat_matrix) <- rep(begin_cont, 2)
     rownames(organism_long_matrix) <- rep(begin_cont, 2)
     edge <- rbind(c(1, 2), c(1, 3)) # this is a starting edge matrix
@@ -181,7 +174,7 @@ DispersalSimulator <- function(N_steps = 1000, organism_multiplier = 5, N_contin
 			start_lat <- position[k, t - 1, 2]
 
 			#Identify which supercontinent, and therefore which element of the euler pole and speed vectors, the circle k belongs to
-			where <- which_supercontinent(k, tail(linked, n = 1)[[1]])
+			where <- WhichSupercontinent(k, tail(linked, n = 1)[[1]])
 
 			#Find distance of circle from pole
 			distance <- GreatCircleDistanceFromLongLat(long1 = start_long,lat1=start_lat, long2 = euler_pole_longitudes[where], lat2 = euler_pole_latitudes[where], Warn = FALSE)
@@ -196,8 +189,8 @@ DispersalSimulator <- function(N_steps = 1000, organism_multiplier = 5, N_contin
 			new_loc <- EndPoint(euler_pole_longitudes[where], euler_pole_latitudes[where], new_bearing, distance, EarthRad = EarthRad)
 
 			#Add the new loction to the position matrix
-			temp_position[k, 1] <- new_loc$long
-			temp_position[k, 2] <- new_loc$lat
+			temp_position[k, 1] <- new_loc$longitude
+			temp_position[k, 2] <- new_loc$latitude
 
 		}
 
@@ -242,8 +235,8 @@ DispersalSimulator <- function(N_steps = 1000, organism_multiplier = 5, N_contin
 			for (coll in 1:nrow(collisions)) {
 				cont_1 <- collisions[coll, 1]
 				cont_2 <- collisions[coll, 2]
-				where_1 <- which_supercontinent(cont_1, tail(linked, n = 1)[[1]])
-				where_2 <- which_supercontinent(cont_2, tail(linked, n = 1)[[1]])
+				where_1 <- WhichSupercontinent(cont_1, tail(linked, n = 1)[[1]])
+				where_2 <- WhichSupercontinent(cont_2, tail(linked, n = 1)[[1]])
 				continent_1_euler_longitude = euler_pole_longitudes[where_1]
 				continent_1_euler_latitude = euler_pole_latitudes[where_1]
 				continent_2_euler_longitude = euler_pole_longitudes[where_2]
@@ -266,7 +259,7 @@ DispersalSimulator <- function(N_steps = 1000, organism_multiplier = 5, N_contin
 
 			# Move first clump back
 			head_of_collision_1 <- cont_involved[1]
-			where_1 <- which_supercontinent(head_of_collision_1, tail(linked, n = 1)[[1]])
+			where_1 <- WhichSupercontinent(head_of_collision_1, tail(linked, n = 1)[[1]])
 
 			#Find the other continents that were attached to the collider
 			all_involved <- as.numeric(strsplit(tail(linked, n = 1)[[1]][where_1], "&")[[1]])
@@ -291,8 +284,8 @@ DispersalSimulator <- function(N_steps = 1000, organism_multiplier = 5, N_contin
 				new_loc <- EndPoint(euler_pole_longitudes[where_1], euler_pole_latitudes[where_1], new_bearing, distance, EarthRad = EarthRad)
 
 				#Add the new loction to the position matrix
-				temp_position[cont_to_rev,1] <- new_loc$long
-				temp_position[cont_to_rev,2] <- new_loc$lat
+				temp_position[cont_to_rev,1] <- new_loc$longitude
+				temp_position[cont_to_rev,2] <- new_loc$latitude
 
 				organism_mover[cont_to_rev,3] <- addition
 				
@@ -300,7 +293,7 @@ DispersalSimulator <- function(N_steps = 1000, organism_multiplier = 5, N_contin
 
 			#Move the second clump back
 			head_of_collision_2 <- cont_involved[2]
-			where_2 <- which_supercontinent(head_of_collision_2, tail(linked, n = 1)[[1]])
+			where_2 <- WhichSupercontinent(head_of_collision_2, tail(linked, n = 1)[[1]])
 			all_involved_2 <- as.numeric(strsplit(tail(linked, n = 1)[[1]][where_2], "&")[[1]])
 
 			#Update temporary positions based on new change in bearing for all the continents the other clump
@@ -320,8 +313,8 @@ DispersalSimulator <- function(N_steps = 1000, organism_multiplier = 5, N_contin
 				new_loc <- EndPoint(euler_pole_longitudes[where_2], euler_pole_latitudes[where_2], new_bearing, distance, EarthRad = EarthRad)
 
 				#Add the new loction to the position matrix
-				temp_position[cont_to_rev,1] <- new_loc$long
-				temp_position[cont_to_rev,2] <- new_loc$lat
+				temp_position[cont_to_rev,1] <- new_loc$longitude
+				temp_position[cont_to_rev,2] <- new_loc$latitude
 				
 			}
 
@@ -522,9 +515,9 @@ DispersalSimulator <- function(N_steps = 1000, organism_multiplier = 5, N_contin
 			if (length(moving) == 0) {
 				next 
 			} else {
-				#Find out how many degrees around the euler pole that continent went
+				# Find out how many degrees around the euler pole that continent went
 				organism_degrees <- organism_mover[cont, 3]
-				#loops through all the organisms that are currently living
+				# loops through all the organisms that are currently living
 				for (organism in 1:length(moving)) {
 					organism_row <- moving[organism]
 					if (is.na(organism_long_matrix[organism_row, ot + 1])) {
@@ -536,8 +529,8 @@ DispersalSimulator <- function(N_steps = 1000, organism_multiplier = 5, N_contin
 						organism_bearing <- BearingBetweenTwoLongLatPoints(organism_mover[cont, 1], organism_mover[cont, 2], first_long, first_lat)
 						new_organism_bearing <- (organism_bearing + organism_degrees) %% 360
 						new_organism_loc <- EndPoint(organism_mover[cont, 1], organism_mover[cont, 2], new_organism_bearing, organism_distance, EarthRad = EarthRad)
-						organism_long_matrix[organism_row, ot + 1] <- new_organism_loc$long
-    					organism_lat_matrix[organism_row, ot + 1] <- new_organism_loc$lat
+						organism_long_matrix[organism_row, ot + 1] <- new_organism_loc$longitude
+    					organism_lat_matrix[organism_row, ot + 1] <- new_organism_loc$latitude
 						
 					}
 					
@@ -553,40 +546,110 @@ DispersalSimulator <- function(N_steps = 1000, organism_multiplier = 5, N_contin
             ot <- ot + dt
             for (m in 1:nrow(organism_lat_matrix)) {
                 if (alive[m]) {
-                    starting <- c(organism_lat_matrix[m, ot], organism_long_matrix[m, ot])
-                    moveto <- EndPoint(starting[2], starting[1], RandomBearingDraw(n = 1, shape_parameter = organism_step_shape), abs(rnorm(1, 0, organism_step_sd)), EarthRad = EarthRad) #generates a random walk step and calculates new position
+                    starting <- c(organism_long_matrix[m, ot], organism_lat_matrix[m, ot])
+                    moveto <- EndPoint(starting[1], starting[2], RandomBearingDraw(n = 1, shape_parameter = organism_step_shape), abs(rnorm(1, 0, organism_step_sd)), EarthRad = EarthRad) #generates a random walk step and calculates new position
 					on_cont <- as.numeric(rownames(organism_lat_matrix)[m])
-                    friends <- as.numeric(strsplit(tail(touching, n = 1)[[1]][which_supercontinent(on_cont, tail(touching, n = 1)[[1]])], "&")[[1]])
-                    dist_from_center <- GreatCircleDistanceFromLongLat(position[on_cont, t, 1], position[on_cont, t, 2], moveto$long, moveto$lat)
-                    if (length(friends) > 1) {
+                    friends <- as.numeric(strsplit(tail(touching, n = 1)[[1]][WhichSupercontinent(on_cont, tail(touching, n = 1)[[1]])], "&")[[1]])
+                    
+					# Get distance new move-to step will take organism away from the current continents centre:
+					dist_from_centre <- GreatCircleDistanceFromLongLat(position[on_cont, t, 1], position[on_cont, t, 2], moveto$longitude, moveto$latitude)
+                    
+					# If other continents are in contact with the currently inhabited continent:
+					if (length(friends) > 1) {
+						
                     	all_dist <- vector(length = length(friends))
                     	for (g in 1:length(friends)) {
-                    		all_dist[g] <- GreatCircleDistanceFromLongLat(position[friends[g], t, 1], position[friends[g], t, 2], moveto$long, moveto$lat)
+                    		all_dist[g] <- GreatCircleDistanceFromLongLat(position[friends[g], t, 1], position[friends[g], t, 2], moveto$longitude, moveto$latitude)
                     	}
-                    	while (min(all_dist) > radius) {
-                    		moveto <- EndPoint(starting[2], starting[1], RandomBearingDraw(n = 1, shape_parameter = organism_step_shape), abs(rnorm(1, 0, organism_step_sd)), EarthRad = EarthRad)
-							temp_all_dist <- vector(length = length(friends))
-                    		for (g in 1:length(friends)) {
-                    			temp_all_dist[g] <- GreatCircleDistanceFromLongLat(position[friends[g], t, 1], position[friends[g], t, 2], moveto$long, moveto$lat)
-                    		}
-                    		all_dist <- temp_all_dist
-                    	}
-                    	new_cont <- friends[which(all_dist == min(all_dist))] 
-                    	organism_lat_matrix[m, ot + 1] <- moveto$lat
-                    	organism_long_matrix[m, ot + 1] <- moveto$long
+						new_cont <- friends[which(all_dist == min(all_dist))[1]]
+						
+						# If the current move-to step takes the organism out to sea:
+						if(all.equal(min(all_dist), radius) != TRUE && min(all_dist) > radius) {
+							
+							# Case if a sweeptakes dispersal occurs:
+							if(runif(n = 1, min = 0, max = 1) <= sweepstakes) {
+							
+# SWEEPSTAKES
+landing_spot <- MagicPortal(start_longitude = as.vector(starting[1]), start_latitude = as.vector(starting[2]), end_longitude = moveto$longitude, end_latitude = moveto$latitude, start_continent = on_cont, touching_continents = as.vector(unlist(tail(touching, n = 1))), continent_centres = position[,t,], continent_radius = radius, EarthRad = EarthRad)
+								
+new_cont <- landing_spot$continent
+								
+moveto <- landing_spot[c("longitude", "latitude")]
+								
+							# Case if no sweepstakes dispersal occurs:
+							} else  {
+								
+								# Whilst the current move-to step take the organism off the continent:
+								while (all.equal(min(all_dist), radius) != TRUE && min(all_dist) > radius) {
+									
+									# Draw a new move-to step:
+									moveto <- EndPoint(starting[1], starting[2], RandomBearingDraw(n = 1, shape_parameter = organism_step_shape), abs(rnorm(1, 0, organism_step_sd)), EarthRad = EarthRad)
+									temp_all_dist <- vector(length = length(friends))
+									for (g in 1:length(friends)) {
+										temp_all_dist[g] <- GreatCircleDistanceFromLongLat(position[friends[g], t, 1], position[friends[g], t, 2], moveto$longitude, moveto$latitude)
+									}
+									all_dist <- temp_all_dist
+									new_cont <- friends[which(all_dist == min(all_dist))][1]
+									
+								}
+								
+							}
+							
+						}
+                    	 
+                    	organism_long_matrix[m, ot + 1] <- moveto$longitude
+                    	organism_lat_matrix[m, ot + 1] <- moveto$latitude
                     	rownames(organism_long_matrix)[m] <- new_cont
                     	rownames(organism_lat_matrix)[m] <- new_cont
                     	if(new_cont != on_cont) {
                     		dispersals <- rbind(dispersals, c(on_cont, new_cont, m, t, ot + 1))
                     	}
 						
+					# If currently inhabited continent is isolated:
                     } else {
-                    	while (dist_from_center >= radius) {
-                    		moveto <- EndPoint(starting[2], starting[1], RandomBearingDraw(n = 1, shape_parameter = organism_step_shape), abs(rnorm(1, 0, organism_step_sd)), EarthRad = EarthRad)
-							dist_from_center <- GreatCircleDistanceFromLongLat(position[on_cont, t, 1], position[on_cont, t, 2], moveto$long, moveto$lat)
-                    	}
-                    	organism_lat_matrix[m, ot + 1] <- moveto$lat
-                    	organism_long_matrix[m, ot + 1] <- moveto$long
+						
+						# If the current move-to step takes the organism out to sea:
+						if (all.equal(as.vector(dist_from_centre), radius) != TRUE && dist_from_centre > radius) {
+							
+							# Case if a sweeptakes dispersal occurs:
+							if(runif(n = 1, min = 0, max = 1) <= sweepstakes) {
+								
+# SWEEPSTAKES
+landing_spot <- MagicPortal(start_longitude = as.vector(starting[1]), start_latitude = as.vector(starting[2]), end_longitude = moveto$longitude, end_latitude = moveto$latitude, start_continent = on_cont, touching_continents = as.vector(unlist(tail(touching, n = 1))), continent_centres = position[,t,], continent_radius = radius, EarthRad = EarthRad)
+								
+new_cont <- landing_spot$continent
+								
+moveto <- landing_spot[c("longitude", "latitude")]
+								
+								rownames(organism_long_matrix)[m] <- new_cont
+								rownames(organism_lat_matrix)[m] <- new_cont
+								
+								if(new_cont != on_cont) {
+									dispersals <- rbind(dispersals, c(on_cont, new_cont, m, t, ot + 1))
+								}
+								
+							# Case if no sweepstakes dispersal occurs:
+							} else  {
+								
+								# Whilst the current move-to step take the organism off the continent:
+								while (all.equal(as.vector(dist_from_centre), radius) != TRUE && dist_from_centre > radius) {
+									
+									# Draw a new move-to step:
+									moveto <- EndPoint(starting[1], starting[2], RandomBearingDraw(n = 1, shape_parameter = organism_step_shape), abs(rnorm(1, 0, organism_step_sd)), EarthRad = EarthRad)
+									
+									# Update distance from center:
+									dist_from_centre <- GreatCircleDistanceFromLongLat(position[on_cont, t, 1], position[on_cont, t, 2], moveto$longitude, moveto$latitude)
+								
+								}
+								
+							}
+							
+						}
+						
+                    	organism_long_matrix[m, ot + 1] <- moveto$longitude
+
+                    	organism_lat_matrix[m, ot + 1] <- moveto$latitude
+						
                 	}
                 }
             }

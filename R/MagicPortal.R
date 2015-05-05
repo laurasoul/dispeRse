@@ -24,14 +24,8 @@ MagicPortal <- function(start_longitude, start_latitude, end_longitude, end_lati
 	# Create empty variables to store landing spot and landing continent:
 	landing_spot <- landing_continent <- NA
 	
-	# Case if there are no other continents (i.e., there is a single supercontinent):
-	if(length(touching_continents) == 1) {
-		
-		# Cannot disperse to new continent, but can disperse along coast of current continent:
-		next
-		
 	# Case if there is at least one other continental cluster:
-	} else {
+	if(length(touching_continents) > 1) {
 		
 		# Get vector of other continental clusters:
 		other_continents <- touching_continents[-WhichSupercontinent(start_continent, touching_continents)]
@@ -77,18 +71,12 @@ MagicPortal <- function(start_longitude, start_latitude, end_longitude, end_lati
 			# Get landing spot:
 			landing_spot <- EndPoint(continent_centres[as.numeric(landing_continent), 1], continent_centres[as.numeric(landing_continent), 2], BearingBetweenTwoLongLatPoints(continent_centres[as.numeric(landing_continent), 1], continent_centres[as.numeric(landing_continent), 2], collision_point$collision_longitude, collision_point$collision_latitude), continent_radius)[c("longitude", "latitude")]
 			
-		# Case if there are no potential landing spots on other continent clusters:
-		} else {
-			
-			# Cannot disperse to new continent, but can disperse along coast of current continent:
-			next
-			
 		}
 		
 	}
 	
 	# Case if dispersing onto current continental cluster (no viable landing spots elsewhere):
-	if(is.na(landing_spot)) {
+	if(is.na(unlist(landing_spot)[1])) {
 		
 		# Find current cluster:
 		current_cluster <- touching_continents[WhichSupercontinent(start_continent, touching_continents)]

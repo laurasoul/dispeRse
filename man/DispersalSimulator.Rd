@@ -9,7 +9,7 @@ DispersalSimulator(N_steps = 1000, organism_multiplier = 5,
   start_configuration = "random separate", squishiness = 0.25,
   stickiness = 0.95, continent_speed_mean = 5, continent_speed_sd = 2,
   organism_step_sd = 100, organism_step_shape = 1, b = 0.1, d = 0.05,
-  EarthRad = 6367.4447, polar = FALSE)
+  sweepstakes = 0, EarthRad = 6367.4447, polar = FALSE)
 }
 \arguments{
 \item{N_steps}{The number of time steps in the simulation.}
@@ -37,6 +37,8 @@ DispersalSimulator(N_steps = 1000, organism_multiplier = 5,
 \item{b}{Per-lineage birth (speciation) rate.}
 
 \item{d}{Per-lineage death (extinction) rate.}
+
+\item{sweepstakes}{The probability of a sweepstakes dispersal occuring each time an organism hits the coast.}
 
 \item{EarthRad}{Radius of the Earth in kilometres.}
 
