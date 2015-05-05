@@ -20,6 +20,7 @@ A list of things we might want to add in future:
 - Standardise language regarding continental units (individual continents and clumps).
 - Remove geiger dependency if possible.
 - Make function restart if complete extinction happens before end of time window.
+- Check EarthRad propagates correctly through all functions and subfunctions.
 
 Already added:
 
