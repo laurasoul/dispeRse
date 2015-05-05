@@ -30,8 +30,8 @@ MoveTogether <- function(centers, pole, angle, EarthRad = 6367.4447) {
     	init_bearing <- BearingBetweenTwoLongLatPoints(pole[1], pole[2], start_long, start_lat)
     	new_bearing <- (init_bearing + angle) %% 360
     	new_loc <- EndPoint(pole[1], pole[2], new_bearing, distance, EarthRad = EarthRad)
-    	new_centers[1,i] <- new_loc$long
-    	new_centers[2,i] <- new_loc$lat
+    	new_centers[1,i] <- new_loc$longitude
+    	new_centers[2,i] <- new_loc$latitude
     }
 
     return(new_centers)

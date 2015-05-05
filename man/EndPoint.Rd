@@ -4,13 +4,13 @@
 \alias{EndPoint}
 \title{Random walk on a sphere}
 \usage{
-EndPoint(slong = 0, slat = 0, bearing = 0, distance = 1,
+EndPoint(longitude = 0, latitude = 0, bearing = 0, distance = 1,
   EarthRad = 6367.4447)
 }
 \arguments{
-\item{slong}{starting longitude}
+\item{longitude}{starting longitude}
 
-\item{slat}{starting latitude}
+\item{latitude}{starting latitude}
 
 \item{bearing}{heading in degrees from north}
 
@@ -19,9 +19,9 @@ EndPoint(slong = 0, slat = 0, bearing = 0, distance = 1,
 \item{EarthRad}{Earth radius in kilometres.}
 }
 \value{
-lat final latitude
+longitude final longitude
 
-long final longitude
+latitude final latitude
 
 bearing final bearing in degrees from north
 }
@@ -29,7 +29,7 @@ bearing final bearing in degrees from north
 This function allows you calculate the final coordinates and bearing after one step of a random walk on a sphere.
 }
 \examples{
-EndPoint(slong = 0, slat = 0, bearing = 90, distance = 111, EarthRad = 6367.4447)
+EndPoint(longitude = 0, latitude = 0, bearing = 90, distance = 111, EarthRad = 6367.4447)
 }
 \author{
 Laura C. Soul \email{lauracsoul@gmail.com}

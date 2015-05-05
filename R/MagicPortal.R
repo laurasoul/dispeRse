@@ -71,9 +71,11 @@ MagicPortal <- function(start_longitude, start_latitude, end_longitude, end_lati
 		# Case if there is a potential landing spot:
 		if(length(potential_landing_spots) > 0) {
 			
+			# Get landing continent number:
 			landing_continent <- names(which.min(other_continent_distances[potential_landing_spots]))
 			
-			landing_spot <- EndPoint(continent_centres[as.numeric(landing_continent), 1], continent_centres[as.numeric(landing_continent), 2], BearingBetweenTwoLongLatPoints(continent_centres[as.numeric(landing_continent), 1], continent_centres[as.numeric(landing_continent), 2], collision_point$collision_longitude, collision_point$collision_latitude), continent_radius)[c("long", "lat")]
+			# Get landing spot:
+			landing_spot <- EndPoint(continent_centres[as.numeric(landing_continent), 1], continent_centres[as.numeric(landing_continent), 2], BearingBetweenTwoLongLatPoints(continent_centres[as.numeric(landing_continent), 1], continent_centres[as.numeric(landing_continent), 2], collision_point$collision_longitude, collision_point$collision_latitude), continent_radius)[c("longitude", "latitude")]
 			
 		# Case if there are no potential landing spots on other continent clusters:
 		} else {
@@ -101,7 +103,7 @@ MagicPortal <- function(start_longitude, start_latitude, end_longitude, end_lati
 		landing_spot <- EndPoint(continent_centres[landing_continent, 1], continent_centres[landing_continent, 2], runif(1, min = 0, max = 360), continent_radius)
 		
 		# Calculate distances from landing spot to continent centre(s) (to be used to establish if spot is on the coast or not):
-		distances <- One2ManyGreatCircleDistance(landing_spot$long, landing_spot$lat, continent_centres[current_cluster, 1], continent_centres[current_cluster, 2], EarthRad = EarthRad)
+		distances <- One2ManyGreatCircleDistance(landing_spot$longitude, landing_spot$latitude, continent_centres[current_cluster, 1], continent_centres[current_cluster, 2], EarthRad = EarthRad)
 		
 		# If current landing spot is not on the coast:
 		while((as.numeric(apply(matrix(distances, nrow=1), 2, all.equal, current = continent_radius) != TRUE) + as.numeric(distances < continent_radius)) == 2) {
@@ -113,14 +115,14 @@ MagicPortal <- function(start_longitude, start_latitude, end_longitude, end_lati
 			landing_spot <- EndPoint(continent_centres[landing_continent, 1], continent_centres[landing_continent, 2], runif(1, min = 0, max = 360), continent_radius)
 			
 			# Recalculate distances to continent centre(s):
-			distances <- One2ManyGreatCircleDistance(landing_spot$long, landing_spot$lat, continent_centres[current_cluster, 1], continent_centres[current_cluster, 2], EarthRad = EarthRad)
+			distances <- One2ManyGreatCircleDistance(landing_spot$longitude, landing_spot$latitude, continent_centres[current_cluster, 1], continent_centres[current_cluster, 2], EarthRad = EarthRad)
 
 		}
 		
 	}
 	
 	# Compile output:
-	output <- list(as.numeric(landing_continent), as.vector(unlist(landing_spot)[1]), as.vector(unlist(landing_spot)[2]))
+	output <- list(as.numeric(landing_continent), landing_spot$longitude, landing_spot$latitude)
 	
 	# Add names to output:
 	names(output) <- c("continent", "longitude", "latitude")

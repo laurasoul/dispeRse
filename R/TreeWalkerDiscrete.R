@@ -49,8 +49,8 @@ TreeWalkerDiscrete <- function (b=0.1, d=0.05, steps=50, slon=0, slat=0, steplen
                 if (alive[i]) {
                     starting<-c(lat.matrix[i,t],long.matrix[i,t])
                     moveto<-EndPoint(starting[2],starting[1],runif(1,0,360),abs(rnorm(1,0,steplengthsd)), EarthRad = EarthRad) #generates a random walk step and calculates new position
-                    lat.matrix[i,t+1]<-moveto$lat
-                    long.matrix[i,t+1]<-moveto$long
+                    lat.matrix[i,t+1]<-moveto$latitude
+                    long.matrix[i,t+1]<-moveto$longitude
                 }
             }
 

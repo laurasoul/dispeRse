@@ -35,13 +35,13 @@ DivingBoard <- function(start_longitude, start_latitude, end_longitude, end_lati
 	distance <- GreatCircleDistanceFromLongLat(start_longitude, start_latitude, end_longitude, end_latitude, EarthRad = EarthRad, Warn = FALSE)
 	
 	# Get starting new position (that will be overwritten until the collision point is found):
-	new_position <- EndPoint(start_longitude, start_latitude, bearing, distance_modifier * distance, EarthRad = EarthRad)[c("long", "lat")]
+	new_position <- EndPoint(start_longitude, start_latitude, bearing, distance_modifier * distance, EarthRad = EarthRad)[c("longitude", "latitude")]
 	
 	# Whilst the collision point has not been found:
-	while(all.equal(as.vector(GreatCircleDistanceFromLongLat(continent_longitude, continent_latitude, new_position$long, new_position$lat, EarthRad = EarthRad, Warn = FALSE)), continent_radius) != TRUE) {
+	while(all.equal(as.vector(GreatCircleDistanceFromLongLat(continent_longitude, continent_latitude, new_position$longitude, new_position$latitude, EarthRad = EarthRad, Warn = FALSE)), continent_radius) != TRUE) {
 		
 		# Record current distance of new position from centre of continent:
-		current_distance_from_centre <- as.vector(GreatCircleDistanceFromLongLat(continent_longitude, continent_latitude, new_position$long, new_position$lat, EarthRad = EarthRad, Warn = FALSE))
+		current_distance_from_centre <- as.vector(GreatCircleDistanceFromLongLat(continent_longitude, continent_latitude, new_position$longitude, new_position$latitude, EarthRad = EarthRad, Warn = FALSE))
 		
 		# Do we need to increase the distance modifier value?:
 		if(current_distance_from_centre < continent_radius) {
@@ -58,10 +58,10 @@ DivingBoard <- function(start_longitude, start_latitude, end_longitude, end_lati
 		}
 		
 		# Store the new new position (so we can ask if this is better):
-		new_new_position <- EndPoint(start_longitude, start_latitude, bearing, limit * distance, EarthRad = EarthRad)[c("long", "lat")]
+		new_new_position <- EndPoint(start_longitude, start_latitude, bearing, limit * distance, EarthRad = EarthRad)[c("longitude", "latitude")]
 		
 		# Get new distance from continent centre based on potential better modifer:
-		new_distance_from_centre <- as.vector(GreatCircleDistanceFromLongLat(continent_longitude, continent_latitude, new_new_position$long, new_new_position$lat, EarthRad = EarthRad, Warn = FALSE))
+		new_distance_from_centre <- as.vector(GreatCircleDistanceFromLongLat(continent_longitude, continent_latitude, new_new_position$longitude, new_new_position$latitude, EarthRad = EarthRad, Warn = FALSE))
 		
 		# If new distance is closer to continent radius:
 		if(abs(current_distance_from_centre - continent_radius) > abs(new_distance_from_centre - continent_radius)) {

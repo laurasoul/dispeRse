@@ -135,13 +135,13 @@ TreeWalkerContinuous <- function(tree, slon = 0, slat = 0, niter = 1000, steplen
 				step_fraction <- edge_start_time - step_times[start_step]
 				
 				# Make first step to join branch beginning to first step:
-				first_step <- EndPoint(slong = slon, slat = slat, bearing = runif(1, 0, 360), distance = step_fraction * abs(rnorm(1, steplengthmean, steplengthsd)), EarthRad = EarthRad)
+				first_step <- EndPoint(longitude = slon, latitude = slat, bearing = runif(1, 0, 360), distance = step_fraction * abs(rnorm(1, steplengthmean, steplengthsd)), EarthRad = EarthRad)
 				
 				# Record starting longitude:
-				start_lon <- first_step$long
+				start_lon <- first_step$longitude
 				
 				# Record starting latitude:
-				start_lat <- first_step$lat
+				start_lat <- first_step$latitude
 				
 			}
 			
@@ -161,13 +161,13 @@ TreeWalkerContinuous <- function(tree, slon = 0, slat = 0, niter = 1000, steplen
 				step_matrix[3, match(i, colnames(step_matrix))] <- start_lat
 				
 				# Make next step:
-				next_step <- EndPoint(slong = start_lon, slat = start_lat, bearing = runif(1, 0, 360), distance = abs(rnorm(1, steplengthmean, steplengthsd)), EarthRad = EarthRad)
+				next_step <- EndPoint(longitude = start_lon, latitude = start_lat, bearing = runif(1, 0, 360), distance = abs(rnorm(1, steplengthmean, steplengthsd)), EarthRad = EarthRad)
 				
 				# Update starting longitude:
-				start_lon <- next_step$long
+				start_lon <- next_step$longitude
 				
 				# Update starting latitude:
-				start_lat <- next_step$lat
+				start_lat <- next_step$latitude
 				
 			}
 			
@@ -187,13 +187,13 @@ TreeWalkerContinuous <- function(tree, slon = 0, slat = 0, niter = 1000, steplen
 				step_fraction <- (step_times[end_step] - edge_end_time) / step_size
 				
 				# Make actual last step to end of branch:
-				last_step <- EndPoint(slong = step_matrix[2, as.character(end_step)], slat = step_matrix[3, as.character(end_step)], bearing = runif(1, 0, 360), distance = step_fraction * abs(rnorm(1, steplengthmean, steplengthsd)), EarthRad = EarthRad)
+				last_step <- EndPoint(longitude = step_matrix[2, as.character(end_step)], latitude = step_matrix[3, as.character(end_step)], bearing = runif(1, 0, 360), distance = step_fraction * abs(rnorm(1, steplengthmean, steplengthsd)), EarthRad = EarthRad)
 				
 				# Record ending longitude:
-				elon <- last_step$long
+				elon <- last_step$longitude
 				
 				# Record ending latitude:
-				elat <- last_step$lat			
+				elat <- last_step$latitude
 				
 			}
 			
@@ -216,13 +216,13 @@ TreeWalkerContinuous <- function(tree, slon = 0, slat = 0, niter = 1000, steplen
 			step_fraction <- (edge_start_time - edge_end_time) / step_size
 			
 			# Make fractional step proportioned by branch length:
-			branch_step <- EndPoint(slong = slon, slat = slat, bearing = runif(1, 0, 360), distance = step_fraction * abs(rnorm(1, steplengthmean, steplengthsd)), EarthRad = EarthRad)
+			branch_step <- EndPoint(longitude = slon, latitude = slat, bearing = runif(1, 0, 360), distance = step_fraction * abs(rnorm(1, steplengthmean, steplengthsd)), EarthRad = EarthRad)
 			
 			# Update starting longitude:
-			elon <- branch_step$long
+			elon <- branch_step$longitude
 			
 			# Update starting latitude:
-			elat <- branch_step$lat
+			elat <- branch_step$latitude
 			
 			# Compile output:
 			output <- matrix(c(edge_start_time, edge_end_time, slon, elon, slat, elat), nrow=3, byrow=TRUE, dimnames=list(c("step_time", "step_long", "step_lat"), c("begin", "end")))

@@ -38,10 +38,10 @@ OpenSpots <- function(longitudes, latitudes, min_separation, EarthRad = 6367.444
 				new_bearing_2 <- (BearingBetweenTwoLongLatPoints(longitudes[i], latitudes[i], longitudes[j], latitudes[j]) + spherical_angle) %% 360
 				
 				# Get lat-long coordinates of first possible site new continent:
-				new_continent_1 <- EndPoint(longitudes[i], latitudes[i], new_bearing_1, min_separation, EarthRad = EarthRad)[c("long", "lat")]
+				new_continent_1 <- EndPoint(longitudes[i], latitudes[i], new_bearing_1, min_separation, EarthRad = EarthRad)[c("longitude", "latitude")]
 				
 				# Get lat-long coordinates of second possible site new continent:
-				new_continent_2 <- EndPoint(longitudes[i], latitudes[i], new_bearing_2, min_separation, EarthRad = EarthRad)[c("long", "lat")]
+				new_continent_2 <- EndPoint(longitudes[i], latitudes[i], new_bearing_2, min_separation, EarthRad = EarthRad)[c("longitude", "latitude")]
 				
 				# Add two new spots to open spots list:
 				open_spots <- rbind(open_spots, rbind(unlist(new_continent_1), unlist(new_continent_2)))

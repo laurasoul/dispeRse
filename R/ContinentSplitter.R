@@ -78,13 +78,13 @@ ContinentSplitter <- function(min_separation, longitudes, latitudes, continent_n
 		random_distance <- runif(1, 0, min_separation)
 		
 		# Define point at which cut will begin:
-		cut_point_1 <- EndPoint(random_link_start_longitude, random_link_start_latitude, random_link_start_bearing, random_distance, EarthRad = EarthRad)[c("long", "lat")]
+		cut_point_1 <- EndPoint(random_link_start_longitude, random_link_start_latitude, random_link_start_bearing, random_distance, EarthRad = EarthRad)[c("longitude", "latitude")]
 		
 		# Get cut bearing (will be used to describe Great Circle made by cut):
 		cut_bearing <- runif(1, 0, 360)
 		
 		# Pick second point on Great Circle to use to describe it:
-		cut_point_2 <- EndPoint(cut_point_1$long, cut_point_1$lat, cut_bearing, min_separation, EarthRad = EarthRad)[c("long", "lat")]
+		cut_point_2 <- EndPoint(cut_point_1$longitude, cut_point_1$latitude, cut_bearing, min_separation, EarthRad = EarthRad)[c("longitude", "latitude")]
 		
 		# If there are protected links (need to check if cut line intersects them and if so redraw):
 		if(nrow(protected_links) > 0) {
@@ -113,7 +113,7 @@ ContinentSplitter <- function(min_separation, longitudes, latitudes, continent_n
 				cut_bearing <- runif(1, 0, 360)
 				
 				# Pick new second point on Great Circle to use to describe it:
-				cut_point_2 <- EndPoint(cut_point_1$long, cut_point_1$lat, cut_bearing, min_separation, EarthRad = EarthRad)[c("long", "lat")]
+				cut_point_2 <- EndPoint(cut_point_1$longitude, cut_point_1$latitude, cut_bearing, min_separation, EarthRad = EarthRad)[c("longitude", "latitude")]
 				
 				# Overwrite intersection occurs:
 				intersection_occurs <- FALSE
@@ -140,10 +140,10 @@ ContinentSplitter <- function(min_separation, longitudes, latitudes, continent_n
 		}
 		
 		# Get first pole to the cut line equator:
-		cut_line_pole_1 <- EndPoint(cut_point_1$long, cut_point_1$lat, (cut_bearing + 90) %% 360, 0.5 * pi * EarthRad, EarthRad = EarthRad)[c("long", "lat")]
+		cut_line_pole_1 <- EndPoint(cut_point_1$longitude, cut_point_1$latitude, (cut_bearing + 90) %% 360, 0.5 * pi * EarthRad, EarthRad = EarthRad)[c("longitude", "latitude")]
 		
 		# Get second pole to the cut line equator:
-		cut_line_pole_2 <- EndPoint(cut_point_1$long, cut_point_1$lat, (cut_bearing - 90) %% 360, 0.5 * pi * EarthRad, EarthRad = EarthRad)[c("long", "lat")]
+		cut_line_pole_2 <- EndPoint(cut_point_1$longitude, cut_point_1$latitude, (cut_bearing - 90) %% 360, 0.5 * pi * EarthRad, EarthRad = EarthRad)[c("longitude", "latitude")]
 		
 		# Get Great Circle distances from first pole:
 		GC_distances_to_pole_1 <- One2ManyGreatCircleDistance(cut_line_pole_1$long, cut_line_pole_1$lat, longitudes, latitudes, EarthRad = EarthRad)
