@@ -26,21 +26,17 @@
 #' @examples
 #' #DispersalSimulator(N_steps = 100, organism_multiplier = 5, N_continents = 2, radius = 2000,
 #' #  start_configuration = "random separate", squishiness = 0.25, stickiness = 0.95,
-#' #  continent_speed_mean = 5, continent_speed_sd = 2, organism_step_sd = 100, b = 0.1, d = 0.05,
-#' #  EarthRad = 6367.4447,  polar = FALSE)
+#' #  continent_speed_mean = 5, continent_speed_sd = 2, organism_step_sd = 100, sweepstakes = 0, 
+#' #  b = 0.1, d = 0.05, EarthRad = 6367.4447,  polar = FALSE)
 
-# Outputs:
-# - N separated continents (distance matrix with values less than 2 radii)
-# - Long-lat of each circle centre
-# - Bearings after each step change
-# - Total land area all circles - minus
+# Total land area
 
 # Use this line for debugging (sets values for input variables):
 #N_steps = 200; organism_multiplier = 1; N_continents = 7; radius = 2000; start_configuration = "supercontinent"; squishiness = 0.25; stickiness = 0.95; continent_speed_mean = 5; continent_speed_sd = 2; organism_step_sd = 100; organism_step_shape = 1; b = 0.1; d = 0.05; sweepstakes = 0; EarthRad = 6367.4447; polar = FALSE
 
 DispersalSimulator <- function(N_steps = 1000, organism_multiplier = 5, N_continents = 7, radius = 2000, start_configuration = "random separate", squishiness = 0.25, stickiness = 0.95, continent_speed_mean = 5, continent_speed_sd = 2, organism_step_sd = 100, organism_step_shape = 1, b = 0.1, d = 0.05, sweepstakes = 0, EarthRad = 6367.4447, polar = FALSE) {
 
-# Need more top-level conditionals, e.g. N steps must be a positive integer, speed mean and sd must also be positive
+# Need more top-level conditionals, e.g. N steps must be a positive integer, speed mean and sd must be non-negative
 # Others may be caught by subfunctions so no need to repeat
 # Add progress bar?
 	
@@ -84,10 +80,10 @@ DispersalSimulator <- function(N_steps = 1000, organism_multiplier = 5, N_contin
 		furthest_continent_GC_distance <- (0.5 * pi * EarthRad) - min(abs(euler_GC_distances - (0.5 * pi * EarthRad)))
 		
 		# Randomly draw a continent speed:
-		continent_speed <- rnorm(1, mean = continent_speed_mean, sd = continent_speed_sd)
+		continent_speed <- rnorm(n = 1, mean = continent_speed_mean, sd = continent_speed_sd)
 		
-		# If a negative or zero speed is picked then redraw:
-		while(continent_speed <= 0) continent_speed <- rnorm(1, mean = continent_speed_mean, sd = continent_speed_sd)
+		# If a negative speed is picked then redraw:
+		while(continent_speed < 0) continent_speed <- rnorm(n = 1, mean = continent_speed_mean, sd = continent_speed_sd)
 		
 		# Set degree change per step (effectively the speed):
 		degrees_per_step[i] <- continent_speed / (2 * pi * furthest_continent_GC_distance) * 360

@@ -56,8 +56,8 @@ Nothing yet.
 \examples{
 #DispersalSimulator(N_steps = 100, organism_multiplier = 5, N_continents = 2, radius = 2000,
 #  start_configuration = "random separate", squishiness = 0.25, stickiness = 0.95,
-#  continent_speed_mean = 5, continent_speed_sd = 2, organism_step_sd = 100, b = 0.1, d = 0.05,
-#  EarthRad = 6367.4447,  polar = FALSE)
+#  continent_speed_mean = 5, continent_speed_sd = 2, organism_step_sd = 100, sweepstakes = 0,
+#  b = 0.1, d = 0.05, EarthRad = 6367.4447,  polar = FALSE)
 }
 \author{
 Laura C. Soul \email{lauracsoul@gmail.com} and Graeme T. Lloyd \email{graemetlloyd@gmail.com}
