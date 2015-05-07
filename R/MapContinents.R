@@ -25,6 +25,7 @@ MapContinents <- function(continent_centres, radius, xlim = c(-180, 180), ylim =
 # Ensure resolution has a minimum value of say, 100.
 # Top-level conditionals to check values make sense, e.g., long-lat within limits.
 # Allow borders of continents to be plotted?
+# Remove borders of plot/axes? Or allow option to.
 	
 	# Make empty plot:
 	plot(x = c(1, 1), xlim = xlim, ylim = c(-90, 90), type = "n", xlab = "Longitude", ylab = "Latitude", ...)
