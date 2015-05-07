@@ -374,4 +374,32 @@ barplot(start_N_animals_per_ring / sphere_areas, main="Start")
 barplot(end_N_animals_per_ring / sphere_areas, main="End")
 ```
 
+Animated results of a dispersal simulation run:
+
+```r
+# Load libraries (must have ImageMagick installed too):
+library(dispeRse)
+library(animation)
+
+# Run a simulation (note, may crash so re-run this line until it works without errors):
+out <- DispersalSimulator(N_steps = 200, organism_multiplier = 1, radius = 2000, continent_speed_mean = 50, continent_speed_sd = 20, organism_step_sd = 1000, start_configuration = "supercontinent", stickiness = 0.5)
+
+# Start outputting to GIF:
+saveGIF({
+
+	# For each time step:
+	for(i in 1:201) {
+		
+		# Plot continents:
+		MapContinents(cbind(out$continent_positions[, i, 1], out$continent_positions[, i, 2]), radius = 2000)
+
+		# Plot organisms:
+		points(x = out$organism_longitudes[, i], y = out$organism_latitudes[, i], pch=19, col="red")
+
+	}
+
+# Additional output information:
+}, movie.name = "test.gif", interval = 0.1, nmax = 201, ani.width = 600, ani.height = 600)
+```
+
 More to follow.
