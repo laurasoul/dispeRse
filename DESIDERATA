@@ -21,6 +21,7 @@ A list of things we might want to add in future:
 - Remove geiger dependency if possible.
 - Make function restart if complete extinction happens before end of time window.
 - Check EarthRad propagates correctly through all functions and subfunctions.
+- Add option to turn animals off (and just simulate continents).
 
 Already added:
 
