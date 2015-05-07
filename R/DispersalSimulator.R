@@ -565,12 +565,14 @@ DispersalSimulator <- function(N_steps = 1000, organism_multiplier = 5, N_contin
 							# Case if a sweeptakes dispersal occurs:
 							if(runif(n = 1, min = 0, max = 1) <= sweepstakes) {
 							
-# SWEEPSTAKES
-landing_spot <- MagicPortal(start_longitude = as.vector(starting[1]), start_latitude = as.vector(starting[2]), end_longitude = moveto$longitude, end_latitude = moveto$latitude, start_continent = on_cont, touching_continents = as.vector(unlist(tail(touching, n = 1))), continent_centres = position[,t,], continent_radius = radius, EarthRad = EarthRad)
+								# Find landing spot after sweepstakes dispersal:
+								landing_spot <- MagicPortal(start_longitude = as.vector(starting[1]), start_latitude = as.vector(starting[2]), end_longitude = moveto$longitude, end_latitude = moveto$latitude, start_continent = on_cont, touching_continents = as.vector(unlist(tail(touching, n = 1))), continent_centres = position[,t,], continent_radius = radius, EarthRad = EarthRad)
 								
-new_cont <- landing_spot$continent
+								# Get new continent after sweepstakes dispersal:
+								new_cont <- landing_spot$continent
 								
-moveto <- landing_spot[c("longitude", "latitude")]
+								# Update the move-to variable with the landing spot for the sweepstakes dispersal:
+								moveto <- landing_spot[c("longitude", "latitude")]
 								
 							# Case if no sweepstakes dispersal occurs:
 							} else  {
@@ -610,18 +612,27 @@ moveto <- landing_spot[c("longitude", "latitude")]
 							# Case if a sweeptakes dispersal occurs:
 							if(runif(n = 1, min = 0, max = 1) <= sweepstakes) {
 								
-# SWEEPSTAKES
-landing_spot <- MagicPortal(start_longitude = as.vector(starting[1]), start_latitude = as.vector(starting[2]), end_longitude = moveto$longitude, end_latitude = moveto$latitude, start_continent = on_cont, touching_continents = as.vector(unlist(tail(touching, n = 1))), continent_centres = position[,t,], continent_radius = radius, EarthRad = EarthRad)
+								# Get landing spot following sweepstakes dispersal:
+								landing_spot <- MagicPortal(start_longitude = as.vector(starting[1]), start_latitude = as.vector(starting[2]), end_longitude = moveto$longitude, end_latitude = moveto$latitude, start_continent = on_cont, touching_continents = as.vector(unlist(tail(touching, n = 1))), continent_centres = position[,t,], continent_radius = radius, EarthRad = EarthRad)
 								
-new_cont <- landing_spot$continent
+								# Update continent taxon found on:
+								new_cont <- landing_spot$continent
 								
-moveto <- landing_spot[c("longitude", "latitude")]
+								# Update move-to variable with new position:
+								moveto <- landing_spot[c("longitude", "latitude")]
 								
+								# Update continent organism found on:
 								rownames(organism_long_matrix)[m] <- new_cont
+								
+								# Update continent organism found on:
 								rownames(organism_lat_matrix)[m] <- new_cont
 								
+								# If continent is different to starting continent:
 								if(new_cont != on_cont) {
+									
+									# Add sweepstakes dispersal to dispersals matrix:
 									dispersals <- rbind(dispersals, c(on_cont, new_cont, m, t, ot + 1))
+									
 								}
 								
 							# Case if no sweepstakes dispersal occurs:
@@ -642,8 +653,10 @@ moveto <- landing_spot[c("longitude", "latitude")]
 							
 						}
 						
+						# Update organism position in longitude matrix:
                     	organism_long_matrix[m, ot + 1] <- moveto$longitude
 
+						# Update organism position in latitude matrix:
                     	organism_lat_matrix[m, ot + 1] <- moveto$latitude
 						
                 	}
