@@ -17,6 +17,8 @@
 
 ContinentSplitter <- function(min_separation, longitudes, latitudes, continent_numbers, protected_links = matrix(nrow = 0, ncol = 2), EarthRad = 6367.4447) {
 
+# Should really find bearings to beginning and ends of protected links from cut point to check that there is available space when drawing a bearing for cutting along.
+	
 	# Check min separation is not greater than 1/2 circumference of planet:
 	if(min_separation > (pi * EarthRad)) stop("ERROR: Cannot have minimum separation larger than half the circumference of the planet!")
 	
@@ -40,19 +42,53 @@ ContinentSplitter <- function(min_separation, longitudes, latitudes, continent_n
 			
 		}
 		
+		# If there are possible additional protected links (by implication as they would lead to impossible positions to find a cut line from):
+		if(nrow(protected_links) > 1) {
+		
+			# For each protected link excep the last:
+			for(i in 1:(nrow(protected_links) - 1)) {
+				
+				# For each next protected link to the last:
+				for(j in (i + 1):nrow(protected_links)) {
+					
+					# Get continents forming the two links:
+					continents <- rle(sort(as.vector(protected_links[c(i, j), ])))
+					
+					# If any continents appear twice (i.e., are links linked?):
+					if(any(continents$lengths == 2)) {
+						
+						# Get ends of linked-links (to check if these form a currently unprotected link that should really be considered protected):
+						continents <- as.character(continents$values[continents$lengths == 1])
+						
+						# If link exists and is unprotected:
+						if(unprotected_links[continents[1], continents[2]] == 1) {
+							
+							# Remove link from unprotected links matrix (i.e., set to zero):
+							unprotected_links[continents[1], continents[2]] <- unprotected_links[continents[2], continents[1]] <- 0
+							
+						}
+						
+					}
+					
+				}
+				
+			}
+
+		}
+		
 	}
 	
 	# If there are unprotected links (and can continue with separation):
 	if(sum(unprotected_links[lower.tri(unprotected_links)]) > 0) {
 	
 		# Pick random starting link (from continent to continent):
-		start_link <- which(intercontinent_links == 1, arr.ind=TRUE)[sample(1:sum(intercontinent_links == 1))[1],]
+		start_link <- which(intercontinent_links == 1, arr.ind = TRUE)[sample(1:sum(intercontinent_links == 1))[1],]
 		
 		# Whilst randomly chosen link is a protected link:
 		while(unprotected_links[start_link[1], start_link[2]] == 0) {
 			
 			# Pick new random starting link (from continent to continent):
-			start_link <- which(intercontinent_links == 1, arr.ind=TRUE)[sample(1:sum(intercontinent_links == 1))[1],]
+			start_link <- which(intercontinent_links == 1, arr.ind = TRUE)[sample(1:sum(intercontinent_links == 1))[1],]
 			
 		}
 		
@@ -98,12 +134,12 @@ ContinentSplitter <- function(min_separation, longitudes, latitudes, continent_n
 				# Find if there are any intersections:
 				intersections <- ArcIntersection(longitudes[match(as.character(protected_links[i, ])[1], colnames(intercontinent_links))], latitudes[match(as.character(protected_links[i, ])[1], colnames(intercontinent_links))], longitudes[match(as.character(protected_links[i, ])[2], colnames(intercontinent_links))], latitudes[match(as.character(protected_links[i, ])[2], colnames(intercontinent_links))], cut_point_1$long, cut_point_1$lat, cut_point_2$long, cut_point_2$lat, type = c("arc", "GC"), EarthRad = EarthRad)
 			
-				# If there are intersectiosn update intersection_occurs:
+				# If there are intersections update intersection_occurs:
 				if(nrow(intersections) > 0) intersection_occurs <- TRUE
 				
 			}
 			
-			# Set up counter (to be used rto warn user if loop gets stuck):
+			# Set up counter (to be used to warn user if loop gets stuck):
 			counter <- 1
 			
 			# Whilst there is an intersection between the cut line and a protected link:
