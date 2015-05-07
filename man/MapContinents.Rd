@@ -21,6 +21,8 @@ MapContinents(continent_centres, radius, xlim = c(-180, 180), ylim = c(-90,
 \item{sea_colour}{The colour value to use to plot the sea.}
 
 \item{land_colour}{The colour value used to plot the land.}
+
+\item{...}{Other arguments to be passed to \link{plot}.}
 }
 \value{
 A Mercator projection plot of each continent.

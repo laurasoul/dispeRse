@@ -1,6 +1,7 @@
 #' Maps continents on Mercator projection
 #'
 #' Given a set of continent centres and their radius plots them on a Mercator projection
+#'
 #' @param continent_centres A two-column matrix of decimalised longitudes (first column) and latitudes (second column).
 #' @param radius A single radius value for each continent in kilometres.
 #' @param xlim A single radius value for each continent in kilometres.
@@ -8,6 +9,7 @@
 #' @param resolution The number of points to use to plot each continent.
 #' @param sea_colour The colour value to use to plot the sea.
 #' @param land_colour The colour value used to plot the land.
+#' @param ... Other arguments to be passed to \link{plot}.
 #' @return A Mercator projection plot of each continent.
 #' @details Nothing yet.
 #' @author Graeme T. Lloyd \email{graemetlloyd@@gmail.com}
