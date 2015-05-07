@@ -125,7 +125,7 @@ MapContinents <- function(continent_centres, radius, xlim = c(-180, 180), ylim =
 	
 	}
 	
-	# If there are continent(s) at the North pole:
+	# If there are continent(s) that cross the date line:
 	if(length(continents_across_date_line) > 0) {
 	
 		# For each continent that crosses the date line:
@@ -138,7 +138,10 @@ MapContinents <- function(continent_centres, radius, xlim = c(-180, 180), ylim =
 			side_one <- continent_polygons[[i]][(breaks[1] + 1):breaks[2], ]
 			
 			# Get second side (second "half" of the polygon):
-			side_two <- continent_polygons[[i]][c(min(c(breaks[2] + 1, resolution)):resolution, 1:breaks[1]), ]
+			if(breaks[2] != resolution) side_two <- continent_polygons[[i]][c((breaks[2] + 1):resolution, 1:breaks[1]), ]
+			
+			# Get second side (second "half" of the polygon):
+			if(breaks[2] == resolution) side_two <- continent_polygons[[i]][c(1:breaks[1]), ]
 			
 			# Add extra points to draw first polygon up to the date line:
 			side_one <- rbind(side_one, matrix(c(as.vector(rep((side_one[1, 1] / abs(side_one[1, 1])) * 180, 2)), as.vector(c(side_one[nrow(side_one), 2], side_one[1, 2]))), ncol = 2))
