@@ -66,6 +66,9 @@ ContinentSplitter <- function(min_separation, longitudes, latitudes, continent_n
 							# Remove link from unprotected links matrix (i.e., set to zero):
 							unprotected_links[continents[1], continents[2]] <- unprotected_links[continents[2], continents[1]] <- 0
 							
+							# Add new protected links to list:
+							protected_links <- rbind(protected_links, sort(as.numeric(c(continents[2], continents[1]))))
+							
 						}
 						
 					}
@@ -81,77 +84,90 @@ ContinentSplitter <- function(min_separation, longitudes, latitudes, continent_n
 	# If there are unprotected links (and can continue with separation):
 	if(sum(unprotected_links[lower.tri(unprotected_links)]) > 0) {
 	
-		# Pick random starting link (from continent to continent):
-		start_link <- which(intercontinent_links == 1, arr.ind = TRUE)[sample(1:sum(intercontinent_links == 1))[1],]
+		# If all continents are found in protected links (then clumps define the answer and splitting must occur based on these):
+		if(any(is.na(match(as.numeric(continent_numbers), protected_links)))) {
 		
-		# Whilst randomly chosen link is a protected link:
-		while(unprotected_links[start_link[1], start_link[2]] == 0) {
-			
-			# Pick new random starting link (from continent to continent):
-			start_link <- which(intercontinent_links == 1, arr.ind = TRUE)[sample(1:sum(intercontinent_links == 1))[1],]
-			
-		}
-		
-		# Define start links by continent numbers:
-		start_link <- colnames(intercontinent_links)[start_link]
-		
-		# Get starting longitude for randomly selected link:
-		random_link_start_longitude <- longitudes[match(start_link[1], colnames(intercontinent_links))]
-		
-		# Get starting latitude for randomly selected link:
-		random_link_start_latitude <- latitudes[match(start_link[1], colnames(intercontinent_links))]
-		
-		# Get ending longitude for randomly selected link:
-		random_link_end_longitude <- longitudes[match(start_link[2], colnames(intercontinent_links))]
-		
-		# Get ending latitude for randomly selected link:
-		random_link_end_latitude <- latitudes[match(start_link[2], colnames(intercontinent_links))]
-		
-		# Get bearing from start of random link to end of random link:
-		random_link_start_bearing <- BearingBetweenTwoLongLatPoints(random_link_start_longitude, random_link_start_latitude, random_link_end_longitude, random_link_end_latitude)
-		
-		# Pick a random distance along the link:
-		random_distance <- runif(1, 0, min_separation)
-		
-		# Define point at which cut will begin:
-		cut_point_1 <- EndPoint(random_link_start_longitude, random_link_start_latitude, random_link_start_bearing, random_distance, EarthRad = EarthRad)[c("longitude", "latitude")]
-		
-		# Get cut bearing (will be used to describe Great Circle made by cut):
-		cut_bearing <- runif(1, 0, 360)
-		
-		# Pick second point on Great Circle to use to describe it:
-		cut_point_2 <- EndPoint(cut_point_1$longitude, cut_point_1$latitude, cut_bearing, min_separation, EarthRad = EarthRad)[c("longitude", "latitude")]
-		
-		# If there are protected links (need to check if cut line intersects them and if so redraw):
-		if(nrow(protected_links) > 0) {
-			
-			# Variable to switch to true if intersection is found:
-			intersection_occurs <- FALSE
+			# Create empty vector to store protected clumps:
+			protected_clumps <- vector(mode="character")
 			
 			# For each protected link:
 			for(i in 1:nrow(protected_links)) {
 				
-				# Find if there are any intersections:
-				intersections <- ArcIntersection(longitudes[match(as.character(protected_links[i, ])[1], colnames(intercontinent_links))], latitudes[match(as.character(protected_links[i, ])[1], colnames(intercontinent_links))], longitudes[match(as.character(protected_links[i, ])[2], colnames(intercontinent_links))], latitudes[match(as.character(protected_links[i, ])[2], colnames(intercontinent_links))], cut_point_1$long, cut_point_1$lat, cut_point_2$long, cut_point_2$lat, type = c("arc", "GC"), EarthRad = EarthRad)
-			
-				# If there are intersections update intersection_occurs:
-				if(nrow(intersections) > 0) intersection_occurs <- TRUE
+				# Search for matches of continents involved in link with clumps found so far:
+				clump_matches <- unique(c(WhichSupercontinent(protected_links[i, 1], protected_clumps), WhichSupercontinent(protected_links[i, 2], protected_clumps)))
+				
+				# If no matching clump, then make new clump of continents:
+				if(length(clump_matches) == 0) protected_clumps <- c(protected_clumps, paste(sort(protected_links[i, ]), collapse="&"))
+				
+				# If matching clump found add new continent(s) to it:
+				if(length(clump_matches) == 1) protected_clumps[clump_matches] <- paste(sort(unique(c(as.numeric(unlist(strsplit(protected_clumps[clump_matches], "&"))), protected_links[i, ]))), collapse="&")
 				
 			}
 			
-			# Set up counter (to be used to warn user if loop gets stuck):
-			counter <- 1
-			
-			# Whilst there is an intersection between the cut line and a protected link:
-			while(intersection_occurs) {
-			
-				# Get new cut bearing (will be used to describe Great Circle made by cut):
-				cut_bearing <- runif(1, 0, 360)
+			# If only one continent exists formed of the protectde links:
+			if(length(protected_clumps) == 1) {
 				
-				# Pick new second point on Great Circle to use to describe it:
-				cut_point_2 <- EndPoint(cut_point_1$longitude, cut_point_1$latitude, cut_bearing, min_separation, EarthRad = EarthRad)[c("longitude", "latitude")]
+				# Make single clump from all continents:
+				clumps <- paste(continent_numbers, collapse="&")
 				
-				# Overwrite intersection occurs:
+				# Warn user that no separation can be made:
+				print("WARNING: Cannot separate continent as all links are protected.")
+				
+			}
+			
+			# If two or more clumps are found have these be the output:
+			if(length(protected_clumps) >= 2) clumps <- protected_clumps
+			
+		# If separation line is not decided by protected links defining continental clumps:
+		} else {
+			
+# If only one unprotected link then just sever this and move on! (Will be faster)
+			
+			# Pick random starting link (from continent to continent):
+			start_link <- which(intercontinent_links == 1, arr.ind = TRUE)[sample(1:sum(intercontinent_links == 1))[1],]
+			
+			# Whilst randomly chosen link is a protected link:
+			while(unprotected_links[start_link[1], start_link[2]] == 0) {
+				
+				# Pick new random starting link (from continent to continent):
+				start_link <- which(intercontinent_links == 1, arr.ind = TRUE)[sample(1:sum(intercontinent_links == 1))[1],]
+				
+			}
+			
+			# Define start links by continent numbers:
+			start_link <- colnames(intercontinent_links)[start_link]
+			
+			# Get starting longitude for randomly selected link:
+			random_link_start_longitude <- longitudes[match(start_link[1], colnames(intercontinent_links))]
+			
+			# Get starting latitude for randomly selected link:
+			random_link_start_latitude <- latitudes[match(start_link[1], colnames(intercontinent_links))]
+			
+			# Get ending longitude for randomly selected link:
+			random_link_end_longitude <- longitudes[match(start_link[2], colnames(intercontinent_links))]
+			
+			# Get ending latitude for randomly selected link:
+			random_link_end_latitude <- latitudes[match(start_link[2], colnames(intercontinent_links))]
+			
+			# Get bearing from start of random link to end of random link:
+			random_link_start_bearing <- BearingBetweenTwoLongLatPoints(random_link_start_longitude, random_link_start_latitude, random_link_end_longitude, random_link_end_latitude)
+			
+			# Pick a random distance along the link:
+			random_distance <- runif(1, 0, min_separation)
+			
+			# Define point at which cut will begin:
+			cut_point_1 <- EndPoint(random_link_start_longitude, random_link_start_latitude, random_link_start_bearing, random_distance, EarthRad = EarthRad)[c("longitude", "latitude")]
+			
+			# Get cut bearing (will be used to describe Great Circle made by cut):
+			cut_bearing <- runif(1, 0, 360)
+			
+			# Pick second point on Great Circle to use to describe it:
+			cut_point_2 <- EndPoint(cut_point_1$longitude, cut_point_1$latitude, cut_bearing, min_separation, EarthRad = EarthRad)[c("longitude", "latitude")]
+			
+			# If there are protected links (need to check if cut line intersects them and if so redraw):
+			if(nrow(protected_links) > 0) {
+				
+				# Variable to switch to true if intersection is found:
 				intersection_occurs <- FALSE
 				
 				# For each protected link:
@@ -160,42 +176,70 @@ ContinentSplitter <- function(min_separation, longitudes, latitudes, continent_n
 					# Find if there are any intersections:
 					intersections <- ArcIntersection(longitudes[match(as.character(protected_links[i, ])[1], colnames(intercontinent_links))], latitudes[match(as.character(protected_links[i, ])[1], colnames(intercontinent_links))], longitudes[match(as.character(protected_links[i, ])[2], colnames(intercontinent_links))], latitudes[match(as.character(protected_links[i, ])[2], colnames(intercontinent_links))], cut_point_1$long, cut_point_1$lat, cut_point_2$long, cut_point_2$lat, type = c("arc", "GC"), EarthRad = EarthRad)
 					
-					# If there are intersectiosn update intersection_occurs:
+					# If there are intersections update intersection_occurs:
 					if(nrow(intersections) > 0) intersection_occurs <- TRUE
 					
 				}
 				
-				# Update counter:
-				counter <- counter + 1
+				# Set up counter (to be used to warn user if loop gets stuck):
+				counter <- 1
 				
-				# Add stop in case this loop never closes:
-				if(counter == 10000) stop("ERROR: Model failed as cannot find clean separation cut line.")
-			
+				# Whilst there is an intersection between the cut line and a protected link:
+				while(intersection_occurs) {
+					
+					# Get new cut bearing (will be used to describe Great Circle made by cut):
+					cut_bearing <- runif(1, 0, 360)
+					
+					# Pick new second point on Great Circle to use to describe it:
+					cut_point_2 <- EndPoint(cut_point_1$longitude, cut_point_1$latitude, cut_bearing, min_separation, EarthRad = EarthRad)[c("longitude", "latitude")]
+					
+					# Overwrite intersection occurs:
+					intersection_occurs <- FALSE
+					
+					# For each protected link:
+					for(i in 1:nrow(protected_links)) {
+						
+						# Find if there are any intersections:
+						intersections <- ArcIntersection(longitudes[match(as.character(protected_links[i, ])[1], colnames(intercontinent_links))], latitudes[match(as.character(protected_links[i, ])[1], colnames(intercontinent_links))], longitudes[match(as.character(protected_links[i, ])[2], colnames(intercontinent_links))], latitudes[match(as.character(protected_links[i, ])[2], colnames(intercontinent_links))], cut_point_1$long, cut_point_1$lat, cut_point_2$long, cut_point_2$lat, type = c("arc", "GC"), EarthRad = EarthRad)
+						
+						# If there are intersectiosn update intersection_occurs:
+						if(nrow(intersections) > 0) intersection_occurs <- TRUE
+						
+					}
+					
+					# Update counter:
+					counter <- counter + 1
+					
+					# Add stop in case this loop never closes:
+					if(counter == 10000) stop("ERROR: Model failed as cannot find clean separation cut line.")
+					
+				}
+				
 			}
-				
+			
+			# Get first pole to the cut line equator:
+			cut_line_pole_1 <- EndPoint(cut_point_1$longitude, cut_point_1$latitude, (cut_bearing + 90) %% 360, 0.5 * pi * EarthRad, EarthRad = EarthRad)[c("longitude", "latitude")]
+			
+			# Get second pole to the cut line equator:
+			cut_line_pole_2 <- EndPoint(cut_point_1$longitude, cut_point_1$latitude, (cut_bearing - 90) %% 360, 0.5 * pi * EarthRad, EarthRad = EarthRad)[c("longitude", "latitude")]
+			
+			# Get Great Circle distances from first pole:
+			GC_distances_to_pole_1 <- One2ManyGreatCircleDistance(cut_line_pole_1$long, cut_line_pole_1$lat, longitudes, latitudes, EarthRad = EarthRad)
+			
+			# Get Great Circle distances from second pole:
+			GC_distances_to_pole_2 <- One2ManyGreatCircleDistance(cut_line_pole_2$long, cut_line_pole_2$lat, longitudes, latitudes, EarthRad = EarthRad)
+			
+			# Make first clump (those in first hemisphere):
+			first_clump <- paste(continent_numbers[which(GC_distances_to_pole_1 < (0.5 * pi * EarthRad))], collapse="&")
+			
+			# Make second clump (those in second hemisphere):
+			second_clump <- paste(continent_numbers[which(GC_distances_to_pole_2 < (0.5 * pi * EarthRad))], collapse="&")
+			
+			# Make vector of clumps:
+			clumps <- c(first_clump, second_clump)
+			
 		}
-		
-		# Get first pole to the cut line equator:
-		cut_line_pole_1 <- EndPoint(cut_point_1$longitude, cut_point_1$latitude, (cut_bearing + 90) %% 360, 0.5 * pi * EarthRad, EarthRad = EarthRad)[c("longitude", "latitude")]
-		
-		# Get second pole to the cut line equator:
-		cut_line_pole_2 <- EndPoint(cut_point_1$longitude, cut_point_1$latitude, (cut_bearing - 90) %% 360, 0.5 * pi * EarthRad, EarthRad = EarthRad)[c("longitude", "latitude")]
-		
-		# Get Great Circle distances from first pole:
-		GC_distances_to_pole_1 <- One2ManyGreatCircleDistance(cut_line_pole_1$long, cut_line_pole_1$lat, longitudes, latitudes, EarthRad = EarthRad)
-
-		# Get Great Circle distances from second pole:
-		GC_distances_to_pole_2 <- One2ManyGreatCircleDistance(cut_line_pole_2$long, cut_line_pole_2$lat, longitudes, latitudes, EarthRad = EarthRad)
-		
-		# Make first clump (those in first hemisphere):
-		first_clump <- paste(continent_numbers[which(GC_distances_to_pole_1 < (0.5 * pi * EarthRad))], collapse="&")
-		
-		# Make second clump (those in second hemisphere):
-		second_clump <- paste(continent_numbers[which(GC_distances_to_pole_2 < (0.5 * pi * EarthRad))], collapse="&")
-		
-		# Make vector of clumps:
-		clumps <- c(first_clump, second_clump)
-		
+			
 	# Case if no unprotected links:
 	} else {
 		
