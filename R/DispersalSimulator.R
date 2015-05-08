@@ -144,77 +144,79 @@ DispersalSimulator <- function(N_steps = 1000, organism_multiplier = 5, N_contin
 	# Number based on first time step (technically this should be zero as no steps have occurred, but here we are using one):
 	names(touching)[[1]] <- "1:1"
 	
-	#List to store which circles are in each supercontinent (new element added only when it changes)
+	# List to store which circles are in each supercontinent (new element added only when it changes)
 
-	#Array to store the positions of every continent at each time step
+	# Array to store the positions of every continent at each time step
 	position <- array(NA, c(N_continents, N_steps + 1, 2), c("continent", "timestep", "coordinate"))
 	position[, 1, 1] <- continent_starting_points[, "Longitude"]
 	position[, 1, 2] <- continent_starting_points[, "Latitude"]
 
 	temp_position <- matrix(nrow = N_continents, ncol = 2)
 
+# REPLACE THIS WITH PROGRESS BAR AT SOME POINT
 	progress <- seq(1, N_steps, floor(N_steps / 50))
 	cat("Starting time steps \n")
 	cat("Progress \n")
 	cat("- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - \n")
 
-	#for loops to move everything
+	# Main continent time step loop:
 	for (t in 2:(N_steps + 1)) {
 		
-		#distances apart before they move
+		# Distances continents are apart before moving:
 		starting_distances <- GreatCircleDistanceMatrix(position[, t - 1, 1], position[, t - 1, 2])
-
+		
 		for (k in 1:N_continents) {
-			#find current longlat of the circle k
+			
+			# Find current longlat of the kth continent:
 			start_long <- position[k, t - 1, 1]
 			start_lat <- position[k, t - 1, 2]
 
-			#Identify which supercontinent, and therefore which element of the euler pole and speed vectors, the circle k belongs to
+			# Identify which supercontinent, and therefore which element of the euler pole and speed vectors, the circle k belongs to
 			where <- WhichSupercontinent(k, tail(linked, n = 1)[[1]])
 
-			#Find distance of circle from pole
+			# Find distance of circle from pole
 			distance <- GreatCircleDistanceFromLongLat(long1 = start_long,lat1=start_lat, long2 = euler_pole_longitudes[where], lat2 = euler_pole_latitudes[where], Warn = FALSE)
 			
-			#Find bearing of circle from pole
+			# Find bearing of circle from pole
 			init_bearing <- BearingBetweenTwoLongLatPoints(euler_pole_longitudes[where], euler_pole_latitudes[where], start_long, start_lat)
 
-			#Find the new bearing of circle from pole according to the speed specified
+			# Find the new bearing of circle from pole according to the speed specified
 			new_bearing <- (init_bearing + degrees_per_step[where]) %% 360
 
-			#Find the new location of the circle
+			# Find the new location of the circle
 			new_loc <- EndPoint(euler_pole_longitudes[where], euler_pole_latitudes[where], new_bearing, distance, EarthRad = EarthRad)
 
-			#Add the new loction to the position matrix
+			# Add the new loction to the position matrix
 			temp_position[k, 1] <- new_loc$longitude
 			temp_position[k, 2] <- new_loc$latitude
 
 		}
 
-		#Matrix of the distances between each continent in their new positions, before these are set
+		# Matrix of the distances between each continent in their new positions, before these are set
 		new_distances <- GreatCircleDistanceMatrix(temp_position[, 1], temp_position[, 2])
 		
 		comp1 <- vector()
 		comp2 <- vector()
 
-		#Making a vector of whether any continents have collided and should be linked
+		# Making a vector of whether any continents have collided and thus should potentially be linked:
 		collisions <- matrix(nrow = 0, ncol = 2)
 		for (q in 1:(N_continents - 1)) {
 			for (p in (q + 1):N_continents) {
 				comp1 <- all.equal(new_distances[p, q], starting_distances[p, q])
 				comp2 <- new_distances[p, q] <= min_separation
 				if (comp1 != TRUE && comp2 == TRUE) {
-					collisions <- rbind(collisions, c(p, q))
+					collisions <- rbind(collisions, sort(c(p, q)))
 				}
 			}
 		}
 
-		#Matrix of euler poles and speeds for each individual continent for moving the animals later
+		# Matrix of euler poles and speeds for each individual continent for moving the animals later
 		organism_mover <- matrix(nrow = N_continents, ncol = 3)
 		for (clump in 1:length(tail(linked, n = 1)[[1]])) {
 			which_conts <- as.numeric(strsplit(tail(linked, n = 1)[[1]][[clump]], "&")[[1]])
 			organism_mover[which_conts, 1] <- rep(euler_pole_longitudes[clump], length(which_conts))
 			organism_mover[which_conts, 2] <- rep(euler_pole_latitudes[clump], length(which_conts))
-			#This bit will get overwritten if there are collisions
+			# This bit will get overwritten if there are collisions
 			organism_mover[which_conts, 3] <- rep(degrees_per_step[clump], length(which_conts))
 		}
 		
@@ -224,11 +226,16 @@ DispersalSimulator <- function(N_steps = 1000, organism_multiplier = 5, N_contin
 		# Moving continents back if there has only been one collision
 		while(nrow(collisions) > 0) {
 
+			print("Entering collision loop")
+			
 			# Set up vector to store proportional changes after collisions
 			proportion <- vector()
 
+			print("Entering coll loop")
+			
 			# Find out proportions to reduce to for all potential collisions
 			for (coll in 1:nrow(collisions)) {
+
 				cont_1 <- collisions[coll, 1]
 				cont_2 <- collisions[coll, 2]
 				where_1 <- WhichSupercontinent(cont_1, tail(linked, n = 1)[[1]])
@@ -243,78 +250,47 @@ DispersalSimulator <- function(N_steps = 1000, organism_multiplier = 5, N_contin
 				proportion[coll] <- ColliderReverser(min_separation, position[cont_1, t - 1, 1], position[cont_1, t - 1, 2], temp_position[cont_1, 1], temp_position[cont_1, 2], position[cont_2, t - 1, 1], position[cont_2, t - 1, 2], temp_position[cont_2, 1], temp_position[cont_2, 2], continent_1_euler_longitude, continent_1_euler_latitude, continent_2_euler_longitude, continent_2_euler_latitude, continent_1_degrees_per_step, continent_2_degrees_per_step, EarthRad = EarthRad, Warn = FALSE)
 			
 			}
+			
+			print("Leaving coll loop")
 
-			# Select proportion to move for first collision
-			first_collision <- match(min(proportion), proportion)
+			# Find the continents involved in the earliest collision(s):
+			cont_involved <- collisions[which(proportion == min(proportion)), ]
 
-			# Find the two continents that collided first
-			cont_involved <- sort(collisions[first_collision, ])
-
-			# Add to matrix of definite collisions that cannot be separated in the next step
+			# Ensure matrix structure:
+			if(!is.matrix(cont_involved)) cont_involved <- matrix(cont_involved, ncol = 2)
+			
+			# Add to matrix of definite collisions that cannot be separated in the next step:
 			perm_collisions <- rbind(perm_collisions, cont_involved)
 
-			# Move first clump back
-			head_of_collision_1 <- cont_involved[1]
-			where_1 <- WhichSupercontinent(head_of_collision_1, tail(linked, n = 1)[[1]])
-
-			#Find the other continents that were attached to the collider
-			all_involved <- as.numeric(strsplit(tail(linked, n = 1)[[1]][where_1], "&")[[1]])
-
-			#Update temporary positions based on new change in bearing for all the continents in one of the clumps
-			for (rev in 1:length(all_involved)) {
-				cont_to_rev <- all_involved[rev]
-				start_long <- position[cont_to_rev, t - 1, 1]
-				start_lat <- position[cont_to_rev, t - 1, 2]
-				distance <- GreatCircleDistanceFromLongLat(long1=start_long,lat1 = start_lat, long2 = euler_pole_longitudes[where_1], lat2 = euler_pole_latitudes[where_1], Warn = FALSE)
+			# Get list of continents to reverse:
+			cont_to_reverse <- as.numeric(unlist(strsplit(tail(linked, n = 1)[[1]][unique(apply(matrix(unique(sort(cont_involved)), nrow = 1), 2, WhichSupercontinent, supercontinents = tail(linked, n = 1)[[1]]))], "&")))
 			
-				#Find bearing of circle from pole
-				init_bearing <- BearingBetweenTwoLongLatPoints(euler_pole_longitudes[where_1], euler_pole_latitudes[where_1], start_long, start_lat)
-
-				#degrees to add
-				addition <- proportion[first_collision] * degrees_per_step[where_1]
-
-				#Find the new bearing of circle from pole according to the speed specified
-				new_bearing <- (init_bearing + addition) %% 360
-
-				#Find the new location of the circle
-				new_loc <- EndPoint(euler_pole_longitudes[where_1], euler_pole_latitudes[where_1], new_bearing, distance, EarthRad = EarthRad)
-
-				#Add the new loction to the position matrix
-				temp_position[cont_to_rev,1] <- new_loc$longitude
-				temp_position[cont_to_rev,2] <- new_loc$latitude
-
-				organism_mover[cont_to_rev,3] <- addition
-				
-			}
-
-			#Move the second clump back
-			head_of_collision_2 <- cont_involved[2]
-			where_2 <- WhichSupercontinent(head_of_collision_2, tail(linked, n = 1)[[1]])
-			all_involved_2 <- as.numeric(strsplit(tail(linked, n = 1)[[1]][where_2], "&")[[1]])
-
-			#Update temporary positions based on new change in bearing for all the continents the other clump
-			for (rev in 1:length(all_involved_2)) {
-				cont_to_rev <- all_involved_2[rev]
-				start_long <- position[cont_to_rev, t - 1, 1]
-				start_lat <- position[cont_to_rev, t - 1, 2]
-				distance <- GreatCircleDistanceFromLongLat(long1 = start_long, lat1 = start_lat, long2 = euler_pole_longitudes[where_2], lat2 = euler_pole_latitudes[where_2], Warn = FALSE)
+			print("Entering rev loop")
 			
-				#Find bearing of circle from pole
-				init_bearing <- BearingBetweenTwoLongLatPoints(euler_pole_longitudes[where_2], euler_pole_latitudes[where_2], start_long, start_lat)
-
-				#Find the new bearing of circle from pole according to the speed specified
-				new_bearing <- (init_bearing + (proportion[first_collision] * degrees_per_step[where_2])) %% 360
-
-				#Find the new location of the circle
-				new_loc <- EndPoint(euler_pole_longitudes[where_2], euler_pole_latitudes[where_2], new_bearing, distance, EarthRad = EarthRad)
-
-				#Add the new loction to the position matrix
-				temp_position[cont_to_rev,1] <- new_loc$longitude
-				temp_position[cont_to_rev,2] <- new_loc$latitude
+			# Update temporary positions based on new change in bearing for all the continents the other clump
+			for (rev in cont_to_reverse) {
 				
+# Make this faster by doing by clump instead of by continent?
+				
+				start_long <- position[rev, t - 1, 1]
+				start_lat <- position[rev, t - 1, 2]
+				clump <- WhichSupercontinent(rev, tail(linked, n = 1)[[1]])
+				if(min(proportion) != 0) {
+					new_bearing <- init_bearing <- BearingBetweenTwoLongLatPoints(euler_pole_longitudes[clump], euler_pole_latitudes[clump], start_long, start_lat)
+					distance <- GreatCircleDistanceFromLongLat(long1 = start_long, lat1 = start_lat, long2 = euler_pole_longitudes[clump], lat2 = euler_pole_latitudes[clump], Warn = FALSE)
+					new_bearing <- (init_bearing + (min(proportion) * degrees_per_step[clump])) %% 360
+					new_loc <- EndPoint(euler_pole_longitudes[where_2], euler_pole_latitudes[where_2], new_bearing, distance, EarthRad = EarthRad)
+					temp_position[rev, 1] <- new_loc$longitude
+					temp_position[rev, 2] <- new_loc$latitude
+				} else {
+					temp_position[rev, 1] <- start_long
+					temp_position[rev, 2] <- start_lat
+				}
 			}
+			
+			print("Leaving rev loop")
 
-			#Recalculate the new distances
+			# Recalculate the new distances:
 			new_distances <- GreatCircleDistanceMatrix(temp_position[, 1], temp_position[, 2])
 		
 			comp1 <- vector()
@@ -332,7 +308,7 @@ DispersalSimulator <- function(N_steps = 1000, organism_multiplier = 5, N_contin
 					comp2 <- new_distances[p, q] <= min_separation
 					
 					if (comp1 != TRUE && comp2 == TRUE) {
-					
+						
 						# If collision has not already been recorded:
 						if(length(sort(match(paste(sort(c(q, p)), collapse=""), apply(perm_collisions, 1, paste, collapse="")))) == 0) {
 						
@@ -346,6 +322,8 @@ DispersalSimulator <- function(N_steps = 1000, organism_multiplier = 5, N_contin
 				}
 				
 			}
+			
+			print("Leaving collision loop")
 			
 		}
 
@@ -395,7 +373,6 @@ DispersalSimulator <- function(N_steps = 1000, organism_multiplier = 5, N_contin
 							cluster_protected_links <- rbind(cluster_protected_links, perm_collisions[j, ])
 							
 						}
-						
 						
 					}
 
@@ -473,24 +450,24 @@ DispersalSimulator <- function(N_steps = 1000, organism_multiplier = 5, N_contin
 				# Find the first NA to fill in:
 				changer <- match(NA, new_degrees_per_step)
 				
-				#Find the contients that are in the clump whose speed is going to change
+				# Find the continents that are in the clump whose speed is going to change:
 				rows <- as.numeric(unlist(strsplit(separate_continents[changer], "&")))
 				
-				#Find the new euler pole for that clump
+				# Find the new euler pole for that clump:
 				euler_long <- new_euler_longitudes[changer]
 				euler_lat <- new_euler_latitudes[changer]
 				
-				#Find the distances of each of the continents in the clump from their new euler pole
+				# Find the distances of each of the continents in the clump from their new euler pole:
 				euler_GC_distances <- One2ManyGreatCircleDistance(euler_long, euler_lat, position[rows, t, 1], position[rows, t, 2])
 				
-				#Find which of those is closest to the equator
+				# Find which of those is closest to the equator:
 				furthest_continent_GC_distance <- (0.5 * pi * EarthRad) - min(abs(euler_GC_distances - (0.5 * pi * EarthRad)))
 	
 				# Randomly draw a continent speed:
 				continent_speed <- rnorm(1, mean = continent_speed_mean, sd = continent_speed_sd)
 		
-				# If a negative or zero speed is picked then redraw:
-				while(continent_speed <= 0) continent_speed <- rnorm(1, mean = continent_speed_mean, sd = continent_speed_sd)
+				# If a negative speed is picked then redraw:
+				while(continent_speed < 0) continent_speed <- rnorm(1, mean = continent_speed_mean, sd = continent_speed_sd)
 		
 				# Set degree change per step (effectively the speed):
 				new_degrees_per_step[changer] <- continent_speed / (2 * pi * furthest_continent_GC_distance) * 360
@@ -503,9 +480,10 @@ DispersalSimulator <- function(N_steps = 1000, organism_multiplier = 5, N_contin
 		}
 
 #Need to add in the tree bit
-		#Move the animals with the continents
+		# Move the animals with the continents
 		for (cont in 1:N_continents) {
-			#Find the rows that are in the continent of focus
+			
+			# Find the rows that are in the continent of focus
 			moving <- which(rownames(organism_long_matrix) == cont)
 
 			if (length(moving) == 0) {
@@ -577,7 +555,7 @@ DispersalSimulator <- function(N_steps = 1000, organism_multiplier = 5, N_contin
 							# Case if no sweepstakes dispersal occurs:
 							} else  {
 								
-								# Whilst the current move-to step take the organism off the continent:
+								# Whilst the current move-to step takes the organism off the continent:
 								while (all.equal(min(all_dist), radius) != TRUE && min(all_dist) > radius) {
 									
 									# Draw a new move-to step:
@@ -692,6 +670,10 @@ DispersalSimulator <- function(N_steps = 1000, organism_multiplier = 5, N_contin
         if (any(progress == t)) {
         	cat("- ")
         }
+		
+errorcheck <- matrix(GreatCircleDistanceMatrix(position[, t - 1, 1], position[, t - 1, 2])[lower.tri(GreatCircleDistanceMatrix(position[, t - 1, 1], position[, t - 1, 2]))], ncol=1)
+if(any((as.numeric(apply(errorcheck, 1, all.equal, target = min_separation) != TRUE) + as.numeric(errorcheck < min_separation)) == 2)) stop("Continents have beeen moved wrong")
+		
     }
 
     # Things to do right at the end to turn it into a phylo object
