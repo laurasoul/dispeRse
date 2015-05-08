@@ -143,7 +143,7 @@ ColliderReverser <- function(min_separation, continent_1_longitude_t0, continent
 		# Starting coordinate of degree-modified guess for the point at which the two continents are exactly minimally separated for second continent:
 		y <- EndPoint(continent_2_euler_longitude, continent_2_euler_latitude, (continent_2_start_bearing + (continent_2_degrees_per_step * degree_modifier)) %% 360, continent_2_euler_distance, EarthRad = EarthRad)[c("longitude", "latitude")]
 		
-		# As long as we have not reached the point where the distacne between the two continents 
+		# As long as we have not reached the point where the distance between the two continents is equal to the minimum separation:
 		while(!all.equal(GreatCircleDistanceFromLongLat(x$longitude, x$latitude, y$longitude, y$latitude, EarthRad = EarthRad, Warn = FALSE), min_separation) == TRUE) {
 			
 			# First establish current distance between continents based on best guess for degree modifier:

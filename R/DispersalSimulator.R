@@ -226,12 +226,8 @@ DispersalSimulator <- function(N_steps = 1000, organism_multiplier = 5, N_contin
 		# Moving continents back if there has only been one collision
 		while(nrow(collisions) > 0) {
 
-			print("Entering collision loop")
-			
 			# Set up vector to store proportional changes after collisions
 			proportion <- vector()
-
-			print("Entering coll loop")
 			
 			# Find out proportions to reduce to for all potential collisions
 			for (coll in 1:nrow(collisions)) {
@@ -240,18 +236,16 @@ DispersalSimulator <- function(N_steps = 1000, organism_multiplier = 5, N_contin
 				cont_2 <- collisions[coll, 2]
 				where_1 <- WhichSupercontinent(cont_1, tail(linked, n = 1)[[1]])
 				where_2 <- WhichSupercontinent(cont_2, tail(linked, n = 1)[[1]])
-				continent_1_euler_longitude = euler_pole_longitudes[where_1]
-				continent_1_euler_latitude = euler_pole_latitudes[where_1]
-				continent_2_euler_longitude = euler_pole_longitudes[where_2]
-				continent_2_euler_latitude = euler_pole_latitudes[where_2]
-				continent_1_degrees_per_step = degrees_per_step[where_1]
-				continent_2_degrees_per_step = degrees_per_step[where_2]
+				continent_1_euler_longitude <- euler_pole_longitudes[where_1]
+				continent_1_euler_latitude <- euler_pole_latitudes[where_1]
+				continent_2_euler_longitude <- euler_pole_longitudes[where_2]
+				continent_2_euler_latitude <- euler_pole_latitudes[where_2]
+				continent_1_degrees_per_step <- degrees_per_step[where_1]
+				continent_2_degrees_per_step <- degrees_per_step[where_2]
 				
 				proportion[coll] <- ColliderReverser(min_separation, position[cont_1, t - 1, 1], position[cont_1, t - 1, 2], temp_position[cont_1, 1], temp_position[cont_1, 2], position[cont_2, t - 1, 1], position[cont_2, t - 1, 2], temp_position[cont_2, 1], temp_position[cont_2, 2], continent_1_euler_longitude, continent_1_euler_latitude, continent_2_euler_longitude, continent_2_euler_latitude, continent_1_degrees_per_step, continent_2_degrees_per_step, EarthRad = EarthRad, Warn = FALSE)
 			
 			}
-			
-			print("Leaving coll loop")
 
 			# Find the continents involved in the earliest collision(s):
 			cont_involved <- collisions[which(proportion == min(proportion)), ]
@@ -264,8 +258,6 @@ DispersalSimulator <- function(N_steps = 1000, organism_multiplier = 5, N_contin
 
 			# Get list of continents to reverse:
 			cont_to_reverse <- as.numeric(unlist(strsplit(tail(linked, n = 1)[[1]][unique(apply(matrix(unique(sort(cont_involved)), nrow = 1), 2, WhichSupercontinent, supercontinents = tail(linked, n = 1)[[1]]))], "&")))
-			
-			print("Entering rev loop")
 			
 			# Update temporary positions based on new change in bearing for all the continents the other clump
 			for (rev in cont_to_reverse) {
@@ -287,8 +279,6 @@ DispersalSimulator <- function(N_steps = 1000, organism_multiplier = 5, N_contin
 					temp_position[rev, 2] <- start_lat
 				}
 			}
-			
-			print("Leaving rev loop")
 
 			# Recalculate the new distances:
 			new_distances <- GreatCircleDistanceMatrix(temp_position[, 1], temp_position[, 2])
@@ -322,8 +312,6 @@ DispersalSimulator <- function(N_steps = 1000, organism_multiplier = 5, N_contin
 				}
 				
 			}
-			
-			print("Leaving collision loop")
 			
 		}
 
