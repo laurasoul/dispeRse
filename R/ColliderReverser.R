@@ -89,7 +89,7 @@ ColliderReverser <- function(min_separation, continent_1_longitude_t0, continent
 	if(all.equal(as.vector(min_separation), as.vector(t0_distance)) != TRUE && min_separation > t0_distance) stop("ERROR: Continents converged before t0.")
 	
 	# Check that continents do converge in the interval:
-	if(t0_distance < t1_distance) stop("ERROR: Continents are not converging between t0 and t1.")
+	if(t0_distance < t1_distance && continent_1_degrees_per_step != 0 && continent_2_degrees_per_step != 0) stop("ERROR: Continents are not converging between t0 and t1.")
 
 	# Check that continents cross minimum separation threshold in time window (i.e., between t0 and t1):
 	if(all.equal(as.vector(min_separation), as.vector(t0_distance)) != TRUE && min_separation < t1_distance) stop("ERROR: Continents do not cross minimum separation threshold within time window.")
@@ -142,6 +142,9 @@ ColliderReverser <- function(min_separation, continent_1_longitude_t0, continent
 		
 		# Starting coordinate of degree-modified guess for the point at which the two continents are exactly minimally separated for second continent:
 		y <- EndPoint(continent_2_euler_longitude, continent_2_euler_latitude, (continent_2_start_bearing + (continent_2_degrees_per_step * degree_modifier)) %% 360, continent_2_euler_distance, EarthRad = EarthRad)[c("longitude", "latitude")]
+
+		# Check movement of continents makes sense:
+		if(GreatCircleDistanceFromLongLat(x$longitude, x$latitude, y$longitude, y$latitude, EarthRad = EarthRad, Warn = FALSE) > t0_distance) stop("ERROR: Something is wrong - continents are moving apart rather than together. Check Euler pole positions and degrees per step.")
 		
 		# As long as we have not reached the point where the distance between the two continents is equal to the minimum separation:
 		while(!all.equal(GreatCircleDistanceFromLongLat(x$longitude, x$latitude, y$longitude, y$latitude, EarthRad = EarthRad, Warn = FALSE), min_separation) == TRUE) {
