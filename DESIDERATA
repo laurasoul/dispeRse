@@ -22,6 +22,7 @@ A list of things we might want to add in future:
 - Make function restart if complete extinction happens before end of time window.
 - Check EarthRad propagates correctly through all functions and subfunctions.
 - Add option to turn animals off (and just simulate continents).
+- Start point still biased as areas of overlap in supercontinent are more likely start spots!
 
 Already added:
 
