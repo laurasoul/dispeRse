@@ -381,14 +381,14 @@ Animated results of a dispersal simulation run:
 library(dispeRse)
 library(animation)
 
-# Run a simulation (note, may crash so re-run this line until it works without errors):
-out <- DispersalSimulator(N_steps = 200, organism_multiplier = 1, radius = 2000, continent_speed_mean = 50, continent_speed_sd = 20, organism_step_sd = 1000, start_configuration = "supercontinent", stickiness = 0.5)
+# Run a simulation (note, will crash if complete extinction occursso so re-run until it works):
+out <- DispersalSimulator(N_steps = 1000, organism_multiplier = 1, radius = 2000, continent_speed_mean = 50, continent_speed_sd = 20, organism_step_sd = 1000, start_configuration = "supercontinent", stickiness = 0)
 
 # Start outputting to GIF:
 saveGIF({
 
 	# For each time step:
-	for(i in 1:201) {
+	for(i in 1:1001) {
 		
 		# Plot continents:
 		MapContinents(cbind(out$continent_positions[, i, 1], out$continent_positions[, i, 2]), radius = 2000)
@@ -399,7 +399,7 @@ saveGIF({
 	}
 
 # Additional output information:
-}, movie.name = "test.gif", interval = 0.1, nmax = 201, ani.width = 600, ani.height = 600)
+}, movie.name = "test.gif", interval = 0.1, nmax = 1001, ani.width = 600, ani.height = 600)
 ```
 
 More to follow.
