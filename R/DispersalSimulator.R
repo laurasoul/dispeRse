@@ -55,6 +55,7 @@ DispersalSimulator <- function(N_steps = 1000, organism_multiplier = 5, N_contin
 	touching_continents <- HowManySeparateContinents((radius * 2), continent_starting_points[, "Longitude"], continent_starting_points[, "Latitude"])
 	
 # Assign Euler poles to each separate continent:
+# THESE MAY NOT BE EQUALLY DISTRIBUTED ACROSS THE PLANET, MAYBE RECONSIDER HOW TO DRAW THESE
 	
 	# Randomly draw longitudes for each separated continent:
 	euler_pole_longitudes <- runif(length(separate_continents), -180, 180)
@@ -62,7 +63,7 @@ DispersalSimulator <- function(N_steps = 1000, organism_multiplier = 5, N_contin
 	# Randomly draw latitudes for each separated continent:
 	euler_pole_latitudes <- runif(length(separate_continents), -90, 90)
 	
-	# Ensure no latitude is directly at a pole (North or South) by redrawing if any are found:
+	# Ensure no latitude is directly at a pole (North or South) by redrawing if any are found (causes an issue with bearings - e.g., what is 0-degrees from North pole):
 	if((sum(euler_pole_latitudes == 90) + sum(euler_pole_latitudes == -90)) > 0) euler_pole_latitudes <- runif(length(separate_continents), -90, 90)
 
 # Assign speeds to each separate continent:
@@ -92,13 +93,14 @@ DispersalSimulator <- function(N_steps = 1000, organism_multiplier = 5, N_contin
 
 # Starting information for the tree:
 	
+# MAYBE DISTINGUISH HERE BETWEEN REGULAR AND SWEEPSTAKES DISPERSALS	
 	# Create marix that will store each intercontinental dispersal:
 	dispersals <- matrix(nrow = 0, ncol = 5, dimnames = list(c(), c("From_continent", "To_continent", "Branch", "Continent_time_step", "Animal_time_step")))
 	
 	# Pick a random continent on which the clade begins:
 	begin_cont <- ceiling(runif(1, 0, N_continents))
 	
-	# Start by drawing two values from long-lat limits as though continent were centered at equator-Greenwich meridean intersection (means degrees are same disatnce value):
+	# Start by drawing two values from long-lat limits as though continent were centered at equator-Greenwich meridean intersection (means degrees are same distance value):
 	begin_coordinates <- runif(n = 2, min = -radius / (2 * pi * EarthRad) * 360, max = radius / (2 * pi * EarthRad) * 360)
 	
 	# Whilst the draw is not on the continent redraw long and lat values:
@@ -165,6 +167,9 @@ DispersalSimulator <- function(N_steps = 1000, organism_multiplier = 5, N_contin
 		# Distances continents are apart before moving:
 		starting_distances <- GreatCircleDistanceMatrix(position[, t - 1, 1], position[, t - 1, 2])
 		
+		
+		if(any(as.numeric(apply(matrix(starting_distances[lower.tri(starting_distances)], nrow = 1), 2, all.equal, target = min_separation) != TRUE) + as.numeric(starting_distances[lower.tri(starting_distances)] < min_separation) == 2)) stop("Continents have been moved incorrectly!")
+		
 		for (k in 1:N_continents) {
 			
 			# Find current longlat of the kth continent:
@@ -195,21 +200,6 @@ DispersalSimulator <- function(N_steps = 1000, organism_multiplier = 5, N_contin
 		# Matrix of the distances between each continent in their new positions, before these are set
 		new_distances <- GreatCircleDistanceMatrix(temp_position[, 1], temp_position[, 2])
 		
-		comp1 <- vector()
-		comp2 <- vector()
-
-		# Making a vector of whether any continents have collided and thus should potentially be linked:
-		collisions <- matrix(nrow = 0, ncol = 2)
-		for (q in 1:(N_continents - 1)) {
-			for (p in (q + 1):N_continents) {
-				comp1 <- all.equal(new_distances[p, q], starting_distances[p, q])
-				comp2 <- new_distances[p, q] <= min_separation
-				if (comp1 != TRUE && comp2 == TRUE) {
-					collisions <- rbind(collisions, sort(c(p, q)))
-				}
-			}
-		}
-
 		# Matrix of euler poles and speeds for each individual continent for moving the animals later
 		organism_mover <- matrix(nrow = N_continents, ncol = 3)
 		for (clump in 1:length(tail(linked, n = 1)[[1]])) {
@@ -220,72 +210,95 @@ DispersalSimulator <- function(N_steps = 1000, organism_multiplier = 5, N_contin
 			organism_mover[which_conts, 3] <- rep(degrees_per_step[clump], length(which_conts))
 		}
 		
-		# Matrix to store permanent collisions:
-		perm_collisions <- matrix(nrow = 0, ncol = 2)
-
-		# Moving continents back if there has only been one collision
-		while(nrow(collisions) > 0) {
-
-			# Set up vector to store proportional changes after collisions
-			proportion <- vector()
-			
-			# Find out proportions to reduce to for all potential collisions
-			for (coll in 1:nrow(collisions)) {
-
-				cont_1 <- collisions[coll, 1]
-				cont_2 <- collisions[coll, 2]
-				where_1 <- WhichSupercontinent(cont_1, tail(linked, n = 1)[[1]])
-				where_2 <- WhichSupercontinent(cont_2, tail(linked, n = 1)[[1]])
-				continent_1_euler_longitude <- euler_pole_longitudes[where_1]
-				continent_1_euler_latitude <- euler_pole_latitudes[where_1]
-				continent_2_euler_longitude <- euler_pole_longitudes[where_2]
-				continent_2_euler_latitude <- euler_pole_latitudes[where_2]
-				continent_1_degrees_per_step <- degrees_per_step[where_1]
-				continent_2_degrees_per_step <- degrees_per_step[where_2]
-				
-				proportion[coll] <- ColliderReverser(min_separation, position[cont_1, t - 1, 1], position[cont_1, t - 1, 2], temp_position[cont_1, 1], temp_position[cont_1, 2], position[cont_2, t - 1, 1], position[cont_2, t - 1, 2], temp_position[cont_2, 1], temp_position[cont_2, 2], continent_1_euler_longitude, continent_1_euler_latitude, continent_2_euler_longitude, continent_2_euler_latitude, continent_1_degrees_per_step, continent_2_degrees_per_step, EarthRad = EarthRad, Warn = FALSE)
-			
+		# Making a vector of whether any continents have collided and thus should potentially be linked:
+		collisions <- matrix(nrow = 0, ncol = 2)
+		for (q in 1:(N_continents - 1)) {
+			for (p in (q + 1):N_continents) {
+				comp1 <- WhichSupercontinent(p, tail(linked, n = 1)[[1]]) == WhichSupercontinent(q, tail(linked, n = 1)[[1]])
+				comp2 <- all.equal(new_distances[p, q], min_separation) == TRUE || new_distances[p, q] < min_separation
+				if (comp1 != TRUE && comp2 == TRUE) {
+					where_1 <- WhichSupercontinent(p, tail(linked, n = 1)[[1]])
+					where_2 <- WhichSupercontinent(q, tail(linked, n = 1)[[1]])
+					continent_1_euler_longitude <- organism_mover[p, 1]
+					continent_1_euler_latitude <- organism_mover[p, 2]
+					continent_2_euler_longitude <- organism_mover[q, 1]
+					continent_2_euler_latitude <- organism_mover[q, 2]
+					continent_1_degrees_per_step <- organism_mover[p, 3]
+					continent_2_degrees_per_step <- organism_mover[q, 3]
+					proportion_to_reverse <- ColliderReverser(min_separation, position[p, t - 1, 1], position[p, t - 1, 2], temp_position[p, 1], temp_position[p, 2], position[q, t - 1, 1], position[q, t - 1, 2], temp_position[q, 1], temp_position[q, 2], continent_1_euler_longitude, continent_1_euler_latitude, continent_2_euler_longitude, continent_2_euler_latitude, continent_1_degrees_per_step, continent_2_degrees_per_step, EarthRad = EarthRad, Warn = FALSE)
+					if(proportion_to_reverse == 0.5) stop("1")
+					collisions <- rbind(collisions, sort(c(p, q)))
+					rownames(collisions)[nrow(collisions)] <- paste(c(sort(c(tail(linked, n = 1)[[1]][where_1], tail(linked, n = 1)[[1]][where_2])), proportion_to_reverse), collapse = " ")
+				}
 			}
+		}
 
+		# Matrices to store permanent collisions:
+		perm_collisions <- clump_collisions <- matrix(nrow = 0, ncol = 2)
+		
+		# Move continents until all collisions have been accounted for:
+		while(nrow(collisions) > 0) {
+			
+# SAME CONTINENT CANNOT BE MOVED TWICE OR BY DIFFERENT AMOUNTS
+# NEED PROPORTION TO BE INHERITED BY DIFFERENT CONTINENTS WHEN MOVING BACKWARDS IF LINKED BUT THEN ALSO HAVE THESE REMOVED FROM COLLISIONS (UNLESS STILL A COLLISION ONCE MOVED BACK
+			
+			proportions <- as.numeric(unlist(lapply(strsplit(rownames(collisions), " "), '[', 3)))
+			
+			# Which continents collide first?:
+			first_collisions <- which(proportions == min(proportions))
+
+			# What other collisions occur?:
+			other_collisions <- setdiff(1:nrow(collisions), first_collisions)
+			
+# BELOW SHOULD INCLUDE LINKED COLLISIONS
 			# Find the continents involved in the earliest collision(s):
-			cont_involved <- collisions[which(proportion == min(proportion)), ]
+			cont_involved <- as.numeric(unique(unlist(strsplit(unlist(lapply(strsplit(rownames(collisions)[first_collisions], " "), '[', 1:2)), "&"))))
 
-			# Ensure matrix structure:
-			if(!is.matrix(cont_involved)) cont_involved <- matrix(cont_involved, ncol = 2)
+			# If there are other collisions (need to check if they include same continents):
+			if(length(other_collisions) > 0) {
+				
+				# Get list of continents involved in each other (later) collision(s):
+				other_cont_involved <- lapply(lapply(lapply(lapply(strsplit(rownames(collisions)[other_collisions], " "), '[', 1:2), strsplit, split = "&"), unlist), as.numeric)
 			
-			# Add to matrix of definite collisions that cannot be separated in the next step:
-			perm_collisions <- rbind(perm_collisions, cont_involved)
+				# Add any continents attached to those involved in first collision(s) (as these should be moved back too):
+				cont_involved <- unique(c(cont_involved, unlist(other_cont_involved[which(unlist(lapply(lapply(lapply(other_cont_involved, match, cont_involved), sort), length)) > 0)])))
 
-			# Get list of continents to reverse:
-			cont_to_reverse <- as.numeric(unlist(strsplit(tail(linked, n = 1)[[1]][unique(apply(matrix(unique(sort(cont_involved)), nrow = 1), 2, WhichSupercontinent, supercontinents = tail(linked, n = 1)[[1]]))], "&")))
-			
+			}
+				
 			# Update temporary positions based on new change in bearing for all the continents the other clump
-			for (rev in cont_to_reverse) {
+			for (rev in cont_involved) {
 				
 # Make this faster by doing by clump instead of by continent?
 				
 				start_long <- position[rev, t - 1, 1]
 				start_lat <- position[rev, t - 1, 2]
-				clump <- WhichSupercontinent(rev, tail(linked, n = 1)[[1]])
-				if(min(proportion) != 0) {
-					new_bearing <- init_bearing <- BearingBetweenTwoLongLatPoints(euler_pole_longitudes[clump], euler_pole_latitudes[clump], start_long, start_lat)
-					distance <- GreatCircleDistanceFromLongLat(long1 = start_long, lat1 = start_lat, long2 = euler_pole_longitudes[clump], lat2 = euler_pole_latitudes[clump], Warn = FALSE)
-					new_bearing <- (init_bearing + (min(proportion) * degrees_per_step[clump])) %% 360
-					new_loc <- EndPoint(euler_pole_longitudes[where_2], euler_pole_latitudes[where_2], new_bearing, distance, EarthRad = EarthRad)
+				min_proportion <- min(proportions)
+				if(min_proportion != 0) {
+					new_bearing <- init_bearing <- BearingBetweenTwoLongLatPoints(organism_mover[rev, 1], organism_mover[rev, 2], start_long, start_lat)
+					distance <- GreatCircleDistanceFromLongLat(long1 = start_long, lat1 = start_lat, long2 = organism_mover[rev, 1], lat2 = organism_mover[rev, 2], Warn = FALSE)
+					
+					# Store modified degrees per step:
+					organism_mover[rev, 3] <- (min_proportion * organism_mover[rev, 3])
+					new_bearing <- (init_bearing + organism_mover[rev, 3]) %% 360
+					new_loc <- EndPoint(organism_mover[rev, 1], organism_mover[rev, 2], new_bearing, distance, EarthRad = EarthRad)
 					temp_position[rev, 1] <- new_loc$longitude
 					temp_position[rev, 2] <- new_loc$latitude
 				} else {
 					temp_position[rev, 1] <- start_long
 					temp_position[rev, 2] <- start_lat
+					organism_mover[rev, 3] <- 0
 				}
 			}
 
+			# Add to matrix of definite collisions that cannot be separated in the next step:
+			clump_collisions <- rbind(clump_collisions, matrix(unlist(lapply(strsplit(rownames(collisions)[first_collisions], " "), '[', 1:2)), ncol = 2, byrow = TRUE))
+			
+			
+			perm_collisions <- rbind(perm_collisions, collisions[first_collisions, ])
+			
 			# Recalculate the new distances:
 			new_distances <- GreatCircleDistanceMatrix(temp_position[, 1], temp_position[, 2])
 		
-			comp1 <- vector()
-			comp2 <- vector()
-
 			# Check whether any other collisions have still occurred
 			collisions <- matrix(nrow = 0, ncol = 2)
 			
@@ -293,17 +306,27 @@ DispersalSimulator <- function(N_steps = 1000, organism_multiplier = 5, N_contin
 				
 				for (p in (q + 1):N_continents) {
 					
-					comp1 <- all.equal(new_distances[p, q], starting_distances[p, q])
-					
-					comp2 <- new_distances[p, q] <= min_separation
+					comp1 <- WhichSupercontinent(p, tail(linked, n = 1)[[1]]) == WhichSupercontinent(q, tail(linked, n = 1)[[1]])
+					comp2 <- all.equal(new_distances[p, q], min_separation) == TRUE || new_distances[p, q] < min_separation
 					
 					if (comp1 != TRUE && comp2 == TRUE) {
+						where_1 <- tail(linked, n = 1)[[1]][WhichSupercontinent(p, tail(linked, n = 1)[[1]])]
+						where_2 <- tail(linked, n = 1)[[1]][WhichSupercontinent(q, tail(linked, n = 1)[[1]])]
 						
 						# If collision has not already been recorded:
-						if(length(sort(match(paste(sort(c(q, p)), collapse=""), apply(perm_collisions, 1, paste, collapse="")))) == 0) {
+						if(!any(apply(matrix(as.numeric(clump_collisions == where_1) + as.numeric(clump_collisions == where_2), ncol = 2), 1, sum) == 2)) {
 						
-							# Record collision:
-							collisions <- rbind(collisions, c(p, q))
+							where_1 <- WhichSupercontinent(p, tail(linked, n = 1)[[1]])
+							where_2 <- WhichSupercontinent(q, tail(linked, n = 1)[[1]])
+							continent_1_euler_longitude <- organism_mover[p, 1]
+							continent_1_euler_latitude <- organism_mover[p, 2]
+							continent_2_euler_longitude <- organism_mover[q, 1]
+							continent_2_euler_latitude <- organism_mover[q, 2]
+							continent_1_degrees_per_step <- organism_mover[p, 3]
+							continent_2_degrees_per_step <- organism_mover[q, 3]
+							proportion_to_reverse <- ColliderReverser(min_separation, position[p, t - 1, 1], position[p, t - 1, 2], temp_position[p, 1], temp_position[p, 2], position[q, t - 1, 1], position[q, t - 1, 2], temp_position[q, 1], temp_position[q, 2], continent_1_euler_longitude, continent_1_euler_latitude, continent_2_euler_longitude, continent_2_euler_latitude, continent_1_degrees_per_step, continent_2_degrees_per_step, EarthRad = EarthRad, Warn = FALSE)
+							collisions <- rbind(collisions, sort(c(p, q)))
+							rownames(collisions)[nrow(collisions)] <- paste(c(sort(c(tail(linked, n = 1)[[1]][where_1], tail(linked, n = 1)[[1]][where_2])), proportion_to_reverse), collapse = " ")
 							
 						}
 						
@@ -410,17 +433,17 @@ DispersalSimulator <- function(N_steps = 1000, organism_multiplier = 5, N_contin
 			# Select continents that are different to previous time step
 			toKeep <- c(tail(linked, n = 1)[[1]], tail(linked, n = 2)[[1]])[duplicated(c(tail(linked, n = 1)[[1]], tail(linked, n = 2)[[1]]))]
 
-			#Vectors for new poles and speeds
+			# Vectors for new poles and speeds
 			new_euler_latitudes <- rep(NA, length(separate_continents))
 			new_euler_longitudes <- rep(NA, length(separate_continents))
 			new_degrees_per_step <- rep(NA, length(separate_continents))
 
 			if (length(toKeep) != 0){
-				#Inherit previous poles and speeds for those clumps that remain the same
+				# Inherit previous poles and speeds for those clumps that remain the same
 				for (y in 1:length(toKeep)) {
-					new_euler_longitudes[match(toKeep[y], separate_continents)]<- euler_pole_longitudes[match(toKeep[y], tail(linked, n = 2)[[1]])]
-					new_euler_latitudes[match(toKeep[y], separate_continents)]<- euler_pole_latitudes[match(toKeep[y], tail(linked, n = 2)[[1]])]
-					new_degrees_per_step[match(toKeep[y], separate_continents)]<- degrees_per_step[match(toKeep[y], tail(linked, n = 2)[[1]])]
+					new_euler_longitudes[match(toKeep[y], separate_continents)] <- euler_pole_longitudes[match(toKeep[y], tail(linked, n = 2)[[1]])]
+					new_euler_latitudes[match(toKeep[y], separate_continents)] <- euler_pole_latitudes[match(toKeep[y], tail(linked, n = 2)[[1]])]
+					new_degrees_per_step[match(toKeep[y], separate_continents)] <- degrees_per_step[match(toKeep[y], tail(linked, n = 2)[[1]])]
 				}
 			}
 
@@ -468,6 +491,7 @@ DispersalSimulator <- function(N_steps = 1000, organism_multiplier = 5, N_contin
 		}
 
 #Need to add in the tree bit
+		
 		# Move the animals with the continents
 		for (cont in 1:N_continents) {
 			
@@ -501,7 +525,7 @@ DispersalSimulator <- function(N_steps = 1000, organism_multiplier = 5, N_contin
 			}
 			
 		}
-		
+
 		for (f in 1:organism_multiplier) {
             if (sum(alive) == 0) stop("METEOR IMPACT!! EVERYTHING HAS GONE EXTINCT! AAAAHHHHHH!!!")
             dt <- 1
@@ -520,9 +544,7 @@ DispersalSimulator <- function(N_steps = 1000, organism_multiplier = 5, N_contin
 					if (length(friends) > 1) {
 						
                     	all_dist <- vector(length = length(friends))
-                    	for (g in 1:length(friends)) {
-                    		all_dist[g] <- GreatCircleDistanceFromLongLat(position[friends[g], t, 1], position[friends[g], t, 2], moveto$longitude, moveto$latitude)
-                    	}
+                    	for (g in 1:length(friends)) all_dist[g] <- GreatCircleDistanceFromLongLat(position[friends[g], t, 1], position[friends[g], t, 2], moveto$longitude, moveto$latitude)
 						new_cont <- friends[which(all_dist == min(all_dist))[1]]
 						
 						# If the current move-to step takes the organism out to sea:
@@ -565,9 +587,7 @@ DispersalSimulator <- function(N_steps = 1000, organism_multiplier = 5, N_contin
                     	organism_lat_matrix[m, ot + 1] <- moveto$latitude
                     	rownames(organism_long_matrix)[m] <- new_cont
                     	rownames(organism_lat_matrix)[m] <- new_cont
-                    	if(new_cont != on_cont) {
-                    		dispersals <- rbind(dispersals, c(on_cont, new_cont, m, t, ot + 1))
-                    	}
+                    	if(new_cont != on_cont) dispersals <- rbind(dispersals, c(on_cont, new_cont, m, t, ot + 1))
 						
 					# If currently inhabited continent is isolated:
                     } else {
@@ -654,14 +674,10 @@ DispersalSimulator <- function(N_steps = 1000, organism_multiplier = 5, N_contin
                 edge.length[alive][random_lineage] <- ot - stem.depth[alive][random_lineage]
                 alive[alive][random_lineage] <- FALSE
             }###4
-        }#1A
+        }
         if (any(progress == t)) {
         	cat("- ")
         }
-		
-errorcheck <- matrix(GreatCircleDistanceMatrix(position[, t - 1, 1], position[, t - 1, 2])[lower.tri(GreatCircleDistanceMatrix(position[, t - 1, 1], position[, t - 1, 2]))], ncol=1)
-if(any((as.numeric(apply(errorcheck, 1, all.equal, target = min_separation) != TRUE) + as.numeric(errorcheck < min_separation)) == 2)) stop("Continents have beeen moved wrong")
-		
     }
 
     # Things to do right at the end to turn it into a phylo object
@@ -683,7 +699,6 @@ if(any((as.numeric(apply(errorcheck, 1, all.equal, target = min_separation) != T
     class(obj) <- "phylo"
     obj <- old2new.phylo(obj)
     obj$tip.label = paste("s", 1:Ntip(obj), sep = "")
-   	
     
 	# Add final time step to continental configurations:
 	names(linked)[length(linked)] <- paste(strsplit(names(linked)[length(linked)], ":")[[1]][1], ":", t, sep="")
