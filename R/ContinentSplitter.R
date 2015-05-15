@@ -15,7 +15,7 @@
 #' @examples
 #' # Nothing yet
 
-ContinentSplitter <- function(min_separation, longitudes, latitudes, continent_numbers, protected_links = matrix(nrow = 0, ncol = 2), EarthRad = 6367.4447) {
+ContinentSplitter <- function(min_separation, longitudes, latitudes, continent_numbers, protected_links = matrix(nrow = 0, ncol = 2), EarthRad = 6367.4447, Warn = TRUE) {
 
 	# Check min separation is not greater than 1/2 circumference of planet:
 	if(min_separation > (pi * EarthRad)) stop("ERROR: Cannot have minimum separation larger than half the circumference of the planet!")
@@ -106,7 +106,7 @@ ContinentSplitter <- function(min_separation, longitudes, latitudes, continent_n
 			clumps <- protected_clumps
 			
 			# If only one continent exists in the protected clumps then warn user that no separation has been made:
-			if(length(protected_clumps) == 1) print("WARNING: Cannot separate continent as protected links prohibit it.")
+			if(length(protected_clumps) == 1 && Warn) print("WARNING: Cannot separate continent as protected links prohibit it.")
 			
 		}
 		
@@ -288,7 +288,7 @@ ContinentSplitter <- function(min_separation, longitudes, latitudes, continent_n
 		clumps <- paste(continent_numbers, collapse="&")
 		
 		# Warn user that no separation can be made:
-		print("WARNING: Cannot separate continent as all links are protected.")
+		if(Warn) print("WARNING: Cannot separate continent as all links are protected.")
 		
 	}
 	

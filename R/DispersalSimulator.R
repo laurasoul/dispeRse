@@ -32,7 +32,7 @@
 # Total land area
 
 # Use this line for debugging (sets values for input variables):
-#N_steps = 200; organism_multiplier = 1; N_continents = 7; radius = 2000; start_configuration = "supercontinent"; squishiness = 0.25; stickiness = 0.95; continent_speed_mean = 5; continent_speed_sd = 2; organism_step_sd = 100; organism_step_shape = 1; b = 0.1; d = 0.05; sweepstakes = 0; EarthRad = 6367.4447; polar = FALSE
+#N_steps = 200; organism_multiplier = 1; N_continents = 7; radius = 2000; start_configuration = "supercontinent"; squishiness = 0.25; stickiness = 0; continent_speed_mean = 5; continent_speed_sd = 2; organism_step_sd = 100; organism_step_shape = 1; b = 0.1; d = 0.05; sweepstakes = 0; EarthRad = 6367.4447; polar = FALSE
 
 DispersalSimulator <- function(N_steps = 1000, organism_multiplier = 5, N_continents = 7, radius = 2000, start_configuration = "random separate", squishiness = 0.25, stickiness = 0.95, continent_speed_mean = 5, continent_speed_sd = 2, organism_step_sd = 100, organism_step_shape = 1, b = 0.1, d = 0.05, sweepstakes = 0, EarthRad = 6367.4447, polar = FALSE) {
 
@@ -167,9 +167,6 @@ DispersalSimulator <- function(N_steps = 1000, organism_multiplier = 5, N_contin
 		# Distances continents are apart before moving:
 		starting_distances <- GreatCircleDistanceMatrix(position[, t - 1, 1], position[, t - 1, 2])
 		
-		
-		if(any(as.numeric(apply(matrix(starting_distances[lower.tri(starting_distances)], nrow = 1), 2, all.equal, target = min_separation) != TRUE) + as.numeric(starting_distances[lower.tri(starting_distances)] < min_separation) == 2)) stop("Continents have been moved incorrectly!")
-		
 		for (k in 1:N_continents) {
 			
 			# Find current longlat of the kth continent:
@@ -226,7 +223,6 @@ DispersalSimulator <- function(N_steps = 1000, organism_multiplier = 5, N_contin
 					continent_1_degrees_per_step <- organism_mover[p, 3]
 					continent_2_degrees_per_step <- organism_mover[q, 3]
 					proportion_to_reverse <- ColliderReverser(min_separation, position[p, t - 1, 1], position[p, t - 1, 2], temp_position[p, 1], temp_position[p, 2], position[q, t - 1, 1], position[q, t - 1, 2], temp_position[q, 1], temp_position[q, 2], continent_1_euler_longitude, continent_1_euler_latitude, continent_2_euler_longitude, continent_2_euler_latitude, continent_1_degrees_per_step, continent_2_degrees_per_step, EarthRad = EarthRad, Warn = FALSE)
-					if(proportion_to_reverse == 0.5) stop("1")
 					collisions <- rbind(collisions, sort(c(p, q)))
 					rownames(collisions)[nrow(collisions)] <- paste(c(sort(c(tail(linked, n = 1)[[1]][where_1], tail(linked, n = 1)[[1]][where_2])), proportion_to_reverse), collapse = " ")
 				}
@@ -390,7 +386,7 @@ DispersalSimulator <- function(N_steps = 1000, organism_multiplier = 5, N_contin
 				}
 				
 				# Get splits (new clusters) of separated cluster:
-				splits <- ContinentSplitter(min_separation, cluster_longitudes, cluster_latitudes, cluster_continent_numbers, cluster_protected_links, EarthRad)
+				splits <- ContinentSplitter(min_separation, cluster_longitudes, cluster_latitudes, cluster_continent_numbers, cluster_protected_links, EarthRad, Warn = FALSE)
 				
 				# Update separate continents vector:
 				separate_continents <- sort(c(separate_continents[-match(clusters_to_split[i], separate_continents)], splits))
@@ -713,22 +709,3 @@ DispersalSimulator <- function(N_steps = 1000, organism_multiplier = 5, N_contin
 	return(output)
 	
 }
-
-
-
-
-# Number continents in plots
-
-#try <- output
-#plot(try$organism_longitudes[1,], try$organism_latitudes[1,], xlim=c(-180, 180), ylim=c(-90, 90), type = "l")
-#for (i in 1:nrow(try$organism_longitudes))   lines(try$organism_longitudes[i,], try$organism_latitudes[i,])
-#for(i in 1:N_continents) points(try$continent_positions[i,,1], try$continent_positions[i,,2], col=rainbow(N_steps))
-
-#try <- EverythingFunction()
-#plot(try$organism_longitudes[1,], try$organism_latitudes[1,], xlim=c(-180, 180), ylim=c(-90, 90), type = "l")
-#for (i in 1:nrow(try$organism_longitudes))   lines(try$organism_longitudes[i,], try$organism_latitudes[i,])
-#for(i in 1:N_continents) points(try$continent_positions[i,,1], try$continent_positions[i,,2], col=rainbow(N_steps))
-
-#plot(organism_long_matix[1,], organism_lat_matrix[1,], xlim=c(-180, 180), ylim=c(-90, 90), type = "l")
-#for (i in 1:nrow(organism_long_matrix))   lines(organism_long_matrix[i,], organism_lat_matrix[i,])
-#for(i in 1:N_continents) points(position[i,,1], position[i,,2], col=rainbow(N_steps))
