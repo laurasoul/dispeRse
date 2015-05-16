@@ -5,7 +5,8 @@
 \title{Split apart joined continents}
 \usage{
 ContinentSplitter(min_separation, longitudes, latitudes, continent_numbers,
-  protected_links = matrix(nrow = 0, ncol = 2), EarthRad = 6367.4447)
+  protected_links = matrix(nrow = 0, ncol = 2), EarthRad = 6367.4447,
+  Warn = TRUE)
 }
 \arguments{
 \item{min_separation}{The minimum separation in kilometres between continents.}
@@ -19,6 +20,8 @@ ContinentSplitter(min_separation, longitudes, latitudes, continent_numbers,
 \item{protected_links}{A two-column matrix of protected links (those that cannot be severed).}
 
 \item{EarthRad}{Earth radius in kilometres.}
+
+\item{Warn}{Whether or not to print warnings.}
 }
 \value{
 Vector of two continental clumps left after separation.
