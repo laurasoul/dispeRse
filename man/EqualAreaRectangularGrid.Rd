@@ -28,9 +28,12 @@ grids <- EqualAreaRectangularGrid(N_longitude = 20, N_latitude = 10)
 grids
 
 # Visualise the output using a Mercator projection:
-plot(0, 0, type = "n", xlim = c(-180, 180), ylim = c(-90, 90), xlab = "Longitude", ylab = "Latitude")
-for(i in 1:length(grids$latitude_breaks)) lines(c(-180, 180), c(grids$latitude_breaks[i], grids$latitude_breaks[i]), lty = 2)
-for(i in 1:length(grids$longitude_breaks)) lines(c(grids$longitude_breaks[i], grids$longitude_breaks[i]), c(-90, 90), lty = 2)
+plot(0, 0, type = "n", xlim = c(-180, 180), ylim = c(-90, 90),
+  xlab = "Longitude", ylab = "Latitude")
+for(i in 1:length(grids$latitude_breaks))
+  lines(c(-180, 180), c(grids$latitude_breaks[i], grids$latitude_breaks[i]), lty = 2)
+for(i in 1:length(grids$longitude_breaks))
+  lines(c(grids$longitude_breaks[i], grids$longitude_breaks[i]), c(-90, 90), lty = 2)
 }
 \author{
 Graeme T. Lloyd \email{graemetlloyd@gmail.com}
