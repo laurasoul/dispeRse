@@ -235,9 +235,6 @@ DispersalSimulator <- function(N_steps = 1000, organism_multiplier = 5, N_contin
 		# Move continents until all collisions have been accounted for:
 		while(nrow(collisions) > 0) {
 			
-# SAME CONTINENT CANNOT BE MOVED TWICE OR BY DIFFERENT AMOUNTS
-# NEED PROPORTION TO BE INHERITED BY DIFFERENT CONTINENTS WHEN MOVING BACKWARDS IF LINKED BUT THEN ALSO HAVE THESE REMOVED FROM COLLISIONS (UNLESS STILL A COLLISION ONCE MOVED BACK
-			
 			proportions <- as.numeric(unlist(lapply(strsplit(rownames(collisions), " "), '[', 3)))
 			
 			# Which continents collide first?:
@@ -246,7 +243,6 @@ DispersalSimulator <- function(N_steps = 1000, organism_multiplier = 5, N_contin
 			# What other collisions occur?:
 			other_collisions <- setdiff(1:nrow(collisions), first_collisions)
 			
-# BELOW SHOULD INCLUDE LINKED COLLISIONS
 			# Find the continents involved in the earliest collision(s):
 			cont_involved <- as.numeric(unique(unlist(strsplit(unlist(lapply(strsplit(rownames(collisions)[first_collisions], " "), '[', 1:2)), "&"))))
 
@@ -523,6 +519,7 @@ DispersalSimulator <- function(N_steps = 1000, organism_multiplier = 5, N_contin
 		}
 
 		for (f in 1:organism_multiplier) {
+# PERHAPS ALLOW LOOP TO COMPLETE ANYWAY ONCE COMPLETE EXTINCTION OCCURS
             if (sum(alive) == 0) stop("METEOR IMPACT!! EVERYTHING HAS GONE EXTINCT! AAAAHHHHHH!!!")
             dt <- 1
             ot <- ot + dt
