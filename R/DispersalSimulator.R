@@ -49,10 +49,10 @@ DispersalSimulator <- function(N_steps = 1000, organism_multiplier = 5, N_contin
 	min_separation <- (1 - squishiness) * radius * 2
 
 	# Get list of separate continents:
-	separate_continents <- HowManySeparateContinents(min_separation = min_separation, longitudes = continent_starting_points[, "Longitude"], latitudes = continent_starting_points[, "Latitude"])
+	separate_continents <- HowManySeparateContinents(min_separation = min_separation, longitudes = continent_starting_points[, "Longitude"], latitudes = continent_starting_points[, "Latitude"], EarthRad = EarthRad)
 
 	# Get list of touching continents (to be used later for whether dispersal is allowable or not):
-	touching_continents <- HowManySeparateContinents(min_separation = (radius * 2), longitudes = continent_starting_points[, "Longitude"], latitudes = continent_starting_points[, "Latitude"])
+	touching_continents <- HowManySeparateContinents(min_separation = (radius * 2), longitudes = continent_starting_points[, "Longitude"], latitudes = continent_starting_points[, "Latitude"], EarthRad = EarthRad)
 	
 # Assign Euler poles to each separate continent:
 # THESE MAY NOT BE EQUALLY DISTRIBUTED ACROSS THE PLANET, MAYBE RECONSIDER HOW TO DRAW THESE
@@ -104,7 +104,7 @@ DispersalSimulator <- function(N_steps = 1000, organism_multiplier = 5, N_contin
 	begin_coordinates <- runif(n = 2, min = -radius / (2 * pi * EarthRad) * 360, max = radius / (2 * pi * EarthRad) * 360)
 	
 	# Whilst the draw is not on the continent redraw long and lat values:
-	while(GreatCircleDistanceFromLongLat(long1 = 0, lat1 = 0, long2 = begin_coordinates[1], lat2 = begin_coordinates[2]) > radius) begin_coordinates <- runif(n = 2, min = -radius / (2 * pi * EarthRad) * 360, max = radius / (2 * pi * EarthRad) * 360)
+	while(GreatCircleDistanceFromLongLat(long1 = 0, lat1 = 0, long2 = begin_coordinates[1], lat2 = begin_coordinates[2], EarthRad = EarthRad, Warn = TRUE) > radius) begin_coordinates <- runif(n = 2, min = -radius / (2 * pi * EarthRad) * 360, max = radius / (2 * pi * EarthRad) * 360)
 	
 	# Get bearing from continent centre to point where clade begins:
 	bearing_to_clade_start <- BearingBetweenTwoLongLatPoints(0, 0, begin_coordinates[1], begin_coordinates[2])
@@ -188,7 +188,7 @@ DispersalSimulator <- function(N_steps = 1000, organism_multiplier = 5, N_contin
 			where <- WhichSupercontinent(k, tail(linked, n = 1)[[1]])
 
 			# Find distance of circle from pole
-			distance <- GreatCircleDistanceFromLongLat(long1 = start_long,lat1=start_lat, long2 = euler_pole_longitudes[where], lat2 = euler_pole_latitudes[where], Warn = FALSE)
+			distance <- GreatCircleDistanceFromLongLat(long1 = start_long, lat1 = start_lat, long2 = euler_pole_longitudes[where], lat2 = euler_pole_latitudes[where], EarthRad = EarthRad, Warn = FALSE)
 			
 			# Find bearing of circle from pole
 			init_bearing <- BearingBetweenTwoLongLatPoints(euler_pole_longitudes[where], euler_pole_latitudes[where], start_long, start_lat)
@@ -278,7 +278,7 @@ DispersalSimulator <- function(N_steps = 1000, organism_multiplier = 5, N_contin
 				min_proportion <- min(proportions)
 				if(min_proportion != 0) {
 					new_bearing <- init_bearing <- BearingBetweenTwoLongLatPoints(organism_mover[rev, 1], organism_mover[rev, 2], start_long, start_lat)
-					distance <- GreatCircleDistanceFromLongLat(long1 = start_long, lat1 = start_lat, long2 = organism_mover[rev, 1], lat2 = organism_mover[rev, 2], Warn = FALSE)
+					distance <- GreatCircleDistanceFromLongLat(long1 = start_long, lat1 = start_lat, long2 = organism_mover[rev, 1], lat2 = organism_mover[rev, 2], EarthRad = EarthRad, Warn = FALSE)
 					
 					# Store modified degrees per step:
 					organism_mover[rev, 3] <- (min_proportion * organism_mover[rev, 3])
@@ -348,7 +348,7 @@ DispersalSimulator <- function(N_steps = 1000, organism_multiplier = 5, N_contin
 # Finding out if anything gets separated
 		
 		# How many separate continents are there now? (after collisions may have occurred):
-		separate_continents <- HowManySeparateContinents(min_separation, position[, t, 1], position[, t, 2])
+		separate_continents <- HowManySeparateContinents(min_separation = min_separation, longitudes = position[, t, 1], latitudes = position[, t, 2], EarthRad = EarthRad)
 		
 		# Make random uniform draws for each continental cluster:
 		separation_draws <- runif(length(grep("&", separate_continents)))
@@ -403,7 +403,7 @@ DispersalSimulator <- function(N_steps = 1000, organism_multiplier = 5, N_contin
 		}
 		
 		# Get current list of touching continents (to be used later for whether dispersal is allowable or not):
-		touching_continents <- HowManySeparateContinents((radius * 2), position[, t, 1], position[, t, 2])
+		touching_continents <- HowManySeparateContinents(min_separation = (radius * 2), longitudes = position[, t, 1], latitudes = position[, t, 2], EarthRad = EarthRad)
 		
 		# If touching relationships between continetns have changed:
 		if (paste(sort(touching_continents), collapse="") != paste(sort(tail(touching, n = 1)[[1]]), collapse="")) {
@@ -542,13 +542,13 @@ DispersalSimulator <- function(N_steps = 1000, organism_multiplier = 5, N_contin
                     friends <- as.numeric(strsplit(tail(touching, n = 1)[[1]][WhichSupercontinent(on_cont, tail(touching, n = 1)[[1]])], "&")[[1]])
                     
 					# Get distance new move-to step will take organism away from the current continents centre:
-					dist_from_centre <- GreatCircleDistanceFromLongLat(position[on_cont, t, 1], position[on_cont, t, 2], moveto$longitude, moveto$latitude)
+					dist_from_centre <- GreatCircleDistanceFromLongLat(long1 = position[on_cont, t, 1], lat1 = position[on_cont, t, 2], long2 = moveto$longitude, lat2 = moveto$latitude, EarthRad = EarthRad, Warn = TRUE)
                     
 					# If other continents are in contact with the currently inhabited continent:
 					if (length(friends) > 1) {
 						
                     	all_dist <- vector(length = length(friends))
-                    	for (g in 1:length(friends)) all_dist[g] <- GreatCircleDistanceFromLongLat(position[friends[g], t, 1], position[friends[g], t, 2], moveto$longitude, moveto$latitude)
+                    	for (g in 1:length(friends)) all_dist[g] <- GreatCircleDistanceFromLongLat(long1 = position[friends[g], t, 1], lat1 = position[friends[g], t, 2], long2 = moveto$longitude, lat2 = moveto$latitude, EarthRad = EarthRad, Warn = TRUE)
 						new_cont <- friends[which(all_dist == min(all_dist))[1]]
 						
 						# If the current move-to step takes the organism out to sea:
@@ -576,7 +576,7 @@ DispersalSimulator <- function(N_steps = 1000, organism_multiplier = 5, N_contin
 									moveto <- EndPoint(starting[1], starting[2], RandomBearingDraw(n = 1, shape_parameter = organism_step_shape), abs(rnorm(1, 0, organism_step_sd)), EarthRad = EarthRad)
 									temp_all_dist <- vector(length = length(friends))
 									for (g in 1:length(friends)) {
-										temp_all_dist[g] <- GreatCircleDistanceFromLongLat(position[friends[g], t, 1], position[friends[g], t, 2], moveto$longitude, moveto$latitude)
+										temp_all_dist[g] <- GreatCircleDistanceFromLongLat(long1 = position[friends[g], t, 1], lat1 = position[friends[g], t, 2], long2 = moveto$longitude, lat2 = moveto$latitude, EarthRad = EarthRad, Warn = TRUE)
 									}
 									all_dist <- temp_all_dist
 									new_cont <- friends[which(all_dist == min(all_dist))][1]
@@ -635,7 +635,7 @@ DispersalSimulator <- function(N_steps = 1000, organism_multiplier = 5, N_contin
 									moveto <- EndPoint(starting[1], starting[2], RandomBearingDraw(n = 1, shape_parameter = organism_step_shape), abs(rnorm(1, 0, organism_step_sd)), EarthRad = EarthRad)
 									
 									# Update distance from center:
-									dist_from_centre <- GreatCircleDistanceFromLongLat(position[on_cont, t, 1], position[on_cont, t, 2], moveto$longitude, moveto$latitude)
+									dist_from_centre <- GreatCircleDistanceFromLongLat(long1 = position[on_cont, t, 1], lat1 = position[on_cont, t, 2], long2 = moveto$longitude, lat2 = moveto$latitude, EarthRad = EarthRad, Warn = TRUE)
 								
 								}
 								
