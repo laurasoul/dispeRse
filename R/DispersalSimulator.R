@@ -49,10 +49,10 @@ DispersalSimulator <- function(N_steps = 1000, organism_multiplier = 5, N_contin
 	min_separation <- (1 - squishiness) * radius * 2
 
 	# Get list of separate continents:
-	separate_continents <- HowManySeparateContinents(min_separation, continent_starting_points[, "Longitude"], continent_starting_points[, "Latitude"])
+	separate_continents <- HowManySeparateContinents(min_separation = min_separation, longitudes = continent_starting_points[, "Longitude"], latitudes = continent_starting_points[, "Latitude"])
 
 	# Get list of touching continents (to be used later for whether dispersal is allowable or not):
-	touching_continents <- HowManySeparateContinents((radius * 2), continent_starting_points[, "Longitude"], continent_starting_points[, "Latitude"])
+	touching_continents <- HowManySeparateContinents(min_separation = (radius * 2), longitudes = continent_starting_points[, "Longitude"], latitudes = continent_starting_points[, "Latitude"])
 	
 # Assign Euler poles to each separate continent:
 # THESE MAY NOT BE EQUALLY DISTRIBUTED ACROSS THE PLANET, MAYBE RECONSIDER HOW TO DRAW THESE
@@ -75,7 +75,7 @@ DispersalSimulator <- function(N_steps = 1000, organism_multiplier = 5, N_contin
 	for(i in 1:length(separate_continents)) {
 		
 		# Get Greate Circle distances from Euler pole to each continent centre:
-		euler_GC_distances <- One2ManyGreatCircleDistance(euler_pole_longitudes[i], euler_pole_latitudes[i], continent_starting_points[as.numeric(unlist(strsplit(separate_continents[i], "&"))), "Longitude"], continent_starting_points[as.numeric(unlist(strsplit(separate_continents[i], "&"))), "Latitude"])
+		euler_GC_distances <- One2ManyGreatCircleDistance(point_longitude = euler_pole_longitudes[i], point_latitude = euler_pole_latitudes[i], point_longitudes = continent_starting_points[as.numeric(unlist(strsplit(separate_continents[i], "&"))), "Longitude"], point_latitudes = continent_starting_points[as.numeric(unlist(strsplit(separate_continents[i], "&"))), "Latitude"])
 		
 		# Find GC distance to furthest continent (closest to euler pole "equator") in cluster (as speed will be assigned based on this):
 		furthest_continent_GC_distance <- (0.5 * pi * EarthRad) - min(abs(euler_GC_distances - (0.5 * pi * EarthRad)))
@@ -104,13 +104,13 @@ DispersalSimulator <- function(N_steps = 1000, organism_multiplier = 5, N_contin
 	begin_coordinates <- runif(n = 2, min = -radius / (2 * pi * EarthRad) * 360, max = radius / (2 * pi * EarthRad) * 360)
 	
 	# Whilst the draw is not on the continent redraw long and lat values:
-	while(GreatCircleDistanceFromLongLat(0, 0, begin_coordinates[1], begin_coordinates[2]) > radius) begin_coordinates <- runif(n = 2, min = -radius / (2 * pi * EarthRad) * 360, max = radius / (2 * pi * EarthRad) * 360)
+	while(GreatCircleDistanceFromLongLat(long1 = 0, lat1 = 0, long2 = begin_coordinates[1], lat2 = begin_coordinates[2]) > radius) begin_coordinates <- runif(n = 2, min = -radius / (2 * pi * EarthRad) * 360, max = radius / (2 * pi * EarthRad) * 360)
 	
 	# Get bearing from continent centre to point where clade begins:
 	bearing_to_clade_start <- BearingBetweenTwoLongLatPoints(0, 0, begin_coordinates[1], begin_coordinates[2])
 
 	# Get distance from continent centre to point where clade begins:
-	distance_to_clade_start <- GreatCircleDistanceFromLongLat(0, 0, begin_coordinates[1], begin_coordinates[2], EarthRad = EarthRad, Warn = FALSE)
+	distance_to_clade_start <- GreatCircleDistanceFromLongLat(long1 = 0, lat1 = 0, long2 = begin_coordinates[1], lat2 = begin_coordinates[2], EarthRad = EarthRad, Warn = FALSE)
 	
 	# Get coordinates of point where clade begins:
 	life_begins <- EndPoint(continent_starting_points[begin_cont, "Longitude"], continent_starting_points[begin_cont, "Latitude"], bearing_to_clade_start, distance_to_clade_start, EarthRad = EarthRad)
