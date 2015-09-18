@@ -75,7 +75,7 @@ DispersalSimulator <- function(N_steps = 1000, organism_multiplier = 5, N_contin
 	for(i in 1:length(separate_continents)) {
 		
 		# Get Greate Circle distances from Euler pole to each continent centre:
-		euler_GC_distances <- One2ManyGreatCircleDistance(point_longitude = euler_pole_longitudes[i], point_latitude = euler_pole_latitudes[i], point_longitudes = continent_starting_points[as.numeric(unlist(strsplit(separate_continents[i], "&"))), "Longitude"], point_latitudes = continent_starting_points[as.numeric(unlist(strsplit(separate_continents[i], "&"))), "Latitude"])
+		euler_GC_distances <- One2ManyGreatCircleDistance(point_longitude = euler_pole_longitudes[i], point_latitude = euler_pole_latitudes[i], point_longitudes = continent_starting_points[as.numeric(unlist(strsplit(separate_continents[i], "&"))), "Longitude"], point_latitudes = continent_starting_points[as.numeric(unlist(strsplit(separate_continents[i], "&"))), "Latitude"], EarthRad = EarthRad)
 		
 		# Find GC distance to furthest continent (closest to euler pole "equator") in cluster (as speed will be assigned based on this):
 		furthest_continent_GC_distance <- (0.5 * pi * EarthRad) - min(abs(euler_GC_distances - (0.5 * pi * EarthRad)))
@@ -107,13 +107,13 @@ DispersalSimulator <- function(N_steps = 1000, organism_multiplier = 5, N_contin
 	while(GreatCircleDistanceFromLongLat(long1 = 0, lat1 = 0, long2 = begin_coordinates[1], lat2 = begin_coordinates[2], EarthRad = EarthRad, Warn = TRUE) > radius) begin_coordinates <- runif(n = 2, min = -radius / (2 * pi * EarthRad) * 360, max = radius / (2 * pi * EarthRad) * 360)
 	
 	# Get bearing from continent centre to point where clade begins:
-	bearing_to_clade_start <- BearingBetweenTwoLongLatPoints(0, 0, begin_coordinates[1], begin_coordinates[2])
+	bearing_to_clade_start <- BearingBetweenTwoLongLatPoints(start_long = 0, start_lat = 0, end_long = begin_coordinates[1], end_lat = begin_coordinates[2])
 
 	# Get distance from continent centre to point where clade begins:
 	distance_to_clade_start <- GreatCircleDistanceFromLongLat(long1 = 0, lat1 = 0, long2 = begin_coordinates[1], lat2 = begin_coordinates[2], EarthRad = EarthRad, Warn = FALSE)
 	
 	# Get coordinates of point where clade begins:
-	life_begins <- EndPoint(continent_starting_points[begin_cont, "Longitude"], continent_starting_points[begin_cont, "Latitude"], bearing_to_clade_start, distance_to_clade_start, EarthRad = EarthRad)
+	life_begins <- EndPoint(longitude = continent_starting_points[begin_cont, "Longitude"], latitude = continent_starting_points[begin_cont, "Latitude"], bearing = bearing_to_clade_start, distance = distance_to_clade_start, EarthRad = EarthRad)
 	
 	# Add rows to be filled in for the positions of the new taxa 
 	extra.rows <- matrix(NA, nrow = 2, ncol = (N_steps * organism_multiplier) + 1)
@@ -191,13 +191,13 @@ DispersalSimulator <- function(N_steps = 1000, organism_multiplier = 5, N_contin
 			distance <- GreatCircleDistanceFromLongLat(long1 = start_long, lat1 = start_lat, long2 = euler_pole_longitudes[where], lat2 = euler_pole_latitudes[where], EarthRad = EarthRad, Warn = FALSE)
 			
 			# Find bearing of circle from pole
-			init_bearing <- BearingBetweenTwoLongLatPoints(euler_pole_longitudes[where], euler_pole_latitudes[where], start_long, start_lat)
+			init_bearing <- BearingBetweenTwoLongLatPoints(start_long = euler_pole_longitudes[where], start_lat = euler_pole_latitudes[where], end_long = start_long, end_lat = start_lat)
 
 			# Find the new bearing of circle from pole according to the speed specified
 			new_bearing <- (init_bearing + degrees_per_step[where]) %% 360
 
 			# Find the new location of the circle
-			new_loc <- EndPoint(euler_pole_longitudes[where], euler_pole_latitudes[where], new_bearing, distance, EarthRad = EarthRad)
+			new_loc <- EndPoint(longitude = euler_pole_longitudes[where], latitude = euler_pole_latitudes[where], bearing = new_bearing, distance = distance, EarthRad = EarthRad)
 
 			# Add the new loction to the position matrix
 			temp_position[k, 1] <- new_loc$longitude
@@ -277,13 +277,13 @@ DispersalSimulator <- function(N_steps = 1000, organism_multiplier = 5, N_contin
 				start_lat <- position[rev, t - 1, 2]
 				min_proportion <- min(proportions)
 				if(min_proportion != 0) {
-					new_bearing <- init_bearing <- BearingBetweenTwoLongLatPoints(organism_mover[rev, 1], organism_mover[rev, 2], start_long, start_lat)
+					new_bearing <- init_bearing <- BearingBetweenTwoLongLatPoints(start_long = organism_mover[rev, 1], start_lat = organism_mover[rev, 2], end_long = start_long, end_lat = start_lat)
 					distance <- GreatCircleDistanceFromLongLat(long1 = start_long, lat1 = start_lat, long2 = organism_mover[rev, 1], lat2 = organism_mover[rev, 2], EarthRad = EarthRad, Warn = FALSE)
 					
 					# Store modified degrees per step:
 					organism_mover[rev, 3] <- (min_proportion * organism_mover[rev, 3])
 					new_bearing <- (init_bearing + organism_mover[rev, 3]) %% 360
-					new_loc <- EndPoint(organism_mover[rev, 1], organism_mover[rev, 2], new_bearing, distance, EarthRad = EarthRad)
+					new_loc <- EndPoint(longitude = organism_mover[rev, 1], latitude = organism_mover[rev, 2], bearing = new_bearing, distance = distance, EarthRad = EarthRad)
 					temp_position[rev, 1] <- new_loc$longitude
 					temp_position[rev, 2] <- new_loc$latitude
 				} else {
@@ -514,10 +514,10 @@ DispersalSimulator <- function(N_steps = 1000, organism_multiplier = 5, N_contin
 					} else {
 						first_long <- organism_long_matrix[organism_row, ot + 1]
 						first_lat <- organism_lat_matrix[organism_row, ot + 1]
-						organism_distance <- GreatCircleDistanceFromLongLat(organism_mover[cont, 1], organism_mover[cont, 2], first_long, first_lat)
-						organism_bearing <- BearingBetweenTwoLongLatPoints(organism_mover[cont, 1], organism_mover[cont, 2], first_long, first_lat)
+						organism_distance <- GreatCircleDistanceFromLongLat(long1 = organism_mover[cont, 1], lat1 = organism_mover[cont, 2], long2 = first_long, lat2 = first_lat, EarthRad = EarthRad, Warn = TRUE)
+						organism_bearing <- BearingBetweenTwoLongLatPoints(start_long = organism_mover[cont, 1], start_lat = organism_mover[cont, 2], end_long = first_long, end_lat = first_lat)
 						new_organism_bearing <- (organism_bearing + organism_degrees) %% 360
-						new_organism_loc <- EndPoint(organism_mover[cont, 1], organism_mover[cont, 2], new_organism_bearing, organism_distance, EarthRad = EarthRad)
+						new_organism_loc <- EndPoint(longitude = organism_mover[cont, 1], latitude = organism_mover[cont, 2], bearing = new_organism_bearing, distance = organism_distance, EarthRad = EarthRad)
 						organism_long_matrix[organism_row, ot + 1] <- new_organism_loc$longitude
     					organism_lat_matrix[organism_row, ot + 1] <- new_organism_loc$latitude
 						
@@ -537,7 +537,7 @@ DispersalSimulator <- function(N_steps = 1000, organism_multiplier = 5, N_contin
             for (m in 1:nrow(organism_lat_matrix)) {
                 if (alive[m]) {
                     starting <- c(organism_long_matrix[m, ot], organism_lat_matrix[m, ot])
-                    moveto <- EndPoint(starting[1], starting[2], RandomBearingDraw(n = 1, shape_parameter = organism_step_shape), abs(rnorm(1, 0, organism_step_sd)), EarthRad = EarthRad) #generates a random walk step and calculates new position
+                    moveto <- EndPoint(longitude = starting[1], latitude = starting[2], bearing = RandomBearingDraw(n = 1, shape_parameter = organism_step_shape), distance = abs(rnorm(1, 0, organism_step_sd)), EarthRad = EarthRad) #generates a random walk step and calculates new position
 					on_cont <- as.numeric(rownames(organism_lat_matrix)[m])
                     friends <- as.numeric(strsplit(tail(touching, n = 1)[[1]][WhichSupercontinent(on_cont, tail(touching, n = 1)[[1]])], "&")[[1]])
                     
@@ -573,7 +573,7 @@ DispersalSimulator <- function(N_steps = 1000, organism_multiplier = 5, N_contin
 								while (all.equal(min(all_dist), radius) != TRUE && min(all_dist) > radius) {
 									
 									# Draw a new move-to step:
-									moveto <- EndPoint(starting[1], starting[2], RandomBearingDraw(n = 1, shape_parameter = organism_step_shape), abs(rnorm(1, 0, organism_step_sd)), EarthRad = EarthRad)
+									moveto <- EndPoint(longitude = starting[1], latitude = starting[2], bearing = RandomBearingDraw(n = 1, shape_parameter = organism_step_shape), distance = abs(rnorm(1, 0, organism_step_sd)), EarthRad = EarthRad)
 									temp_all_dist <- vector(length = length(friends))
 									for (g in 1:length(friends)) {
 										temp_all_dist[g] <- GreatCircleDistanceFromLongLat(long1 = position[friends[g], t, 1], lat1 = position[friends[g], t, 2], long2 = moveto$longitude, lat2 = moveto$latitude, EarthRad = EarthRad, Warn = TRUE)
@@ -632,7 +632,7 @@ DispersalSimulator <- function(N_steps = 1000, organism_multiplier = 5, N_contin
 								while (all.equal(as.vector(dist_from_centre), radius) != TRUE && dist_from_centre > radius) {
 									
 									# Draw a new move-to step:
-									moveto <- EndPoint(starting[1], starting[2], RandomBearingDraw(n = 1, shape_parameter = organism_step_shape), abs(rnorm(1, 0, organism_step_sd)), EarthRad = EarthRad)
+									moveto <- EndPoint(longitude = starting[1], latitude = starting[2], bearing = RandomBearingDraw(n = 1, shape_parameter = organism_step_shape), distance = abs(rnorm(1, 0, organism_step_sd)), EarthRad = EarthRad)
 									
 									# Update distance from center:
 									dist_from_centre <- GreatCircleDistanceFromLongLat(long1 = position[on_cont, t, 1], lat1 = position[on_cont, t, 2], long2 = moveto$longitude, lat2 = moveto$latitude, EarthRad = EarthRad, Warn = TRUE)
