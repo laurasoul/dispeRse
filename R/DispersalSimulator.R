@@ -115,18 +115,29 @@ DispersalSimulator <- function(N_steps = 1000, organism_multiplier = 5, N_contin
 	# Get coordinates of point where clade begins:
 	life_begins <- EndPoint(continent_starting_points[begin_cont, "Longitude"], continent_starting_points[begin_cont, "Latitude"], bearing_to_clade_start, distance_to_clade_start, EarthRad = EarthRad)
 	
+	# Add rows to be filled in for the positions of the new taxa 
 	extra.rows <- matrix(NA, nrow = 2, ncol = (N_steps * organism_multiplier) + 1)
 	organism_lat_matrix <- matrix(nrow = 2, ncol = (N_steps * organism_multiplier) + 1)
     organism_long_matrix <- matrix(nrow = 2, ncol = (N_steps * organism_multiplier) + 1)
+
+    # Add initial position of taxon to the organism position matrix
     organism_lat_matrix[, 1] <- life_begins$latitude
     organism_long_matrix[, 1] <- life_begins$longitude
+
+    # Add 
     rownames(organism_lat_matrix) <- rep(begin_cont, 2)
     rownames(organism_long_matrix) <- rep(begin_cont, 2)
-    edge <- rbind(c(1, 2), c(1, 3)) # this is a starting edge matrix
+
+    # starting edge matrix (makes a mini tree)
+    edge <- rbind(c(1, 2), c(1, 3)) 
     edge.length <- rep(NA, 2)
     stem.depth <- numeric(2)
-    alive <- rep(TRUE, 2) # marker for live lineages
-    ot <- 0 # time(step) at any point in the tree
+
+    # marker for which lineages have not gone extinct
+    alive <- rep(TRUE, 2) 
+
+    # time(step) counter, at any point in the tree
+    ot <- 0 
     next.node <- 4
 
 # Moving continents:
@@ -197,7 +208,7 @@ DispersalSimulator <- function(N_steps = 1000, organism_multiplier = 5, N_contin
 		# Matrix of the distances between each continent in their new positions, before these are set
 		new_distances <- GreatCircleDistanceMatrix(temp_position[, 1], temp_position[, 2])
 		
-		# Matrix of euler poles and speeds for each individual continent for moving the animals later
+		# Matrix of euler poles and speeds for each individual continent for moving the organisms with the continents later
 		organism_mover <- matrix(nrow = N_continents, ncol = 3)
 		for (clump in 1:length(tail(linked, n = 1)[[1]])) {
 			which_conts <- as.numeric(strsplit(tail(linked, n = 1)[[1]][[clump]], "&")[[1]])
