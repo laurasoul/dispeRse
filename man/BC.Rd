@@ -6,7 +6,7 @@
 \usage{
 BC(taxon_locality_matrix, tree = NULL, count.nodes = FALSE,
   permute.tree = TRUE, bootstrap = FALSE, jackknife = FALSE,
-  resample.replicates = 1000, tree.replicates = 1000)
+  resample.replicates = 1000, tree.replicates = 1000, k = 1000)
 }
 \arguments{
 \item{taxon_locality_matrix}{Presence-absence (1-0) matrix of taxa (rows) in localities (columns).}
@@ -24,6 +24,8 @@ BC(taxon_locality_matrix, tree = NULL, count.nodes = FALSE,
 \item{resample.replicates}{Number of replicates to use for bootstrapping or jacknifing.}
 
 \item{tree.replicates}{Number of replicates to use if permuting trees.}
+
+\item{k}{Value to use to shorten tree and avoid increasing phylogenetic diversity artefact.}
 }
 \value{
 \item{BC_observed}{Empirical results for the: number of localities (\code{N_localities}), number of taxa (\code{N_taxa}), number of links (\code{N_links}), number of endemics (\code{N_endemics}), mean occurrences per locality (\code{Mean_occurrences_per_locality}), and biogeographic connectedness (\code{Biogeographic_connectedness}).}

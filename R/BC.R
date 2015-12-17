@@ -10,6 +10,7 @@
 #' @param jackknife Option to jacknife occurrences.
 #' @param resample.replicates Number of replicates to use for bootstrapping or jacknifing.
 #' @param tree.replicates Number of replicates to use if permuting trees.
+#' @param k Value to use to shorten tree and avoid increasing phylogenetic diversity artefact.
 #'
 #' @return
 #'
@@ -28,7 +29,7 @@
 #' @examples
 #'
 #' # Nothing yet.
-BC <- function(taxon_locality_matrix, tree = NULL, count.nodes = FALSE, permute.tree = TRUE, bootstrap = FALSE, jackknife = FALSE, resample.replicates = 1000, tree.replicates = 1000) {
+BC <- function(taxon_locality_matrix, tree = NULL, count.nodes = FALSE, permute.tree = TRUE, bootstrap = FALSE, jackknife = FALSE, resample.replicates = 1000, tree.replicates = 1000, k = 1000) {
     
     # Function to get BC for a single set of data:
     BC_single <- function(taxon_locality_matrix) {
@@ -91,7 +92,36 @@ BC <- function(taxon_locality_matrix, tree = NULL, count.nodes = FALSE, permute.
     }
     
     # Function to convert phylogeny to 0 to 1 similarity matrix:
-    RescaledPhylogeneticSimilarity <- function(tree) {
+    RescaledPhylogeneticSimilarity <- function(tree, k = k) {
+        
+        # Make root age maximu path length:
+        tree$root.time <- max(diag(vcv(tree)))
+        
+        # Get node ages (expressed as time from tips of tree):
+        node.ages <- GetNodeAges(tree)
+        
+        # Find nodes older than k:
+        too.old.nodes <- as.numeric(names(which(node.ages > k)))
+        
+        # If there are nodes that are too old:
+        if(length(too.old.nodes) > k) {
+            
+            # Identify edges with at least one (>1) too old node:
+            edges.to.change <- apply(cbind(node.ages[tree$edge[, 1]], node.ages[tree$edge[, 2]]) > k, 1, sum)
+            
+            # Isolate Zero-Length Branches (ZLBs):
+            ZLBs <- which(edges.to.change == 2)
+            
+            # Make ZLBs ZLBs:
+            if(length(ZLBs > 0)) tree$edge.length[ZLBs] <- 0
+            
+            # Isolate branches to shorten:
+            shorten <- which(edges.to.change == 1)
+            
+            # Shorten branches:
+            tree$edge.length[shorten] <- k - node.ages[tree$edge[shorten, 2]]
+
+        }
         
         # Get phylogenetic distance matrix:
         phylo_dist <- cophenetic.phylo(tree)
@@ -118,6 +148,27 @@ BC <- function(taxon_locality_matrix, tree = NULL, count.nodes = FALSE, permute.
         
     }
     
+    # Get unique lengths:
+    path.lengths <- unique(diag(vcv(tree)))
+    
+    # If there is more than one different path length (possible non-ultrametric tree):
+    if(length(path.lengths) > 1) {
+        
+        # For each first value:
+        for(i in 1:(length(path.lengths) - 1)) {
+            
+            # For each second value:
+            for(j in (i + 1):length(path.lengths)) {
+                
+                # Check to see if within floating point error and stop if not:
+                if(!all.equal(path.lengths[i], path.lengths[j])) stop("Tree must be ultrametric.")
+                
+            }
+            
+        }
+        
+    }
+
 # THIS BIT COULD PROBABLY BE IMPROVED! (CREATES SLIGHT, NON SIGNIFICANT DOWNWARD TREND.) ALSO, MAYBE THIS IS REMOVING REAL TEMPORAL TREND, I.E., OVER-CORRECTING.
     
     # If not counting nodes (and not a star tree):
