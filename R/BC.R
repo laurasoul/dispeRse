@@ -104,7 +104,7 @@ BC <- function(taxon_locality_matrix, tree = NULL, count.nodes = FALSE, permute.
         too.old.nodes <- as.numeric(names(which(node.ages > k)))
         
         # If there are nodes that are too old:
-        if(length(too.old.nodes) > k) {
+        if(length(too.old.nodes) > 0) {
             
             # Identify edges with at least one (>1) too old node:
             edges.to.change <- apply(cbind(node.ages[tree$edge[, 1]], node.ages[tree$edge[, 2]]) > k, 1, sum)
@@ -184,10 +184,7 @@ BC <- function(taxon_locality_matrix, tree = NULL, count.nodes = FALSE, permute.
         
     #}
     
-    
-    
-    
-    
+# STUFF
     
     # Ensure taxon-locality matrix only contains taxa shared by tree and matrix (if there is a tree):
     if(!is.null(tree)) taxon_locality_matrix <- taxon_locality_matrix[intersect(tree$tip.label, rownames(taxon_locality_matrix)), ]
