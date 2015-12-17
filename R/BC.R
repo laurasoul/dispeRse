@@ -92,22 +92,22 @@ BC <- function(taxon_locality_matrix, tree = NULL, count.nodes = FALSE, permute.
     }
     
     # Function to convert phylogeny to 0 to 1 similarity matrix:
-    RescaledPhylogeneticSimilarity <- function(tree, k = k) {
+    RescaledPhylogeneticSimilarity <- function(tree, K = k) {
         
-        # Make root age maximu path length:
+        # Make root age maximum path length:
         tree$root.time <- max(diag(vcv(tree)))
         
         # Get node ages (expressed as time from tips of tree):
         node.ages <- GetNodeAges(tree)
         
         # Find nodes older than k:
-        too.old.nodes <- as.numeric(names(which(node.ages > k)))
+        too.old.nodes <- as.numeric(names(which(node.ages > K)))
         
         # If there are nodes that are too old:
         if(length(too.old.nodes) > 0) {
             
             # Identify edges with at least one (>1) too old node:
-            edges.to.change <- apply(cbind(node.ages[tree$edge[, 1]], node.ages[tree$edge[, 2]]) > k, 1, sum)
+            edges.to.change <- apply(cbind(node.ages[tree$edge[, 1]], node.ages[tree$edge[, 2]]) > K, 1, sum)
             
             # Isolate Zero-Length Branches (ZLBs):
             ZLBs <- which(edges.to.change == 2)
@@ -119,7 +119,7 @@ BC <- function(taxon_locality_matrix, tree = NULL, count.nodes = FALSE, permute.
             shorten <- which(edges.to.change == 1)
             
             # Shorten branches:
-            tree$edge.length[shorten] <- k - node.ages[tree$edge[shorten, 2]]
+            tree$edge.length[shorten] <- K - node.ages[tree$edge[shorten, 2]]
 
         }
         
