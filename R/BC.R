@@ -148,36 +148,41 @@ BC <- function(taxon_locality_matrix, tree = NULL, count.nodes = FALSE, permute.
         
     }
     
-    # Get unique lengths:
-    path.lengths <- unique(diag(vcv(tree)))
+    # As long as there is a tree:
+    if(!is.null(tree)) {
     
-    # If there is more than one different path length (possible non-ultrametric tree):
-    if(length(path.lengths) > 1) {
+        # Get unique lengths:
+        path.lengths <- unique(diag(vcv(tree)))
+    
+        # If there is more than one different path length (possible non-ultrametric tree):
+        if(length(path.lengths) > 1) {
         
-        # For each first value:
-        for(i in 1:(length(path.lengths) - 1)) {
+            # For each first value:
+            for(i in 1:(length(path.lengths) - 1)) {
             
-            # For each second value:
-            for(j in (i + 1):length(path.lengths)) {
+                # For each second value:
+                for(j in (i + 1):length(path.lengths)) {
                 
-                # Check to see if within floating point error and stop if not:
-                if(!all.equal(path.lengths[i], path.lengths[j])) stop("Tree must be ultrametric.")
+                    # Check to see if within floating point error and stop if not:
+                    if(!all.equal(path.lengths[i], path.lengths[j])) stop("Tree must be ultrametric.")
                 
+                }
+            
             }
-            
-        }
         
+        }
+    
     }
 
 # THIS BIT COULD PROBABLY BE IMPROVED! (CREATES SLIGHT, NON SIGNIFICANT DOWNWARD TREND.) ALSO, MAYBE THIS IS REMOVING REAL TEMPORAL TREND, I.E., OVER-CORRECTING.
     
     # If not counting nodes (and not a star tree):
-    if(!count.nodes && !is.null(tree) && var(vcv(tree)[lower.tri(vcv(tree))]) / mean(diag(vcv(tree))) > 0) {
+    #if(!count.nodes && !is.null(tree) && var(vcv(tree)[lower.tri(vcv(tree))]) / mean(diag(vcv(tree))) > 0) {
         
         # Rescale tree using delta transformation to avoid time-bias toward higher BC later:
-        tree <- rescale(tree, "delta",  var(vcv(tree)[lower.tri(vcv(tree))]) / mean(diag(vcv(tree))))
+        #tree <- rescale(tree, "delta",  var(vcv(tree)[lower.tri(vcv(tree))]) / mean(diag(vcv(tree))))
         
-    }
+    #}
     
     
     
