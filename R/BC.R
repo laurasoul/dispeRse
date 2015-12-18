@@ -164,7 +164,7 @@ BC <- function(taxon_locality_matrix, tree = NULL, count.nodes = FALSE, permute.
                 for(j in (i + 1):length(path.lengths)) {
                 
                     # Check to see if within floating point error and stop if not:
-                    if(!all.equal(path.lengths[i], path.lengths[j])) stop("Tree must be ultrametric.")
+                    if(all.equal(path.lengths[i], path.lengths[j]) != TRUE) stop("Tree must be ultrametric.")
                 
                 }
             
