@@ -147,9 +147,12 @@ BC <- function(taxon_locality_matrix, tree = NULL, count.nodes = FALSE, permute.
         tree$edge.length[match(1:Ntip(tree), tree$edge[, 2])] <- 0.5
         
     }
-    
+
     # As long as there is a tree:
     if(!is.null(tree)) {
+        
+        # Ensure taxon-locality matrix only contains taxa shared by tree and matrix:
+        taxon_locality_matrix <- taxon_locality_matrix[intersect(tree$tip.label, rownames(taxon_locality_matrix)), ]
     
         # Get unique lengths:
         path.lengths <- unique(diag(vcv(tree)))
@@ -185,9 +188,6 @@ BC <- function(taxon_locality_matrix, tree = NULL, count.nodes = FALSE, permute.
     #}
     
 # STUFF
-    
-    # Ensure taxon-locality matrix only contains taxa shared by tree and matrix (if there is a tree):
-    if(!is.null(tree)) taxon_locality_matrix <- taxon_locality_matrix[intersect(tree$tip.label, rownames(taxon_locality_matrix)), ]
     
 # IS THERE A REASON TO RETAIN ZEROES? IT SEEMS LIKE SAMPLING MIGHT BE AN ISSUE HERE.
     
