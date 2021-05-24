@@ -48,10 +48,10 @@ StartingPoints <- function(N_continents = 7, radius = 2000, start_configuration 
 			min_separation <- (1 - squishiness) * radius * 2
 			
 			# Randomly assign starting longitude:
-			first_circle_long <- runif(1, min = -180, max = 180)
+			first_circle_long <- stats::runif(1, min = -180, max = 180)
 			
 			# Randomly assign starting latitude:
-			first_circle_lat <- runif(1, min = -90, max = 90)
+			first_circle_lat <- stats::runif(1, min = -90, max = 90)
 			
 			# Create matrix to store circles:
 			circles <- matrix(c(first_circle_long, first_circle_lat), ncol=2, dimnames=list(c(), c("Longitude", "Latitude")))
@@ -60,7 +60,7 @@ StartingPoints <- function(N_continents = 7, radius = 2000, start_configuration 
 			if(N_continents > 1) {
 				
 				# Find centre of second continnet by randomly drawing from the circle describing all points within minimum separation of the first continent:
-				second_circle <- EndPoint(longitude = first_circle_long, latitude = first_circle_lat, bearing = runif(1, min = 0, max = 360), distance = min_separation, EarthRad = EarthRad)
+				second_circle <- EndPoint(longitude = first_circle_long, latitude = first_circle_lat, bearing = stats::runif(1, min = 0, max = 360), distance = min_separation, EarthRad = EarthRad)
 				
 				# Add second continent to circles matrix:
 				circles <- rbind(circles, c(second_circle$longitude, second_circle$latitude))
@@ -93,10 +93,10 @@ StartingPoints <- function(N_continents = 7, radius = 2000, start_configuration 
 			print("WARNING: Squishiness set to one and supercontinent option employed: all continents will start completely overlapping each other.")
 			
 			# Randomly assign starting longitude:
-			first_circle_long <- runif(1, min = -180, max = 180)
+			first_circle_long <- stats::runif(1, min = -180, max = 180)
 			
 			# Randomly assign starting latitude:
-			first_circle_lat <- runif(1, min = -90, max = 90)
+			first_circle_lat <- stats::runif(1, min = -90, max = 90)
 			
 			# Create matrix to store circles:
 			circles <- cbind(matrix(rep(c(first_circle_long, first_circle_lat), N_continents), ncol=2, byrow=TRUE))
@@ -121,10 +121,10 @@ StartingPoints <- function(N_continents = 7, radius = 2000, start_configuration 
 		if((SphericalCapArea(min_separation / 2) * N_continents) > (4 * pi * (EarthRad ^ 2))) stop("ERROR: The current choices for number of continents, radius and squishiness means it is impossible to fit all continents on the sphere. Consider choosing fewer continents, a smaller radius, or larger squishiness.")
 		
 		# Randomly assign starting longitude:
-		first_circle_long <- runif(1, min = -180, max = 180)
+		first_circle_long <- stats::runif(1, min = -180, max = 180)
 		
 		# Randomly assign starting latitude:
-		first_circle_lat <- runif(1, min = -90, max = 90)
+		first_circle_lat <- stats::runif(1, min = -90, max = 90)
 		
 		# Create matrix to store circles:
 		circles <- matrix(c(first_circle_long, first_circle_lat), ncol=2, dimnames=list(c(), c("Longitude", "Latitude")))
@@ -133,10 +133,10 @@ StartingPoints <- function(N_continents = 7, radius = 2000, start_configuration 
 		while(N_continents > nrow(circles)) {
 
 			# Randomly assign starting longitude:
-			new_circle_long <- runif(1, min = -180, max = 180)
+			new_circle_long <- stats::runif(1, min = -180, max = 180)
 			
 			# Randomly assign starting latitude:
-			new_circle_lat <- runif(1, min = -90, max = 90)
+			new_circle_lat <- stats::runif(1, min = -90, max = 90)
 			
 			# Get the Great Circle distance matrix of the potential new continent and the pre-existing continents:
 			GC_distance_matrix <- GreatCircleDistanceMatrix(rbind(circles[, c("Longitude", "Latitude")], c(new_circle_long, new_circle_lat))[, 1], rbind(circles[, c("Longitude", "Latitude")], c(new_circle_long, new_circle_lat))[, 2], EarthRad = EarthRad)
@@ -148,10 +148,10 @@ StartingPoints <- function(N_continents = 7, radius = 2000, start_configuration 
 			while(min(GC_distance_matrix[lower.tri(GC_distance_matrix)]) < min_separation) {
 				
 				# Randomly assign new starting longitude:
-				new_circle_long <- runif(1, min = -180, max = 180)
+				new_circle_long <- stats::runif(1, min = -180, max = 180)
 				
 				# Randomly assign new starting latitude:
-				new_circle_lat <- runif(1, min = -90, max = 90)
+				new_circle_lat <- stats::runif(1, min = -90, max = 90)
 				
 				# Update Great Circle distance matrix:
 				GC_distance_matrix <- GreatCircleDistanceMatrix(rbind(circles[, c("Longitude", "Latitude")], c(new_circle_long, new_circle_lat))[, 1], rbind(circles[, c("Longitude", "Latitude")], c(new_circle_long, new_circle_lat))[, 2], EarthRad = EarthRad)
@@ -180,8 +180,8 @@ StartingPoints <- function(N_continents = 7, radius = 2000, start_configuration 
 			slat = -90
 		} else {
 			#Randomly positions the first continent
-			slong = runif(1, c(-180,180))
-			slat = runif(1, c(-90, 90))
+			slong = stats::runif(1, c(-180,180))
+			slat = stats::runif(1, c(-90, 90))
 		}
 		#matrix of continent coordinates
 		points <- matrix(nrow=N, ncol=2)
@@ -197,7 +197,7 @@ StartingPoints <- function(N_continents = 7, radius = 2000, start_configuration 
 		#Three points on a great circle
 		if (N==3) {
 			d<- 2*pi*EarthRad/3
-			bearing <- runif(1, c(0,360))
+			bearing <- stats::runif(1, c(0,360))
 			second <- EndPoint(slong, slat, bearing, distance = d, EarthRad = EarthRad)
 			third <- EndPoint(slong, slat, bearing, distance = 2 * d, EarthRad = EarthRad)
 			points[2,] <- c(second$longitude, second$latitude)
@@ -209,7 +209,7 @@ StartingPoints <- function(N_continents = 7, radius = 2000, start_configuration 
 			a<-EarthRad/(sqrt(3/8))
 			theta <- ThetaFromChordLength(a)
 			d <- EarthRad*theta
-			bear <- runif(1, c(0,360))
+			bear <- stats::runif(1, c(0,360))
 			second <- EndPoint(slong, slat, bearing=bear, distance = d, EarthRad = EarthRad)
 			points[2,] <- c(second$longitude, second$latitude)
 			third <- EndPoint(slong, slat, bearing=(bear+120) %% 360, distance = d, EarthRad = EarthRad)
@@ -221,7 +221,7 @@ StartingPoints <- function(N_continents = 7, radius = 2000, start_configuration 
 		#No unique solution so three points on great circle and two at ends of perpendicular diameter
 		if (N==5) {
 			d<- 2*pi*EarthRad/3
-			bear <- runif(1, c(0,360))
+			bear <- stats::runif(1, c(0,360))
 			second <- EndPoint(slong, slat, bear, distance = d, EarthRad = EarthRad)
 			third <- EndPoint(slong, slat, bear, distance = 2*d, EarthRad = EarthRad)
 			fourth <- EndPoint(slong, slat, (bear + 90) %% 360, distance=0.5*EarthRad*pi, EarthRad = EarthRad)
@@ -235,7 +235,7 @@ StartingPoints <- function(N_continents = 7, radius = 2000, start_configuration 
 		#Verticies of an octohedron
 		if (N==6) {
 			d<- 0.5 * pi * EarthRad
-			bear <- runif(1, c(0,360))
+			bear <- stats::runif(1, c(0,360))
 			second <- EndPoint(slong, slat, bear, distance = d, EarthRad = EarthRad)
 			third <- EndPoint(slong, slat, bear, distance = 2*d, EarthRad = EarthRad)
 			fourth <- EndPoint(slong, slat, bear, distance = 3*d, EarthRad = EarthRad)
@@ -250,7 +250,7 @@ StartingPoints <- function(N_continents = 7, radius = 2000, start_configuration 
 		#Verticies of a pentagonal bipyramid
 		if (N==7) {
 			d<- 2*pi*EarthRad/5
-			bear <- runif(1, c(0,360))
+			bear <- stats::runif(1, c(0,360))
 			second <- EndPoint(slong, slat, bear, distance = d, EarthRad = EarthRad)
 			third <- EndPoint(slong, slat, bear, distance = 2*d, EarthRad = EarthRad)
 			fourth <- EndPoint(slong, slat, bear, distance = 3*d, EarthRad = EarthRad)

@@ -16,14 +16,14 @@
 #' @author Graeme T. Lloyd \email{graemetlloyd@@gmail.com}
 #' @export
 #' @examples
-#' longitude_1 <- runif(1, -180, 180)
-#' longitude_2 <- runif(1, -180, 180)
-#' longitude_3 <- runif(1, -180, 180)
-#' longitude_4 <- runif(1, -180, 180)
-#' latitude_1 <- runif(1, -90, 90)
-#' latitude_2 <- runif(1, -90, 90)
-#' latitude_3 <- runif(1, -90, 90)
-#' latitude_4 <- runif(1, -90, 90)
+#' longitude_1 <- stats::runif(1, -180, 180)
+#' longitude_2 <- stats::runif(1, -180, 180)
+#' longitude_3 <- stats::runif(1, -180, 180)
+#' longitude_4 <- stats::runif(1, -180, 180)
+#' latitude_1 <- stats::runif(1, -90, 90)
+#' latitude_2 <- stats::runif(1, -90, 90)
+#' latitude_3 <- stats::runif(1, -90, 90)
+#' latitude_4 <- stats::runif(1, -90, 90)
 #' ArcIntersection(longitude_1, latitude_1, longitude_2, latitude_2,
 #'   longitude_3, latitude_3, longitude_4, latitude_4, EarthRad = 6367.4447)
 

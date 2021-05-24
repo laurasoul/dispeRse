@@ -88,7 +88,7 @@ MagicPortal <- function(start_longitude, start_latitude, end_longitude, end_lati
 		landing_continent <- sample(x = rep(current_cluster, 2), size = 1)
 		
 		# Randomly draw a landing spot (on the coast):
-		landing_spot <- EndPoint(continent_centres[landing_continent, 1], continent_centres[landing_continent, 2], runif(1, min = 0, max = 360), continent_radius)
+		landing_spot <- EndPoint(continent_centres[landing_continent, 1], continent_centres[landing_continent, 2], stats::runif(1, min = 0, max = 360), continent_radius)
 		
 		# Calculate distances from landing spot to continent centre(s) (to be used to establish if spot is on the coast or not):
 		distances <- One2ManyGreatCircleDistance(landing_spot$longitude, landing_spot$latitude, continent_centres[current_cluster, 1], continent_centres[current_cluster, 2], EarthRad = EarthRad)
@@ -100,7 +100,7 @@ MagicPortal <- function(start_longitude, start_latitude, end_longitude, end_lati
 			landing_continent <- sample(x = rep(current_cluster, 2), size = 1)
 			
 			# Redraw landing spot:
-			landing_spot <- EndPoint(continent_centres[landing_continent, 1], continent_centres[landing_continent, 2], runif(1, min = 0, max = 360), continent_radius)
+			landing_spot <- EndPoint(continent_centres[landing_continent, 1], continent_centres[landing_continent, 2], stats::runif(1, min = 0, max = 360), continent_radius)
 			
 			# Recalculate distances to continent centre(s):
 			distances <- One2ManyGreatCircleDistance(landing_spot$longitude, landing_spot$latitude, continent_centres[current_cluster, 1], continent_centres[current_cluster, 2], EarthRad = EarthRad)

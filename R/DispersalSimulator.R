@@ -58,13 +58,13 @@ DispersalSimulator <- function(N_steps = 1000, organism_multiplier = 5, N_contin
 # THESE MAY NOT BE EQUALLY DISTRIBUTED ACROSS THE PLANET, MAYBE RECONSIDER HOW TO DRAW THESE
 	
 	# Randomly draw longitudes for each separated continent:
-	euler_pole_longitudes <- runif(length(separate_continents), -180, 180)
+	euler_pole_longitudes <- stats::runif(length(separate_continents), -180, 180)
 	
 	# Randomly draw latitudes for each separated continent:
-	euler_pole_latitudes <- runif(length(separate_continents), -90, 90)
+	euler_pole_latitudes <- stats::runif(length(separate_continents), -90, 90)
 	
 	# Ensure no latitude is directly at a pole (North or South) by redrawing if any are found (causes an issue with bearings - e.g., what is 0-degrees from North pole):
-	if((sum(euler_pole_latitudes == 90) + sum(euler_pole_latitudes == -90)) > 0) euler_pole_latitudes <- runif(length(separate_continents), -90, 90)
+	if((sum(euler_pole_latitudes == 90) + sum(euler_pole_latitudes == -90)) > 0) euler_pole_latitudes <- stats::runif(length(separate_continents), -90, 90)
 
 # Assign speeds to each separate continent:
 	
@@ -98,13 +98,13 @@ DispersalSimulator <- function(N_steps = 1000, organism_multiplier = 5, N_contin
 	dispersals <- matrix(nrow = 0, ncol = 5, dimnames = list(c(), c("From_continent", "To_continent", "Branch", "Continent_time_step", "Animal_time_step")))
 	
 	# Pick a random continent on which the clade begins:
-	begin_cont <- ceiling(runif(1, 0, N_continents))
+	begin_cont <- ceiling(stats::runif(1, 0, N_continents))
 	
 	# Start by drawing two values from long-lat limits as though continent were centered at equator-Greenwich meridean intersection (means degrees are same distance value):
-	begin_coordinates <- runif(n = 2, min = -radius / (2 * pi * EarthRad) * 360, max = radius / (2 * pi * EarthRad) * 360)
+	begin_coordinates <- stats::runif(n = 2, min = -radius / (2 * pi * EarthRad) * 360, max = radius / (2 * pi * EarthRad) * 360)
 	
 	# Whilst the draw is not on the continent redraw long and lat values:
-	while(GreatCircleDistanceFromLongLat(long1 = 0, lat1 = 0, long2 = begin_coordinates[1], lat2 = begin_coordinates[2], EarthRad = EarthRad, Warn = TRUE) > radius) begin_coordinates <- runif(n = 2, min = -radius / (2 * pi * EarthRad) * 360, max = radius / (2 * pi * EarthRad) * 360)
+	while(GreatCircleDistanceFromLongLat(long1 = 0, lat1 = 0, long2 = begin_coordinates[1], lat2 = begin_coordinates[2], EarthRad = EarthRad, Warn = TRUE) > radius) begin_coordinates <- stats::runif(n = 2, min = -radius / (2 * pi * EarthRad) * 360, max = radius / (2 * pi * EarthRad) * 360)
 	
 	# Get bearing from continent centre to point where clade begins:
 	bearing_to_clade_start <- BearingBetweenTwoLongLatPoints(start_long = 0, start_lat = 0, end_long = begin_coordinates[1], end_lat = begin_coordinates[2])
@@ -351,7 +351,7 @@ DispersalSimulator <- function(N_steps = 1000, organism_multiplier = 5, N_contin
 		separate_continents <- HowManySeparateContinents(min_separation = min_separation, longitudes = position[, t, 1], latitudes = position[, t, 2], EarthRad = EarthRad)
 		
 		# Make random uniform draws for each continental cluster:
-		separation_draws <- runif(length(grep("&", separate_continents)))
+		separation_draws <- stats::runif(length(grep("&", separate_continents)))
 		
 		# Case if a separation occurs (drawn value is equal to or exceeds stickiness):
 		if(any(separation_draws >= stickiness)) {
@@ -451,10 +451,10 @@ DispersalSimulator <- function(N_steps = 1000, organism_multiplier = 5, N_contin
 			}
 
 			# Make new Euler poles
-			new_euler_longitudes[is.na(new_euler_longitudes)] <- runif((length(separate_continents) - length(toKeep)), -180, 180)
+			new_euler_longitudes[is.na(new_euler_longitudes)] <- stats::runif((length(separate_continents) - length(toKeep)), -180, 180)
 
-			changed_euler_latitudes <- runif((length(separate_continents) - length(toKeep)), -90, 90)
-			while((sum(changed_euler_latitudes == 90) + sum(changed_euler_latitudes == -90)) > 0) changed_euler_latitudes <- runif((length(separate_continents) - length(toKeep)), -90, 90)
+			changed_euler_latitudes <- stats::runif((length(separate_continents) - length(toKeep)), -90, 90)
+			while((sum(changed_euler_latitudes == 90) + sum(changed_euler_latitudes == -90)) > 0) changed_euler_latitudes <- stats::runif((length(separate_continents) - length(toKeep)), -90, 90)
 			
 			new_euler_latitudes[is.na(new_euler_latitudes)] <- changed_euler_latitudes
 
@@ -555,7 +555,7 @@ DispersalSimulator <- function(N_steps = 1000, organism_multiplier = 5, N_contin
 						if(all.equal(min(all_dist), radius) != TRUE && min(all_dist) > radius) {
 							
 							# Case if a sweeptakes dispersal occurs:
-							if(runif(n = 1, min = 0, max = 1) <= sweepstakes) {
+							if(stats::runif(n = 1, min = 0, max = 1) <= sweepstakes) {
 							
 								# Find landing spot after sweepstakes dispersal:
 								landing_spot <- MagicPortal(start_longitude = as.vector(starting[1]), start_latitude = as.vector(starting[2]), end_longitude = moveto$longitude, end_latitude = moveto$latitude, start_continent = on_cont, touching_continents = as.vector(unlist(tail(touching, n = 1))), continent_centres = position[,t,], continent_radius = radius, EarthRad = EarthRad)
@@ -600,7 +600,7 @@ DispersalSimulator <- function(N_steps = 1000, organism_multiplier = 5, N_contin
 						if (all.equal(as.vector(dist_from_centre), radius) != TRUE && dist_from_centre > radius) {
 							
 							# Case if a sweeptakes dispersal occurs:
-							if(runif(n = 1, min = 0, max = 1) <= sweepstakes) {
+							if(stats::runif(n = 1, min = 0, max = 1) <= sweepstakes) {
 								
 								# Get landing spot following sweepstakes dispersal:
 								landing_spot <- MagicPortal(start_longitude = as.vector(starting[1]), start_latitude = as.vector(starting[2]), end_longitude = moveto$longitude, end_latitude = moveto$latitude, start_continent = on_cont, touching_continents = as.vector(unlist(tail(touching, n = 1))), continent_centres = position[,t,], continent_radius = radius, EarthRad = EarthRad)
@@ -653,9 +653,9 @@ DispersalSimulator <- function(N_steps = 1000, organism_multiplier = 5, N_contin
                 }
             }
 
-            r <- runif(1)
+            r <- stats::runif(1)
             if (r <= b / (b + d)) { ###4 #this creates a bifucation in the tree
-                random_lineage <- round(runif(1, min = 1, max = sum(alive)))
+                random_lineage <- round(stats::runif(1, min = 1, max = sum(alive)))
                 e <- matrix(edge[alive, ], ncol = 2)
                 parent <- e[random_lineage, 2]
                 x <- which(edge[, 2] == parent)
@@ -674,7 +674,7 @@ DispersalSimulator <- function(N_steps = 1000, organism_multiplier = 5, N_contin
                 edge.length[x] <- ot - stem.depth[x]
                 edge.length <- c(edge.length, NA, NA)
             } else {###4 This terminates one of the current lineages on the tree
-                random_lineage <- round(runif(1, min = 1, max = sum(alive)))
+                random_lineage <- round(stats::runif(1, min = 1, max = sum(alive)))
                 edge.length[alive][random_lineage] <- ot - stem.depth[alive][random_lineage]
                 alive[alive][random_lineage] <- FALSE
             }###4

@@ -192,13 +192,13 @@ ContinentSplitter <- function(min_separation, longitudes, latitudes, continent_n
 				random_link_start_bearing <- BearingBetweenTwoLongLatPoints(random_link_start_longitude, random_link_start_latitude, random_link_end_longitude, random_link_end_latitude)
 				
 				# Pick a random distance along the link:
-				random_distance <- runif(1, 0, min_separation)
+				random_distance <- stats::runif(1, 0, min_separation)
 				
 				# Define point at which cut will begin:
 				cut_point_1 <- EndPoint(random_link_start_longitude, random_link_start_latitude, random_link_start_bearing, random_distance, EarthRad = EarthRad)[c("longitude", "latitude")]
 				
 				# Get cut bearing (will be used to describe Great Circle made by cut):
-				cut_bearing <- runif(1, 0, 360)
+				cut_bearing <- stats::runif(1, 0, 360)
 				
 				# Pick second point on Great Circle to use to describe it:
 				cut_point_2 <- EndPoint(cut_point_1$longitude, cut_point_1$latitude, cut_bearing, min_separation, EarthRad = EarthRad)[c("longitude", "latitude")]
@@ -227,7 +227,7 @@ ContinentSplitter <- function(min_separation, longitudes, latitudes, continent_n
 					while(intersection_occurs) {
 						
 						# Get new cut bearing (will be used to describe Great Circle made by cut):
-						cut_bearing <- runif(1, 0, 360)
+						cut_bearing <- stats::runif(1, 0, 360)
 						
 						# Pick new second point on Great Circle to use to describe it:
 						cut_point_2 <- EndPoint(cut_point_1$longitude, cut_point_1$latitude, cut_bearing, min_separation, EarthRad = EarthRad)[c("longitude", "latitude")]

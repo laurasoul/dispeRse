@@ -48,7 +48,7 @@ TreeWalkerDiscrete <- function (b=0.1, d=0.05, steps=50, slon=0, slat=0, steplen
             for (i in 1:nrow(lat.matrix)) {
                 if (alive[i]) {
                     starting<-c(lat.matrix[i,t],long.matrix[i,t])
-                    moveto<-EndPoint(starting[2],starting[1],runif(1,0,360),abs(rnorm(1,0,steplengthsd)), EarthRad = EarthRad) #generates a random walk step and calculates new position
+                    moveto<-EndPoint(starting[2],starting[1],stats::runif(1,0,360),abs(rnorm(1,0,steplengthsd)), EarthRad = EarthRad) #generates a random walk step and calculates new position
                     lat.matrix[i,t+1]<-moveto$latitude
                     long.matrix[i,t+1]<-moveto$longitude
                 }
@@ -60,9 +60,9 @@ TreeWalkerDiscrete <- function (b=0.1, d=0.05, steps=50, slon=0, slat=0, steplen
                     break
                 }
             }
-            r <- runif(1)
+            r <- stats::runif(1)
             if (r <= b/(b + d)) { ###4 #this creates a bifucation in the tree
-                random_lineage <- round(runif(1, min = 1, max = sum(alive)))
+                random_lineage <- round(stats::runif(1, min = 1, max = sum(alive)))
                 e <- matrix(edge[alive,], ncol = 2)
                 parent <- e[random_lineage,2]
                 x <- which(edge[,2] == parent)
@@ -79,7 +79,7 @@ TreeWalkerDiscrete <- function (b=0.1, d=0.05, steps=50, slon=0, slat=0, steplen
                 edge.length[x] <- t - stem.depth[x]
                 edge.length<-c(edge.length, NA, NA)
             } else {###4 This terminates one of the current lineages on the tree
-                random_lineage <- round(runif(1, min = 1, max = sum(alive)))
+                random_lineage <- round(stats::runif(1, min = 1, max = sum(alive)))
                 edge.length[alive][random_lineage] <- t - stem.depth[alive][random_lineage]
                 alive[alive][random_lineage] <- FALSE
             }###4

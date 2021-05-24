@@ -24,3 +24,9 @@
 #' @import Claddis
 #' @import geiger
 NULL
+
+#' @importFrom graphics plot polygon
+#' @importFrom stats na.omit rbeta rnorm runif
+#' @importFrom utils tail
+NULL
+
