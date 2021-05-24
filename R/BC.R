@@ -98,7 +98,7 @@ BC <- function(taxon_locality_matrix, tree = NULL, count.nodes = FALSE, permute.
         tree$root.time <- max(diag(vcv(tree)))
         
         # Get node ages (expressed as time from tips of tree):
-        node.ages <- GetNodeAges(tree)
+        node.ages <- Claddis::date_nodes(tree)
         
         # Find nodes older than k:
         too.old.nodes <- as.numeric(names(which(node.ages > K)))
